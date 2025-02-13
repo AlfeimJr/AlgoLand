@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://blxsr6m4ojia7"]
 
-[ext_resource type="Texture2D" uid="uid://cwodfdjir68jt" path="res://health_box.png" id="1_aqn4h"]
-[ext_resource type="Script" path="res://item.gd" id="1_qlsne"]
+[ext_resource type="Texture2D" uid="uid://cwodfdjir68jt" path="res://Tiles/health_box.png" id="1_aqn4h"]
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_qlsne"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lie4u"]
 
