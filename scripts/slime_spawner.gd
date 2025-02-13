@@ -3,7 +3,7 @@ extends Node2D
 @onready var main = get_node("/root/cenario")
 
 signal hit_p
-var slime_scene := preload("res://slime.tscn")
+var slime_scene := preload("res://cenas/slime.tscn")
 var spawn_points := []
 var wave_manager
 @export var spawn_delay: float = 0.5  # 🕒 Delay entre os spawns (meio segundo)

@@ -17,7 +17,6 @@ position = Vector2(7, 13)
 
 [node name="WaveManager" parent="enemySpawner" instance=ExtResource("6_j85rw")]
 starting_wave = 200
-max_enemies = 40
 max_waves = 500
 
 [node name="Terrains" parent="." instance=ExtResource("2_rmsv3")]
