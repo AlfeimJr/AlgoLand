@@ -1,6 +1,6 @@
 extends Node2D
 
-var max_enemies: int = 10
+var max_enemies: int = 110
 var current_wave: int = 1
 var wave_interval: float = 10.0  # Intervalo entre as waves
 

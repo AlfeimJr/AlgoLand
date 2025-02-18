@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Slime
 
-@onready var player = get_node("/root/cenario/baseCharacter")
+@onready var player = get_node("/root/cenario/Player")
 signal hit_player
 signal enemy_died  # Sinal para notificar a morte
 

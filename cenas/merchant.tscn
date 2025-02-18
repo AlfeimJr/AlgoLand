@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://5kwygxonpkpt"]
+
+[ext_resource type="Texture2D" uid="uid://bx8nyvg8qemk7" path="res://NPC/npc merchant A v00.png" id="1_5nqid"]
+[ext_resource type="Texture2D" uid="uid://dckgvjj6um2eq" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/1 Frames/Frame2.png" id="2_3fri6"]
+[ext_resource type="Script" path="res://scripts/merchant.gd" id="3_8n8mb"]
+[ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="4_dv8ra"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nn5dv"]
+radius = 11.0
+height = 32.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0ydix"]
+radius = 28.0179
+
+[node name="Merchant" type="CharacterBody2D"]
+texture_filter = 1
+position = Vector2(303, 154)
+script = ExtResource("3_8n8mb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_nn5dv")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_5nqid")
+hframes = 4
+vframes = 8
+frame = 20
+
+[node name="button" type="Sprite2D" parent="."]
+position = Vector2(0, -23)
+scale = Vector2(0.538463, 0.519231)
+texture = ExtResource("2_3fri6")
+
+[node name="openMenu" type="Button" parent="button"]
+offset_left = -15.1428
+offset_top = -15.7037
+offset_right = 16.8572
+offset_bottom = 15.2963
+theme_override_fonts/font = ExtResource("4_dv8ra")
+theme_override_font_sizes/font_size = 12
+text = "F"
+flat = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_0ydix")
+
+[connection signal="pressed" from="button/openMenu" to="." method="_on_open_menu_pressed"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

@@ -8,8 +8,8 @@ radius = 5.0
 height = 18.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vvs2u"]
-radius = 136.0
-height = 272.0
+radius = 138.0
+height = 276.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4bly2"]
 atlas = ExtResource("2_x6hia")
