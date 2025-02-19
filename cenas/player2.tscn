@@ -1403,6 +1403,7 @@ texture_filter = 1
 position = Vector2(-7.62939e-06, 8.39233e-05)
 
 [node name="Body" type="Sprite2D" parent="CompositeSprites"]
+visible = false
 texture_filter = 1
 position = Vector2(-4.76837e-06, -3.05176e-05)
 texture = ExtResource("2_byhnc")
