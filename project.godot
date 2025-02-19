@@ -29,13 +29,14 @@ IsCustomization="*res://scripts/is_customization.gd"
 
 window/size/viewport_width=576
 window/size/viewport_height=324
+window/size/mode=3
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", "res://addons/gdscript_formatter/plugin.cfg")
+enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", "res://addons/gdscript_formatter/plugin.cfg", "res://addons/msca/plugin.cfg")
 
 [input]
 

@@ -12,9 +12,18 @@ func _ready() -> void:
 	add_to_group("merchant")
 	icon.visible = false
 
-	# Conecta os sinais de entrada e saída da área
-	connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
-	connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
+	# Obtém o nó Area2D
+	var area_2d = $Area2D
+	if area_2d:
+		# Conecta o sinal 'body_entered' apenas se ainda não estiver conectado
+		if not area_2d.is_connected("body_entered", Callable(self, "_on_area_2d_body_entered")):
+			area_2d.connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
+
+		# Conecta o sinal 'body_exited' apenas se ainda não estiver conectado
+		if not area_2d.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
+			area_2d.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
+	else:
+		printerr("Nó Area2D não encontrado!")
 
 func _process(delta: float) -> void:
 	# Verifica se o jogador está no alcance e pressiona o botão F para abrir o menu

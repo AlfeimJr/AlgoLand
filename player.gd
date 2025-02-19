@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var _move_speed: float = 64.0
 @export var _friction: float = 0.3
 @export var _acceleration: float = 0.3
-@export var _attack_damage: int = 1  # Quantidade de dano que o ataque causa
+@export var _attack_damage: int = 1
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
 
@@ -15,8 +15,15 @@ extends CharacterBody2D
 @onready var bodySprite = $CompositeSprites/Body
 @onready var hairSprite = $CompositeSprites/Hair
 @onready var outfit_sprite = $CompositeSprites/Outfit
+
+# Estes são os nós específicos para “espada/escudo”
+@onready var swordChieldBodySprite = $CompositeSprites/SwordChieldBody
+@onready var swordArmSprite        = $CompositeSprites/SwordArm
+@onready var chieldSprite          = $CompositeSprites/Chield
+
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
+
 var nickname: String = ""
 signal customization_finished(hair: int, outfit: int, nickname: String)
 
@@ -25,6 +32,9 @@ var curr_outfit: int = 0
 var _state_machine: Object
 var _is_attacking: bool = false
 var _knockback: Vector2 = Vector2.ZERO
+
+# --- Variável para controlar se o player está usando espada/escudo ---
+var using_sword: bool = false
 
 func _ready() -> void:
 	bodySprite.texture = composite_sprites.body_spriteSheet[0]
@@ -38,52 +48,59 @@ func _ready() -> void:
 		if _state_machine == null:
 			print("Erro: _state_machine está null! Verifique o nome da propriedade 'parameters/playback'.")
 
-	# Configuração de layer/mask do AttackArea
-	$AttackArea.collision_layer = 1 << 1   # Layer 2
-	$AttackArea.collision_mask  = 1 << 2   # Mask 4
+	# Configura layers/mask da AttackArea
+	$AttackArea.collision_layer = 1 << 1  # Layer 2
+	$AttackArea.collision_mask  = 1 << 2  # Mask 4
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
 
-	# Conecta os sinais de AttackArea, evitando duplicações
+	# Conecta sinais de ataque
 	connect_signal_if_not_connected($AttackArea, "body_entered", "_on_attack_body_entered")
 	connect_signal_if_not_connected($AttackArea, "area_entered", "_on_attack_area_area_entered")
 
-	# Carrega os dados salvos
+	# Carrega dados salvos (se houver)
 	var loaded_data = load_from_json()
 	apply_loaded_data(loaded_data)
 
-# Método auxiliar para conectar sinais evitando duplicações
+	# Inicia todos os sprites de espada/escudo invisíveis
+	swordChieldBodySprite.visible = false
+	swordArmSprite.visible = false
+	chieldSprite.visible = false
+
+
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):
 		node.connect(signal_name, Callable(self, method))
 		print("Sinal ", signal_name, " conectado ao método ", method)
+
 
 func _physics_process(delta: float) -> void:
 	if IsCustomization.is_customization:
 		camera.enabled = false
 		return
 
-	# Se houver knockback ativo, aplica-o (e vai diminuindo-o)
+	# Se tiver knockback, aplica
 	if _knockback.length() > 1:
-		velocity = _knockback  # Usa a propriedade nativa `velocity`
-		_knockback = _knockback.lerp(Vector2.ZERO, _knockback_decay)  # Faz o empurrão diminuir suavemente
+		velocity = _knockback
+		_knockback = _knockback.lerp(Vector2.ZERO, _knockback_decay)
 	else:
 		_move(delta)
 		_attack()
 
-	# Usa move_and_slide para movimentação física
 	move_and_slide()
 	_animate()
 
+
 func apply_knockback(force: Vector2) -> void:
-	_knockback = force  # Aplica o empurrão
+	_knockback = force
 	print("Player sofreu knockback!")
-	# Faz o player piscar (efeito de dano)
-	for i in range(5):  # Pisca 5 vezes
-		modulate.a = 0.2  # Fica quase invisível
-		await get_tree().create_timer(0.1).timeout  # Espera 0.1s
-		modulate.a = 1.0  # Volta ao normal
-		await get_tree().create_timer(0.1).timeout  # Espera 0.1s
+	# Efeito de piscar
+	for i in range(5):
+		modulate.a = 0.2
+		await get_tree().create_timer(0.1).timeout
+		modulate.a = 1.0
+		await get_tree().create_timer(0.1).timeout
+
 
 func _attack() -> void:
 	if Input.is_action_just_pressed("attack") and not _is_attacking:
@@ -91,6 +108,7 @@ func _attack() -> void:
 		_timer.start()
 		$AttackArea.monitoring = true
 		$AttackArea.monitorable = true
+
 
 func _move(delta: float) -> void:
 	var dir = Vector2(
@@ -101,28 +119,51 @@ func _move(delta: float) -> void:
 		dir = dir.normalized()
 		velocity.x = lerp(velocity.x, dir.x * _move_speed, _acceleration)
 		velocity.y = lerp(velocity.y, dir.y * _move_speed, _acceleration)
-		_animation_tree["parameters/idle/blend_position"] = dir
-		_animation_tree["parameters/run/blend_position"] = dir
+
+		# Dependendo se está usando espada ou não, atualizamos
+		# o blend_position dos estados corretos.
+		if using_sword:
+			_animation_tree["parameters/SwordChieldIdle/blend_position"] = dir
+			_animation_tree["parameters/SwordChieldMove/blend_position"] = dir
+		else:
+			_animation_tree["parameters/idle/blend_position"] = dir
+			_animation_tree["parameters/run/blend_position"] = dir
 	else:
 		velocity.x = lerp(velocity.x, 0.0, _friction)
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 
+
 func _animate() -> void:
+	# Se estiver atacando, toca animação de ataque normal
+	# (se quiser animação diferente para espada, crie "SwordChieldAttack")
 	if _is_attacking:
 		_state_machine.travel("attack")
 		return
+
+	# Se estiver em movimento:
 	if velocity.length() > 2:
-		_state_machine.travel("run")
+		# Se usando espada, use "SwordChieldMove"
+		if using_sword:
+			_state_machine.travel("SwordChieldMove")
+		else:
+			_state_machine.travel("run")
 	else:
-		_state_machine.travel("idle")
+		# Parado: "SwordChieldIdle" ou "idle"
+		if using_sword:
+			_state_machine.travel("SwordChieldIdle")
+		else:
+			_state_machine.travel("idle")
+
 
 func _on_attack_timer_timeout() -> void:
 	_is_attacking = false
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
 
+
 func _on_attack_area_area_entered(area: Area2D) -> void:
 	print("Área de ataque entrou em contato com outra área:", area.name)
+
 
 func _on_attack_body_entered(body: Node2D) -> void:
 	print("Colisão detectada com: ", body.name)
@@ -133,10 +174,12 @@ func _on_attack_body_entered(body: Node2D) -> void:
 			var knockback_dir = (body.position - position).normalized()
 			body.take_damage(_attack_damage, knockback_dir * _knockback_strength)
 
+
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	print("Cabelo alterado para:", curr_hair)
+
 
 func _on_change_hair_back_pressed() -> void:
 	curr_hair = (curr_hair - 1) % composite_sprites.hair_spriteSheet.size()
@@ -145,10 +188,12 @@ func _on_change_hair_back_pressed() -> void:
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	print("Cabelo alterado para:", curr_hair)
 
+
 func _on_change_outfit_pressed() -> void:
 	curr_outfit = (curr_outfit + 1) % composite_sprites.outfit_spriteSheet.size()
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	print("Roupa alterada para:", curr_outfit)
+
 
 func _on_change_outfit_back_pressed() -> void:
 	curr_outfit = (curr_outfit - 1) % composite_sprites.outfit_spriteSheet.size()
@@ -157,37 +202,34 @@ func _on_change_outfit_back_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	print("Roupa alterada para:", curr_outfit)
 
+
 func save_customization():
 	print("Emitindo sinal de personalização...")
 	print("Cabelo atual:", curr_hair, "Roupa atual:", curr_outfit, "Nickname:", nickname)
 	emit_signal("customization_finished", curr_hair, curr_outfit, nickname)
 
+
 func load_from_json():
-	# Obter o caminho para o diretório "Documentos"
 	var documents_dir = OS.get_user_data_dir()
 	var file_path = documents_dir.path_join("player_config.json")
-	
-	# Abrir o arquivo para leitura
 	var file = FileAccess.open(file_path, FileAccess.READ)
 	if file == null:
 		print("Erro: Arquivo JSON não encontrado em:", file_path)
 		return {}
 	
-	# Ler o conteúdo do arquivo
 	var json_string = file.get_as_text()
 	file.close()
 	
-	# Analisar o JSON
 	var json = JSON.new()
 	var parse_result = json.parse(json_string)
 	if parse_result != OK:
 		print("Erro ao analisar o JSON.")
 		return {}
 	
-	# Retornar os dados carregados
 	var data = json.get_data()
 	print("Dados carregados:", data)
 	return data
+
 
 func apply_loaded_data(data: Dictionary):
 	if data.has("curr_hair"):
@@ -201,3 +243,40 @@ func apply_loaded_data(data: Dictionary):
 	if data.has("nickname"):
 		nickname = data["nickname"]
 		print("Nickname carregado:", nickname)
+
+
+# -------------------------------
+# Função para equipar espada e escudo
+# -------------------------------
+func equip_sword_and_shield() -> void:
+	using_sword = true
+
+	# Carrega a espada e o escudo das pastas (ajuste o nome dos arquivos conforme seu projeto)
+	var sword_tex = load("res://CharacterSprites/Arms/swords/Sword_1.png")
+	var shield_tex = load("res://CharacterSprites/Arms/chields/chield_1.png")
+
+	swordArmSprite.texture = sword_tex
+	chieldSprite.texture = shield_tex
+
+	# Esconde o corpo normal
+	bodySprite.visible = false
+	# Mostra o corpo+braço com espada e o escudo
+	swordChieldBodySprite.visible = true
+	swordArmSprite.visible = true
+	chieldSprite.visible = true
+
+	print("Espada e escudo equipados!")
+
+
+# -------------------------------
+# (Opcional) Função para voltar ao Body normal
+# -------------------------------
+func unequip_sword_and_shield() -> void:
+	using_sword = false
+
+	bodySprite.visible = true
+	swordChieldBodySprite.visible = false
+	swordArmSprite.visible = false
+	chieldSprite.visible = false
+
+	print("Espada e escudo removidos!")
