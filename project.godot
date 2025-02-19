@@ -29,7 +29,6 @@ IsCustomization="*res://scripts/is_customization.gd"
 
 window/size/viewport_width=576
 window/size/viewport_height=324
-window/size/mode=3
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"

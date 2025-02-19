@@ -13,7 +13,7 @@ func _init():
 	}
 	
 	# Supondo que você tenha arquivos de hair (1).png até hair (107).png
-	for i in range(1, 114):  # i vai de 1 até 107
+	for i in range(1, 28):  # i vai de 1 até 107
 		var resource = load("res://CharacterSprites/Hair/hair (" + str(i) + ").png")
 		if resource:
 			# Se quiser que hair(1).png fique na chave 0, use i - 1

@@ -12,14 +12,17 @@ extends CharacterBody2D
 @export var _animation_tree: AnimationTree = null
 @export var _timer: Timer = null
 
-@onready var bodySprite = $CompositeSprites/Body
-@onready var hairSprite = $CompositeSprites/Hair
-@onready var outfit_sprite = $CompositeSprites/Outfit
+@onready var bodySprite = $CompositeSprites/BaseSprites/Body
+@onready var hairSprite = $CompositeSprites/BaseSprites/Hair
+@onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
 
 # Estes são os nós específicos para “espada/escudo”
-@onready var swordChieldBodySprite = $CompositeSprites/SwordChieldBody
-@onready var swordArmSprite        = $CompositeSprites/SwordArm
-@onready var chieldSprite          = $CompositeSprites/Chield
+@onready var swordChieldBodySprite = $CompositeSprites/SwordChieldSprites/SwordChieldBody
+@onready var swordArmSprite        = $CompositeSprites/SwordChieldSprites/SwordArm
+@onready var chieldSprite          = $CompositeSprites/SwordChieldSprites/Chield
+@onready var swordChieldHairSprite = $CompositeSprites/SwordChieldSprites/Hair
+@onready var swordChieldOutfitSprite          = $CompositeSprites/SwordChieldSprites/Outfit
+
 
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
@@ -253,7 +256,7 @@ func equip_sword_and_shield() -> void:
 
 	# Carrega a espada e o escudo das pastas (ajuste o nome dos arquivos conforme seu projeto)
 	var sword_tex = load("res://CharacterSprites/Arms/swords/Sword_1.png")
-	var shield_tex = load("res://CharacterSprites/Arms/chields/chield_1.png")
+	var shield_tex = load("res://CharacterSprites/Arms/chields/chield_1.png")	
 
 	swordArmSprite.texture = sword_tex
 	chieldSprite.texture = shield_tex
@@ -265,8 +268,33 @@ func equip_sword_and_shield() -> void:
 	swordArmSprite.visible = true
 	chieldSprite.visible = true
 
-	print("Espada e escudo equipados!")
+	# Esconde os sprites de cabelo e roupa do BaseSprites
+	hairSprite.visible = false
+	outfit_sprite.visible = false
 
+	# ---------- AQUI VEM A PARTE IMPORTANTE ----------
+	# curr_hair e curr_outfit são índices numéricos, ex.: 0, 1, 2...
+	# Vamos montar o arquivo usando esse índice + 1, pois o arquivo se chama "hair (1).png", "hair (2).png", etc.
+	var hair_file = "hair (" + str(curr_hair + 1) + ").png"
+	var outfit_file = "outfit (" + str(curr_outfit + 1) + ").png"
+
+	# Monta o caminho para a pasta "Hair_Sword_Chield"
+	var hair_path = "res://CharacterSprites/Hair_Sword_Chield/" + hair_file
+	#var outfit_path = "res://CharacterSprites/Hair_Sword_Chield/" + outfit_file
+
+	# Carrega essas texturas
+	var hair_texture = load(hair_path)
+	#var outfit_texture = load(outfit_path)
+
+	# Seta nos sprites
+	swordChieldHairSprite.texture = hair_texture
+	#outfit_sprite.texture = outfit_texture
+
+	# Mostra de volta
+	swordChieldHairSprite.visible = true
+	swordChieldOutfitSprite.visible = true
+
+	print("Espada e escudo equipados com hair:", hair_file, "e outfit:", outfit_file)
 
 # -------------------------------
 # (Opcional) Função para voltar ao Body normal
@@ -278,5 +306,9 @@ func unequip_sword_and_shield() -> void:
 	swordChieldBodySprite.visible = false
 	swordArmSprite.visible = false
 	chieldSprite.visible = false
+
+	# Volta os sprites de cabelo e roupa para os padrões
+	hairSprite.visible = true
+	outfit_sprite.visible = true
 
 	print("Espada e escudo removidos!")
