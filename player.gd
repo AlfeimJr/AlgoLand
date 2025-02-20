@@ -16,13 +16,12 @@ extends CharacterBody2D
 @onready var hairSprite = $CompositeSprites/BaseSprites/Hair
 @onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
 
-# Estes são os nós específicos para “espada/escudo”
-@onready var swordChieldBodySprite = $CompositeSprites/SwordChieldSprites/SwordChieldBody
-@onready var swordArmSprite        = $CompositeSprites/SwordChieldSprites/SwordArm
-@onready var chieldSprite          = $CompositeSprites/SwordChieldSprites/Chield
-@onready var swordChieldHairSprite = $CompositeSprites/SwordChieldSprites/Hair
-@onready var swordChieldOutfitSprite          = $CompositeSprites/SwordChieldSprites/Outfit
-
+# Removemos os nós específicos de espada/escudo, pois não serão mais usados
+# @onready var swordChieldBodySprite = $CompositeSprites/SwordChieldSprites/SwordChieldBody
+# @onready var swordArmSprite        = $CompositeSprites/SwordChieldSprites/SwordArm
+# @onready var chieldSprite          = $CompositeSprites/SwordChieldSprites/Chield
+# @onready var swordChieldHairSprite = $CompositeSprites/SwordChieldSprites/Hair
+# @onready var swordChieldOutfitSprite = $CompositeSprites/SwordChieldSprites/Outfit
 
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
@@ -36,10 +35,11 @@ var _state_machine: Object
 var _is_attacking: bool = false
 var _knockback: Vector2 = Vector2.ZERO
 
-# --- Variável para controlar se o player está usando espada/escudo ---
+# Flag para indicar se está equipado com espada/escudo (mantida para controle, mas sem alterações visuais)
 var using_sword: bool = false
 
 func _ready() -> void:
+	# Define os sprites padrões
 	bodySprite.texture = composite_sprites.body_spriteSheet[0]
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
@@ -65,24 +65,17 @@ func _ready() -> void:
 	var loaded_data = load_from_json()
 	apply_loaded_data(loaded_data)
 
-	# Inicia todos os sprites de espada/escudo invisíveis
-	swordChieldBodySprite.visible = false
-	swordArmSprite.visible = false
-	chieldSprite.visible = false
-
-
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):
 		node.connect(signal_name, Callable(self, method))
 		print("Sinal ", signal_name, " conectado ao método ", method)
-
 
 func _physics_process(delta: float) -> void:
 	if IsCustomization.is_customization:
 		camera.enabled = false
 		return
 
-	# Se tiver knockback, aplica
+	# Aplica knockback, se houver
 	if _knockback.length() > 1:
 		velocity = _knockback
 		_knockback = _knockback.lerp(Vector2.ZERO, _knockback_decay)
@@ -92,7 +85,6 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_animate()
-
 
 func apply_knockback(force: Vector2) -> void:
 	_knockback = force
@@ -104,14 +96,12 @@ func apply_knockback(force: Vector2) -> void:
 		modulate.a = 1.0
 		await get_tree().create_timer(0.1).timeout
 
-
 func _attack() -> void:
 	if Input.is_action_just_pressed("attack") and not _is_attacking:
 		_is_attacking = true
 		_timer.start()
 		$AttackArea.monitoring = true
 		$AttackArea.monitorable = true
-
 
 func _move(delta: float) -> void:
 	var dir = Vector2(
@@ -122,12 +112,11 @@ func _move(delta: float) -> void:
 		dir = dir.normalized()
 		velocity.x = lerp(velocity.x, dir.x * _move_speed, _acceleration)
 		velocity.y = lerp(velocity.y, dir.y * _move_speed, _acceleration)
-
-		# Dependendo se está usando espada ou não, atualizamos
-		# o blend_position dos estados corretos.
+		
 		if using_sword:
-			_animation_tree["parameters/SwordChieldIdle/blend_position"] = dir
-			_animation_tree["parameters/SwordChieldMove/blend_position"] = dir
+			_animation_tree["parameters/idle/blend_position"] = dir
+			_animation_tree["parameters/running/blend_position"] = dir
+			
 		else:
 			_animation_tree["parameters/idle/blend_position"] = dir
 			_animation_tree["parameters/run/blend_position"] = dir
@@ -135,38 +124,27 @@ func _move(delta: float) -> void:
 		velocity.x = lerp(velocity.x, 0.0, _friction)
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 
-
 func _animate() -> void:
-	# Se estiver atacando, toca animação de ataque normal
-	# (se quiser animação diferente para espada, crie "SwordChieldAttack")
+	# Se estiver atacando, toca a animação de ataque
 	if _is_attacking:
 		_state_machine.travel("attack")
 		return
 
-	# Se estiver em movimento:
 	if velocity.length() > 2:
-		# Se usando espada, use "SwordChieldMove"
 		if using_sword:
-			_state_machine.travel("SwordChieldMove")
+			_state_machine.travel("running")
 		else:
 			_state_machine.travel("run")
 	else:
-		# Parado: "SwordChieldIdle" ou "idle"
-		if using_sword:
-			_state_machine.travel("SwordChieldIdle")
-		else:
-			_state_machine.travel("idle")
-
+		_state_machine.travel("idle")
 
 func _on_attack_timer_timeout() -> void:
 	_is_attacking = false
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
 
-
 func _on_attack_area_area_entered(area: Area2D) -> void:
 	print("Área de ataque entrou em contato com outra área:", area.name)
-
 
 func _on_attack_body_entered(body: Node2D) -> void:
 	print("Colisão detectada com: ", body.name)
@@ -177,12 +155,10 @@ func _on_attack_body_entered(body: Node2D) -> void:
 			var knockback_dir = (body.position - position).normalized()
 			body.take_damage(_attack_damage, knockback_dir * _knockback_strength)
 
-
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	print("Cabelo alterado para:", curr_hair)
-
 
 func _on_change_hair_back_pressed() -> void:
 	curr_hair = (curr_hair - 1) % composite_sprites.hair_spriteSheet.size()
@@ -191,12 +167,10 @@ func _on_change_hair_back_pressed() -> void:
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	print("Cabelo alterado para:", curr_hair)
 
-
 func _on_change_outfit_pressed() -> void:
 	curr_outfit = (curr_outfit + 1) % composite_sprites.outfit_spriteSheet.size()
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	print("Roupa alterada para:", curr_outfit)
-
 
 func _on_change_outfit_back_pressed() -> void:
 	curr_outfit = (curr_outfit - 1) % composite_sprites.outfit_spriteSheet.size()
@@ -205,12 +179,10 @@ func _on_change_outfit_back_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	print("Roupa alterada para:", curr_outfit)
 
-
 func save_customization():
 	print("Emitindo sinal de personalização...")
 	print("Cabelo atual:", curr_hair, "Roupa atual:", curr_outfit, "Nickname:", nickname)
 	emit_signal("customization_finished", curr_hair, curr_outfit, nickname)
-
 
 func load_from_json():
 	var documents_dir = OS.get_user_data_dir()
@@ -233,7 +205,6 @@ func load_from_json():
 	print("Dados carregados:", data)
 	return data
 
-
 func apply_loaded_data(data: Dictionary):
 	if data.has("curr_hair"):
 		curr_hair = data["curr_hair"]
@@ -247,68 +218,18 @@ func apply_loaded_data(data: Dictionary):
 		nickname = data["nickname"]
 		print("Nickname carregado:", nickname)
 
-
-# -------------------------------
-# Função para equipar espada e escudo
-# -------------------------------
+# Funções de equipar/desequipar espada e escudo simplificadas,
+# sem alterações de animação ou carregamento de texturas.
 func equip_sword_and_shield() -> void:
+	if using_sword == true:
+		using_sword = false
+		_move_speed -= 50
+		return
 	using_sword = true
+	_move_speed += 50
+	print(_move_speed)
+	print("Espada e escudo equipados (sem alterações de animação ou texturas)!")
 
-	# Carrega a espada e o escudo das pastas (ajuste o nome dos arquivos conforme seu projeto)
-	var sword_tex = load("res://CharacterSprites/Arms/swords/Sword_1.png")
-	var shield_tex = load("res://CharacterSprites/Arms/chields/chield_1.png")	
-
-	swordArmSprite.texture = sword_tex
-	chieldSprite.texture = shield_tex
-
-	# Esconde o corpo normal
-	bodySprite.visible = false
-	# Mostra o corpo+braço com espada e o escudo
-	swordChieldBodySprite.visible = true
-	swordArmSprite.visible = true
-	chieldSprite.visible = true
-
-	# Esconde os sprites de cabelo e roupa do BaseSprites
-	hairSprite.visible = false
-	outfit_sprite.visible = false
-
-	# ---------- AQUI VEM A PARTE IMPORTANTE ----------
-	# curr_hair e curr_outfit são índices numéricos, ex.: 0, 1, 2...
-	# Vamos montar o arquivo usando esse índice + 1, pois o arquivo se chama "hair (1).png", "hair (2).png", etc.
-	var hair_file = "hair (" + str(curr_hair + 1) + ").png"
-	var outfit_file = "outfit (" + str(curr_outfit + 1) + ").png"
-
-	# Monta o caminho para a pasta "Hair_Sword_Chield"
-	var hair_path = "res://CharacterSprites/Hair_Sword_Chield/" + hair_file
-	#var outfit_path = "res://CharacterSprites/Hair_Sword_Chield/" + outfit_file
-
-	# Carrega essas texturas
-	var hair_texture = load(hair_path)
-	#var outfit_texture = load(outfit_path)
-
-	# Seta nos sprites
-	swordChieldHairSprite.texture = hair_texture
-	#outfit_sprite.texture = outfit_texture
-
-	# Mostra de volta
-	swordChieldHairSprite.visible = true
-	swordChieldOutfitSprite.visible = true
-
-	print("Espada e escudo equipados com hair:", hair_file, "e outfit:", outfit_file)
-
-# -------------------------------
-# (Opcional) Função para voltar ao Body normal
-# -------------------------------
 func unequip_sword_and_shield() -> void:
 	using_sword = false
-
-	bodySprite.visible = true
-	swordChieldBodySprite.visible = false
-	swordArmSprite.visible = false
-	chieldSprite.visible = false
-
-	# Volta os sprites de cabelo e roupa para os padrões
-	hairSprite.visible = true
-	outfit_sprite.visible = true
-
-	print("Espada e escudo removidos!")
+	print("Espada e escudo removidos (sem alterações de animação ou texturas)!")
