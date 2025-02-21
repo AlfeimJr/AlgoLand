@@ -26,8 +26,8 @@ func _ready() -> void:
 
 	# Conecta o botão "Sword" (ajuste o nome conforme seu nó) 
 	# para chamar o método que equipa a espada/escudo no Player
-	if $Container/Weapons/SwordButton:
-		$Container/Weapons/SwordButton.connect("pressed", Callable(self, "_on_sword_pressed"))
+	if $Container/Weapons/Sword:
+		$Container/Weapons/Sword.connect("pressed", Callable(self, "_on_sword_pressed"))
 	else:
 		print("Erro: Botão SwordButton não encontrado!")
 

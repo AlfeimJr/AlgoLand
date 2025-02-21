@@ -15,13 +15,8 @@ extends CharacterBody2D
 @onready var bodySprite = $CompositeSprites/BaseSprites/Body
 @onready var hairSprite = $CompositeSprites/BaseSprites/Hair
 @onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
-
-# Removemos os nós específicos de espada/escudo, pois não serão mais usados
-# @onready var swordChieldBodySprite = $CompositeSprites/SwordChieldSprites/SwordChieldBody
-# @onready var swordArmSprite        = $CompositeSprites/SwordChieldSprites/SwordArm
-# @onready var chieldSprite          = $CompositeSprites/SwordChieldSprites/Chield
-# @onready var swordChieldHairSprite = $CompositeSprites/SwordChieldSprites/Hair
-# @onready var swordChieldOutfitSprite = $CompositeSprites/SwordChieldSprites/Outfit
+@onready var sword_sprite = $CompositeSprites/BaseSprites/Arm
+@onready var shield_sprite = $CompositeSprites/BaseSprites/Child
 
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
@@ -71,6 +66,7 @@ func connect_signal_if_not_connected(node: Node, signal_name: String, method: St
 		print("Sinal ", signal_name, " conectado ao método ", method)
 
 func _physics_process(delta: float) -> void:
+	# Se estiver na tela de customização, desabilita a câmera e não controla o personagem
 	if IsCustomization.is_customization:
 		camera.enabled = false
 		return
@@ -89,17 +85,21 @@ func _physics_process(delta: float) -> void:
 func apply_knockback(force: Vector2) -> void:
 	_knockback = force
 	print("Player sofreu knockback!")
-	# Efeito de piscar
+	# Efeito de piscar (invencibilidade temporária, por exemplo)
 	for i in range(5):
 		modulate.a = 0.2
 		await get_tree().create_timer(0.1).timeout
 		modulate.a = 1.0
 		await get_tree().create_timer(0.1).timeout
 
+# --------------------------------
+# FUNÇÃO DE ATAQUE
+# --------------------------------
 func _attack() -> void:
+	# Quando apertar a ação "attack" (ex.: Espaço) e não estiver atacando:
 	if Input.is_action_just_pressed("attack") and not _is_attacking:
 		_is_attacking = true
-		_timer.start()
+		_timer.start()  # Dispara o timer que vai "encerrar" o ataque depois
 		$AttackArea.monitoring = true
 		$AttackArea.monitorable = true
 
@@ -113,10 +113,10 @@ func _move(delta: float) -> void:
 		velocity.x = lerp(velocity.x, dir.x * _move_speed, _acceleration)
 		velocity.y = lerp(velocity.y, dir.y * _move_speed, _acceleration)
 		
+		# Atualiza o blend_position de acordo com a direção
 		if using_sword:
 			_animation_tree["parameters/idle/blend_position"] = dir
 			_animation_tree["parameters/running/blend_position"] = dir
-			
 		else:
 			_animation_tree["parameters/idle/blend_position"] = dir
 			_animation_tree["parameters/run/blend_position"] = dir
@@ -124,12 +124,16 @@ func _move(delta: float) -> void:
 		velocity.x = lerp(velocity.x, 0.0, _friction)
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 
+# --------------------------------
+# ANIMAÇÃO (STATE MACHINE)
+# --------------------------------
 func _animate() -> void:
-	# Se estiver atacando, toca a animação de ataque
+	# Se estiver atacando, vai para o estado de ataque
 	if _is_attacking:
-		_state_machine.travel("attack")
+		_state_machine.travel("AttackSwordSlash_1")
 		return
 
+	# Caso contrário, verifica se está correndo/movendo ou parado
 	if velocity.length() > 2:
 		if using_sword:
 			_state_machine.travel("running")
@@ -139,6 +143,7 @@ func _animate() -> void:
 		_state_machine.travel("idle")
 
 func _on_attack_timer_timeout() -> void:
+	# Quando o Timer de ataque acabar, encerra o ataque
 	_is_attacking = false
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
@@ -148,6 +153,7 @@ func _on_attack_area_area_entered(area: Area2D) -> void:
 
 func _on_attack_body_entered(body: Node2D) -> void:
 	print("Colisão detectada com: ", body.name)
+	# Exemplo: se for um inimigo do tipo Slime, causamos dano
 	if body is Slime:
 		print("O corpo é um Slime!")
 		if not body.is_dead:
@@ -155,6 +161,9 @@ func _on_attack_body_entered(body: Node2D) -> void:
 			var knockback_dir = (body.position - position).normalized()
 			body.take_damage(_attack_damage, knockback_dir * _knockback_strength)
 
+# --------------------------------
+# PERSONALIZAÇÃO (CABELO, ROUPA, ETC.)
+# --------------------------------
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
@@ -218,18 +227,30 @@ func apply_loaded_data(data: Dictionary):
 		nickname = data["nickname"]
 		print("Nickname carregado:", nickname)
 
-# Funções de equipar/desequipar espada e escudo simplificadas,
-# sem alterações de animação ou carregamento de texturas.
+# --------------------------------
+# EQUIPAR / DESEQUIPAR ESPADA E ESCUDO
+# --------------------------------
 func equip_sword_and_shield() -> void:
-	if using_sword == true:
-		using_sword = false
-		_move_speed -= 50
+	# Se já estiver equipado, vamos desequipar:
+	if using_sword:
+		unequip_sword_and_shield()
 		return
+	
 	using_sword = true
+	# Exibe espada e escudo
+	sword_sprite.visible = true
+	shield_sprite.visible = true
+	
+	# Se quiser modificar velocidade, etc.
 	_move_speed += 50
-	print(_move_speed)
-	print("Espada e escudo equipados (sem alterações de animação ou texturas)!")
+	print("Espada e escudo equipados!")
 
 func unequip_sword_and_shield() -> void:
 	using_sword = false
-	print("Espada e escudo removidos (sem alterações de animação ou texturas)!")
+	# Oculta espada e escudo
+	sword_sprite.visible = false
+	shield_sprite.visible = false
+	
+	# Reverte possíveis modificações
+	_move_speed -= 50
+	print("Espada e escudo removidos!")
