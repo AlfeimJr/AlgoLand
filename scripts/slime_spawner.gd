@@ -6,9 +6,9 @@ signal hit_p
 var slime_scene := preload("res://cenas/slime.tscn")
 var spawn_points := []
 var wave_manager
-@export var spawn_delay: float = 0.5  # 🕒 Delay entre os spawns (meio segundo)
+@export var spawn_delay: float = 0.5  # Delay entre os spawns (meio segundo)
 
-# Índice para iterar cíclicamente pelos spawn points
+# Índice para iterar cíclicamente pelos spawn points (inicia em 0)
 var current_spawn_index: int = 0
 
 func _ready():
@@ -107,7 +107,6 @@ func spawn_enemy_at(spawn: Marker2D, health_multiplier: float, damage_multiplier
 	
 	return true  # Indica que o Slime foi spawnado com sucesso
 
-# Testa se o Slime permanece na cena após spawnar
 func verify_lifespan() -> void:
 	await get_tree().process_frame
 	if not is_inside_tree():

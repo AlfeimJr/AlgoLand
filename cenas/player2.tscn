@@ -1,15 +1,11 @@
-[gd_scene load_steps=64 format=3 uid="uid://y6c4hi6s1u75"]
+[gd_scene load_steps=60 format=3 uid="uid://y6c4hi6s1u75"]
 
+[ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/body_attack_sword.png" id="2_240al"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_byhnc"]
 [ext_resource type="Script" path="res://player.gd" id="2_chf58"]
-[ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/char_a_pONE3_0bas_humn_v00.png" id="2_q8v8g"]
 [ext_resource type="Script" path="res://scripts/camera_2d.gd" id="3_n2plp"]
-[ext_resource type="Texture2D" uid="uid://qemtui1xxw6" path="res://CharacterSprites/Arms/swords/Attack/slash_1.png" id="3_yumxc"]
-[ext_resource type="Texture2D" uid="uid://d3hs5pe3b3lun" path="res://CharacterSprites/Hair/hair (1).png" id="4_dppal"]
-[ext_resource type="Texture2D" uid="uid://cm0w5o7p5m5q3" path="res://CharacterSprites/Arms/swords/Sword_1.png" id="4_to32g"]
-[ext_resource type="Texture2D" uid="uid://4wola1keifmf" path="res://CharacterSprites/Arms/chields/attack/slash_1.png" id="4_ycfod"]
-[ext_resource type="Texture2D" uid="uid://u0bgvck3akrh" path="res://CharacterSprites/Hair/Attack/slash_1_sword/hair (1).png" id="5_dhdeu"]
-[ext_resource type="Texture2D" uid="uid://g6g6yy2xirq4" path="res://CharacterSprites/Arms/chields/chield_1.png" id="5_i0mfd"]
+[ext_resource type="Texture2D" uid="uid://djcyo37a7ap8g" path="res://CharacterSprites/Hair/hair (1).png" id="4_dppal"]
+[ext_resource type="Texture2D" uid="uid://bsuewacssgjp5" path="res://CharacterSprites/Hair/Attack/slash_1_sword/hair (1).png" id="5_dhdeu"]
 [ext_resource type="Texture2D" uid="uid://b6thistp08ror" path="res://CharacterSprites/Outfit/outfit (1).png" id="5_r351s"]
 [ext_resource type="Texture2D" uid="uid://kq3v8ba4fysv" path="res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(2).png" id="6_n5dev"]
 
@@ -3263,6 +3259,7 @@ tracks/16/keys = {
 [sub_resource type="Animation" id="Animation_8gnlw"]
 resource_name = "sword_slash_1_down"
 length = 0.233337
+loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -3471,6 +3468,7 @@ tracks/16/keys = {
 [sub_resource type="Animation" id="Animation_j48eh"]
 resource_name = "sword_slash_1_up"
 length = 0.233337
+loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -3679,6 +3677,7 @@ tracks/16/keys = {
 [sub_resource type="Animation" id="Animation_tdohp"]
 resource_name = "sword_slash_1_right"
 length = 0.233337
+loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -3887,6 +3886,7 @@ tracks/16/keys = {
 [sub_resource type="Animation" id="Animation_bwqxr"]
 resource_name = "sword_slash_1_left"
 length = 0.233337
+loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -4285,21 +4285,19 @@ position = Vector2(-7.62939e-06, 8.39233e-05)
 
 [node name="SwordChieldBody" type="Sprite2D" parent="CompositeSprites/AttackSwordAnimation"]
 visible = false
-texture = ExtResource("2_q8v8g")
+texture = ExtResource("2_240al")
 hframes = 8
 vframes = 8
 
 [node name="SwordArm" type="Sprite2D" parent="CompositeSprites/AttackSwordAnimation"]
 visible = false
 z_index = 1
-texture = ExtResource("3_yumxc")
 hframes = 8
 vframes = 8
 
 [node name="Chield" type="Sprite2D" parent="CompositeSprites/AttackSwordAnimation"]
 visible = false
 z_index = 1
-texture = ExtResource("4_ycfod")
 hframes = 8
 vframes = 8
 
@@ -4345,7 +4343,6 @@ vframes = 8
 z_index = 1
 position = Vector2(12, -1.00012)
 rotation = 0.977271
-texture = ExtResource("4_to32g")
 flip_v = true
 hframes = 8
 vframes = 8
@@ -4354,7 +4351,6 @@ frame = 15
 [node name="Child" type="Sprite2D" parent="CompositeSprites/BaseSprites"]
 position = Vector2(8, -3.00009)
 rotation = -0.736081
-texture = ExtResource("5_i0mfd")
 flip_h = true
 hframes = 8
 vframes = 8
@@ -4397,4 +4393,5 @@ shape = SubResource("RectangleShape2D_xakdp")
 disabled = true
 
 [node name="AttackTimer" type="Timer" parent="." groups=["character"]]
-wait_time = 0.1
+wait_time = 0.22
+one_shot = true

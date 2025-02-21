@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dutbynh6yeyky"
-path="res://.godot/imported/char_a_pONE3_0bas_humn_v00.png-d07c4a713069eb53a876361df56ec4ec.ctex"
+uid="uid://ttn2upqwrcv6"
+path="res://.godot/imported/FieldsTile_21.png-245bc8b2e2363287fec786afbf8de57d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://CharacterSprites/Body_sword_chield/char_a_pONE3_0bas_humn_v00.png"
-dest_files=["res://.godot/imported/char_a_pONE3_0bas_humn_v00.png-d07c4a713069eb53a876361df56ec4ec.ctex"]
+source_file="res://Tiles/craftpix-net-504452-free-village-pixel-tileset-for-top-down-defense/1 Tiles/FieldsTile_21.png"
+dest_files=["res://.godot/imported/FieldsTile_21.png-245bc8b2e2363287fec786afbf8de57d.ctex"]
 
 [params]
 

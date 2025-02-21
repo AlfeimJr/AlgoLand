@@ -5,13 +5,13 @@ signal wave_completed(wave: int)
 signal game_won()  # Sinal para indicar vitória
 
 @export var starting_wave: int = 1
-@export var max_enemies: int = 1
+@export var max_enemies: int = 10
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 10
 
 const MAX_ACTIVE_ENEMIES: int = 50
 
-# Aqui definimos o retângulo que cobre a área verde do seu cenário
+# Define o retângulo que cobre a área verde do cenário
 @export var green_area := Rect2(Vector2(64, 192), Vector2(800, 400))
 
 var current_wave: int = 1
@@ -25,15 +25,16 @@ func _ready() -> void:
 	await get_tree().process_frame
 	
 	current_wave = starting_wave
+	# Ajuste o caminho conforme sua cena – certifique-se de que "cenario/enemySpawner" é o caminho correto
 	spawner = get_tree().get_root().get_node("cenario/enemySpawner")
 	if spawner:
 		print("✅ Spawner encontrado:", spawner)
 	else:
 		print("❌ ERRO: Spawner não encontrado!")
 	
-	await get_tree().process_frame  
-	start_wave()
-
+	# NÃO conecta o sinal "start_wave" aqui, pois o menu não foi encontrado.
+	# O merchant chamará start_wave() diretamente.
+	
 func start_wave() -> void:
 	if current_wave > max_waves:
 		emit_signal("game_won")
@@ -63,10 +64,12 @@ func update_ui() -> void:
 func spawn_enemies(num_enemies: int, health_multiplier: float, damage_multiplier: float) -> void:
 	print("🔎 Tentando spawnar", num_enemies, "inimigos.")
 
-	if not spawner or spawner.spawn_points.is_empty():
-		print("⚠️ ERRO: Nenhum ponto de spawn disponível ou Spawner inválido!")
+	# Usa spawner.spawn_points (certifique-se de que o spawner possui essa propriedade)
+	if spawner.spawn_points.is_empty():
+		print("⚠️ ERRO: Nenhum ponto de spawn disponível!")
 		return
 
+	var total_spawned: int = 0
 	spawner.spawn_points.shuffle()
 
 	for i in range(num_enemies):
@@ -80,9 +83,12 @@ func spawn_enemies(num_enemies: int, health_multiplier: float, damage_multiplier
 			print("⚠️ Não foi possível encontrar um spawn válido para o inimigo", i + 1)
 		
 		await get_tree().create_timer(0.1).timeout
+	
+	total_spawned = get_tree().get_nodes_in_group("enemies").size()
+	enemies_alive = total_spawned
+	print("✅ Total de inimigos spawnados:", total_spawned)
 
 func get_valid_spawn_position() -> Vector2:
-	# Tenta achar um spawn livre
 	for spawn in spawner.spawn_points:
 		var is_valid = true
 		for enemy in get_tree().get_nodes_in_group("enemies"):
@@ -92,24 +98,21 @@ func get_valid_spawn_position() -> Vector2:
 		if is_valid:
 			return spawn.position
 
-	# Se nenhum spawn livre for encontrado, gera um ponto aleatório dentro de green_area
 	print("🔔 Nenhum spawn livre encontrado. Gerando novo spawn point dentro de green_area.")
 	var new_spawn = Marker2D.new()
-
 	var spawn_x = randf_range(green_area.position.x, green_area.position.x + green_area.size.x)
 	var spawn_y = randf_range(green_area.position.y, green_area.position.y + green_area.size.y)
-
 	new_spawn.position = Vector2(spawn_x, spawn_y)
 	spawner.add_child(new_spawn)
 	spawner.spawn_points.append(new_spawn)
 	return new_spawn.position
 
-func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier: float):
+func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier: float) -> void:
 	if position == Vector2.ZERO:
 		print("⚠️ ERRO: Nenhuma posição válida encontrada para spawn!")
 		return
 
-	var slime = spawner.slime_scene.instantiate()
+	var slime = preload("res://cenas/slime.tscn").instantiate()
 	if slime == null:
 		print("❌ ERRO: Falha ao instanciar Slime!")
 		return
@@ -123,7 +126,6 @@ func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier:
 	slime.connect("enemy_died", Callable(self, "enemy_died"))
 
 	print("🐍 Slime spawnado na posição:", slime.position)
-
 	configure_enemy_collision(slime)
 
 func configure_enemy_collision(enemy):
@@ -139,7 +141,7 @@ func configure_enemy_collision(enemy):
 		print("🟢 Colisão reativada para o Slime:", enemy.name)
 	else:
 		print("⚠️ ERRO: Slime não possui CollisionShape2D!")
-
+		
 func enemy_died() -> void:
 	enemies_alive -= 1
 	print("💀 Inimigo morreu! Restantes:", enemies_alive)
