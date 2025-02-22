@@ -191,7 +191,13 @@ func charge_attack() -> void:
 	
 	if position.distance_to(player.position) < charge_distance:
 		var knockback_dir = (player.position - position).normalized()
+		
+		# Aplica knockback
 		player.apply_knockback(knockback_dir * 300.0)
+		
+		# Aplica dano ao Player
+		player.take_damage(damage, knockback_dir * 300.0)
+		
 		is_recoiling = true
 		velocity = -knockback_dir * (charge_speed * 0.5)
 		move_and_slide()

@@ -132,7 +132,7 @@ animations = [{
 "speed": 15.0
 }]
 
-[node name="slime" type="CharacterBody2D"]
+[node name="slime" type="CharacterBody2D" groups=["enemy"]]
 z_index = 1
 texture_filter = 1
 position = Vector2(289, 177)

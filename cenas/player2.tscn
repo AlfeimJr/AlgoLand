@@ -439,7 +439,7 @@ tracks/35/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(1.625, 23.7292)]
+"values": [Vector2(-1, -3)]
 }
 tracks/36/type = "value"
 tracks/36/imported = false
@@ -451,7 +451,7 @@ tracks/36/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(42.75, 10.5416)]
+"values": [Vector2(16, 10.5416)]
 }
 
 [sub_resource type="Animation" id="Animation_21cf8"]
@@ -3436,7 +3436,7 @@ tracks/14/keys = {
 "times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.133333, 0.166667, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [true, true, false, false, true, true]
+"values": [true, true, false, true, true, true]
 }
 tracks/15/type = "value"
 tracks/15/imported = false
@@ -3669,7 +3669,7 @@ tracks/16/keys = {
 "times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
-"values": [true, true, false, false, true]
+"values": [true, true, false, true, true]
 }
 
 [sub_resource type="Animation" id="Animation_tdohp"]
@@ -3866,7 +3866,7 @@ tracks/15/keys = {
 "times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [true, true, false, false, false, true]
+"values": [true, true, false, false, true, true]
 }
 tracks/16/type = "value"
 tracks/16/imported = false
@@ -4075,7 +4075,7 @@ tracks/15/keys = {
 "times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [true, true, false, false, false, true]
+"values": [true, true, false, false, true, true]
 }
 tracks/16/type = "value"
 tracks/16/imported = false
@@ -4265,15 +4265,23 @@ states/running/node = SubResource("AnimationNodeBlendSpace2D_s6snu")
 states/running/position = Vector2(954, 169)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5o2sk"]
+radius = 7.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xakdp"]
-size = Vector2(42.75, 10.5416)
+size = Vector2(16, 10.5416)
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_animation_tree", "_timer")]
 position = Vector2(585, 443)
 script = ExtResource("2_chf58")
+_move_speed = null
+_friction = null
+_acceleration = null
+_attack_damage = null
+_knockback_strength = null
+_knockback_decay = null
 _animation_tree = NodePath("CompositeSprites/Animation/AnimationTree")
 _timer = NodePath("AttackTimer")
+max_hp = 10
 
 [node name="CompositeSprites" type="Node2D" parent="."]
 texture_filter = 1
@@ -4375,7 +4383,6 @@ parameters/running/blend_position = Vector2(-0.000794291, 0.221239)
 script = ExtResource("3_n2plp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0, -2)
 shape = SubResource("CapsuleShape2D_5o2sk")
 
@@ -4384,7 +4391,7 @@ collision_layer = 16
 collision_mask = 255
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-position = Vector2(1.625, 23.7292)
+position = Vector2(-1, -3)
 shape = SubResource("RectangleShape2D_xakdp")
 disabled = true
 

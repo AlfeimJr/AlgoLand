@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var _move_speed: float = 64.0
 @export var _friction: float = 0.3
 @export var _acceleration: float = 0.3
-@export var _attack_damage: int = 1  # Quantidade de dano que o ataque causa
+@export var _attack_damage: int = 1
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
 
@@ -12,7 +12,7 @@ extends CharacterBody2D
 @export var _animation_tree: AnimationTree = null
 @export var _timer: Timer = null
 
-# Sprites e outros nós
+# Componentes visuais do Player
 @onready var bodySprite = $CompositeSprites/BaseSprites/Body
 @onready var hairSprite = $CompositeSprites/BaseSprites/Hair
 @onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
@@ -38,23 +38,33 @@ var _is_attacking: bool = false
 var _knockback: Vector2 = Vector2.ZERO
 var using_sword: bool = false
 
-# Arrays para texturas de ataque
 var hair_attack_array: Array[Texture2D] = []
 var outfit_attack_array: Array[Texture2D] = []
 
-# Variável para guardar a direção do ataque (última direção válida)
-var _attack_direction: Vector2 = Vector2(0, 1)  # Padrão: para baixo
+var _attack_direction: Vector2 = Vector2(0, 1)
+
+# Variáveis de HP
+@export var max_hp: int = 3
+var current_hp: int = max_hp
+
+# Variáveis para invulnerabilidade (cooldown de dano)
+var invulnerable: bool = false
+var invul_time: float = 1.0   # tempo de invulnerabilidade em segundos
+var invul_timer: float = 0.0
+
+# Referências para a UI da barra de vida
+# Certifique-se de que estes nós estão dentro de um CanvasLayer/Control com âncoras configuradas para o canto.
+@onready var hp_bar_full = $"/root/cenario/UI/HealthbarFull"
+@onready var hp_bar_empty = $"/root/cenario/UI/HealthbarEmpty"
 
 func _ready() -> void:
 	if _timer:
 		_timer.connect("timeout", Callable(self, "_on_attack_timer_timeout"))
 		
-	# 1) Carrega sprites base
-	bodySprite.texture   = composite_sprites.body_spriteSheet[0]
-	hairSprite.texture   = composite_sprites.hair_spriteSheet[curr_hair]
-	outfit_sprite.texture= composite_sprites.outfit_spriteSheet[curr_outfit]
+	bodySprite.texture    = composite_sprites.body_spriteSheet[0]
+	hairSprite.texture    = composite_sprites.hair_spriteSheet[curr_hair]
+	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
-	# 2) Carrega sprites ATAQUE
 	attackSwordChieldBody.texture = load("res://CharacterSprites/Body_sword_chield/body_attack_sword.png")
 	for i in range(1, 28):
 		var path = "res://CharacterSprites/Hair/Attack/slash_1_sword/hair (" + str(i) + ").png"
@@ -75,16 +85,15 @@ func _ready() -> void:
 	if outfit_attack_array.size() > 0:
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
 
-	# 3) Configuração geral
 	if _animation_tree == null:
 		print("Erro: _animation_tree não foi atribuído corretamente!")
 	else:
 		_state_machine = _animation_tree["parameters/playback"]
 		if _state_machine == null:
-			print("Erro: _state_machine está null! Verifique 'parameters/playback'.")
+			print("Erro: _state_machine está null!")
 
-	$AttackArea.collision_layer = 1 << 1  # Layer 2
-	$AttackArea.collision_mask  = 1 << 2  # Mask 4
+	$AttackArea.collision_layer = 1 << 1
+	$AttackArea.collision_mask  = 1 << 2
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
 	connect_signal_if_not_connected($AttackArea, "body_entered", "_on_attack_body_entered")
@@ -114,6 +123,16 @@ func _set_sprites_visible(is_attacking: bool) -> void:
 	attackOutfit.visible          = is_attacking
 
 func _physics_process(delta: float) -> void:
+	# Exemplo de debug: pressione "debug_damage" para sofrer 1 de dano
+	if Input.is_action_just_pressed("debug_damage"):
+		take_damage(1)
+	
+	# Atualiza a invulnerabilidade, se estiver ativa
+	if invulnerable:
+		invul_timer -= delta
+		if invul_timer <= 0:
+			invulnerable = false
+
 	if _knockback.length() > 1:
 		velocity = _knockback
 		_knockback = _knockback.lerp(Vector2.ZERO, _knockback_decay)
@@ -121,8 +140,22 @@ func _physics_process(delta: float) -> void:
 		_move(delta)
 		_attack()
 
+	# Executa o movimento e animação
 	move_and_slide()
 	_animate()
+
+	# Verifica colisões geradas no frame e aplica dano (com knockback) se colidiu com um inimigo (do grupo "enemy")
+	for i in range(get_slide_collision_count()):
+		var collision = get_slide_collision(i)
+		var collider = collision.get_collider()
+		if collider.is_in_group("enemy") and not invulnerable:
+			print("Player colidiu com o inimigo: ", collider.name)
+			# Calcula a direção do knockback: do inimigo para o player
+			var knockback_dir = (position - collider.position).normalized()
+			# Aplica dano e knockback (multiplicador de 300.0, ajuste conforme necessário)
+			take_damage(1, knockback_dir * 300.0)
+			invulnerable = true
+			invul_timer = invul_time
 
 func apply_knockback(force: Vector2) -> void:
 	_knockback = force
@@ -278,12 +311,9 @@ func equip_sword_and_shield() -> void:
 		return
 
 	using_sword = true
-
-	# -- TEXTURAS DA ESPADA E ESCUDO (BASE) --
 	sword_sprite.texture  = load("res://CharacterSprites/Arms/swords/Sword_1.png")
 	shield_sprite.texture = load("res://CharacterSprites/Arms/chields/chield_1.png")
 
-	# -- TEXTURAS PARA O ATAQUE --
 	attackSwordArm.texture = load("res://CharacterSprites/Arms/swords/Attack/slash_1.png")
 	attackChield.texture   = load("res://CharacterSprites/Arms/chields/attack/slash_1.png")
 
@@ -298,3 +328,22 @@ func unequip_sword_and_shield() -> void:
 	shield_sprite.visible = false
 	_move_speed -= 50
 	print("Espada e escudo removidos!")
+
+func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
+	current_hp = max(current_hp - damage, 0)
+	update_hp_bar()
+	
+	# Aplica o knockback no Player, se especificado
+	if knockback_force != Vector2.ZERO:
+		apply_knockback(knockback_force)
+
+	if current_hp <= 0:
+		die()
+
+func update_hp_bar() -> void:
+	var fraction = float(current_hp) / float(max_hp)
+	hp_bar_full.scale.x = fraction
+
+func die() -> void:
+	print("Player morreu!")
+	# Coloque aqui lógica de morte, respawn ou Game Over
