@@ -21,7 +21,7 @@ func _init():
 		else:
 			print("Não foi possível carregar: res://CharacterSprites/Hair/hair (" + str(i) + ").png")
 			
-	for i in range(1, 3):  # i vai de 1 até 107
+	for i in range(1, 8):  # i vai de 1 até 107
 		var resource = load("res://CharacterSprites/Outfit/outfit (" + str(i) + ").png")
 		if resource:
 			# Se quiser que hair(1).png fique na chave 0, use i - 1

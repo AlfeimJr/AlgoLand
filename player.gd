@@ -63,7 +63,7 @@ func _ready() -> void:
 			hair_attack_array.append(resource)
 		else:
 			print("Não foi possível carregar:", path)
-	for i in range(1, 3):
+	for i in range(1, 8):
 		var path = "res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(" + str(i) + ").png"
 		var resource = load(path)
 		if resource:

@@ -4,7 +4,7 @@ signal menu_closed      # Sinal emitido quando o menu é fechado
 
 @onready var main_menu: Control = $Container/Buttons
 @onready var weapons_list: Control = $Container/Weapons
-
+@onready var buildList: Control  = $Build
 func _ready() -> void:
 	# Conecta os botões do menu principal
 	if $Container/Buttons/StartWave:
@@ -17,13 +17,13 @@ func _ready() -> void:
 	else:
 		print("Erro: Botão WeaponsButton não encontrado!")
 	
-	if $Container/Weapons/BackButton:
-		$Container/Weapons/BackButton.connect("pressed", Callable(self, "_on_back_to_main_menu_pressed"))
-	else:
-		print("Erro: Botão BackButton não encontrado!")
-	
 	if $Container/Weapons/Sword:
 		$Container/Weapons/Sword.connect("pressed", Callable(self, "_on_sword_pressed"))
+	else:
+		print("Erro: Botão SwordButton não encontrado!")
+		
+	if $Container/Buttons/Build:
+		$Container/Buttons/Build.connect("pressed", Callable(self, "_on_build_pressed()"))
 	else:
 		print("Erro: Botão SwordButton não encontrado!")
 
@@ -44,14 +44,21 @@ func on_close_button_pressed() -> void:
 func _on_weapons_pressed() -> void:
 	main_menu.visible = false
 	weapons_list.visible = true
-
-func _on_back_to_main_menu_pressed() -> void:
-	main_menu.visible = true
-	weapons_list.visible = false
-
+	
 func _on_sword_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player:
 		player.equip_sword_and_shield()
 	else:
 		print("Player não encontrado na cena atual!")
+
+
+func _on_build_pressed() -> void:
+	main_menu.visible = false
+	weapons_list.visible = false
+	buildList.visible = true
+	
+func _on_back_button_pressed() -> void:
+	main_menu.visible = true
+	weapons_list.visible = false
+	buildList.visible = false

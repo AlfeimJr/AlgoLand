@@ -1,10 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://idfadyrk0auf"]
+[gd_scene load_steps=11 format=3 uid="uid://idfadyrk0auf"]
 
 [ext_resource type="Script" path="res://scripts/control.gd" id="1_uhhk1"]
 [ext_resource type="FontFile" uid="uid://dwub7qum41gaq" path="res://UI/Planes_ValMore.ttf" id="2_nwwd0"]
 [ext_resource type="Script" path="res://scripts/wave.gd" id="3_50t8h"]
-[ext_resource type="Texture2D" uid="uid://cfhlumu376grb" path="res://UI/5 Logo/Logo.png" id="3_cfvah"]
-[ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/2 Bars/Band2_off.png" id="5_t1nvj"]
+[ext_resource type="Texture2D" uid="uid://cfhlumu376grb" path="res://UI/sem org/5 Logo/Logo.png" id="3_cfvah"]
+[ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/sem org/2 Bars/Band2_off.png" id="5_t1nvj"]
+[ext_resource type="Texture2D" uid="uid://crcpsqbhgylr7" path="res://UI/sem org/2 Bars/Healthbar_full.png" id="6_p6ugm"]
+[ext_resource type="Texture2D" uid="uid://b4i4jaaj50hva" path="res://UI/sem org/2 Bars/Healthbar_empty.png" id="7_6xg6j"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_drs66"]
 font = ExtResource("2_nwwd0")
@@ -82,3 +84,11 @@ offset_bottom = 48.0
 text = "1"
 label_settings = SubResource("LabelSettings_v0hah")
 horizontal_alignment = 1
+
+[node name="HealthbarFull" type="Sprite2D" parent="."]
+position = Vector2(224, 296)
+texture = ExtResource("6_p6ugm")
+
+[node name="HealthbarEmpty" type="Sprite2D" parent="."]
+position = Vector2(224, 256)
+texture = ExtResource("7_6xg6j")
