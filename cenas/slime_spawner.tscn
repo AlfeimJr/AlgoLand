@@ -3,7 +3,8 @@
 [ext_resource type="Script" path="res://scripts/slime_spawner.gd" id="1_4xyyh"]
 
 [node name="enemySpawner" type="Node2D"]
-position = Vector2(305, 247)
+position = Vector2(287, 151)
+scale = Vector2(0.441821, 0.927851)
 script = ExtResource("1_4xyyh")
 
 [node name="SpawnTimer" type="Timer" parent="."]
@@ -11,13 +12,13 @@ script = ExtResource("1_4xyyh")
 [node name="WaveTimer" type="Timer" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(-164, -55)
+position = Vector2(-119.958, 6.4373e-06)
 
 [node name="Marker2D2" type="Marker2D" parent="."]
-position = Vector2(129, -64)
+position = Vector2(-56.584, -20.4774)
 
 [node name="Marker2D3" type="Marker2D" parent="."]
-position = Vector2(-21, -157)
+position = Vector2(-15.5267, -71.9097)
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 1.221

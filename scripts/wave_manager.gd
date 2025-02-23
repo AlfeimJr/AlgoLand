@@ -2,7 +2,7 @@ extends Node
 
 signal wave_started(wave: int)
 signal wave_completed(wave: int)
-signal game_won()  # Sinal para indicar vitória
+signal game_won()  
 
 @export var starting_wave: int = 1
 @export var max_enemies: int = 10
@@ -11,8 +11,8 @@ signal game_won()  # Sinal para indicar vitória
 
 const MAX_ACTIVE_ENEMIES: int = 50
 
-# Define o retângulo que cobre a área verde do cenário
-@export var green_area := Rect2(Vector2(64, 192), Vector2(800, 400))
+# Em vez de green_area como Rect2, exporte um NodePath para o Area2D de spawn
+@export var spawn_area_path = NodePath("../../SpawnArea")
 
 var current_wave: int = 1
 var enemies_alive: int = 0
@@ -20,25 +20,22 @@ var enemies_spawned: int = 0
 var enemy_health_multiplier: float = 1.0
 var enemy_damage_multiplier: float = 1.0
 var spawner
+var waves_stopped: bool = false
+
+var spawn_area: Area2D
 
 func _ready() -> void:
 	await get_tree().process_frame
-	
 	current_wave = starting_wave
-	# Ajuste o caminho conforme sua cena – certifique-se de que "cenario/enemySpawner" é o caminho correto
 	spawner = get_tree().get_root().get_node("cenario/enemySpawner")
-	if spawner:
-		print("✅ Spawner encontrado:", spawner)
-	else:
-		print("❌ ERRO: Spawner não encontrado!")
-	
-	# NÃO conecta o sinal "start_wave" aqui, pois o menu não foi encontrado.
-	# O merchant chamará start_wave() diretamente.
-	
+	spawn_area = get_node(spawn_area_path)
+
 func start_wave() -> void:
+	if waves_stopped:
+		return
+
 	if current_wave > max_waves:
 		emit_signal("game_won")
-		print("🏆 Todas as waves foram completadas!")
 		return
 
 	emit_signal("wave_started", current_wave)
@@ -46,8 +43,6 @@ func start_wave() -> void:
 	enemies_alive = min(max_enemies + (current_wave * 2), max_enemies * 2)
 	enemy_health_multiplier = 1.0 + (current_wave * 0.2)
 	enemy_damage_multiplier = 1.0 + (current_wave * 0.1)
-
-	print("🌊 Iniciando Wave", current_wave, "- Inimigos:", enemies_alive)
 
 	var wave_banner = get_tree().get_root().get_node("cenario/UI/wave")
 	if wave_banner:
@@ -62,59 +57,56 @@ func update_ui() -> void:
 		ui.enemies_label.text = "Enemys: " + str(enemies_alive)
 
 func spawn_enemies(num_enemies: int, health_multiplier: float, damage_multiplier: float) -> void:
-	print("🔎 Tentando spawnar", num_enemies, "inimigos.")
-
-	# Usa spawner.spawn_points (certifique-se de que o spawner possui essa propriedade)
+	# Se você ainda usar os spawn_points do spawner (caso misture com pontos fixos), pode embaralhá-los...
 	if spawner.spawn_points.is_empty():
-		print("⚠️ ERRO: Nenhum ponto de spawn disponível!")
 		return
-
-	var total_spawned: int = 0
+	
 	spawner.spawn_points.shuffle()
-
+	
 	for i in range(num_enemies):
 		while get_tree().get_nodes_in_group("enemies").size() >= MAX_ACTIVE_ENEMIES:
 			await get_tree().create_timer(0.5).timeout
 		
-		var spawn_position = get_valid_spawn_position()
+		# Aqui, usamos o spawn_area para gerar uma posição aleatória
+		var spawn_position = get_random_position_in_area()
 		if spawn_position != Vector2.ZERO:
 			spawn_enemy(spawn_position, health_multiplier, damage_multiplier)
-		else:
-			print("⚠️ Não foi possível encontrar um spawn válido para o inimigo", i + 1)
 		
 		await get_tree().create_timer(0.1).timeout
 	
-	total_spawned = get_tree().get_nodes_in_group("enemies").size()
-	enemies_alive = total_spawned
-	print("✅ Total de inimigos spawnados:", total_spawned)
+	enemies_alive = get_tree().get_nodes_in_group("enemies").size()
 
-func get_valid_spawn_position() -> Vector2:
-	for spawn in spawner.spawn_points:
-		var is_valid = true
-		for enemy in get_tree().get_nodes_in_group("enemies"):
-			if enemy.position.distance_to(spawn.position) < 20:
-				is_valid = false
-				break
-		if is_valid:
-			return spawn.position
+# Gera uma posição aleatória dentro do spawn_area
+func get_random_position_in_area() -> Vector2:
+	if spawn_area == null:
+		return Vector2.ZERO
 
-	print("🔔 Nenhum spawn livre encontrado. Gerando novo spawn point dentro de green_area.")
-	var new_spawn = Marker2D.new()
-	var spawn_x = randf_range(green_area.position.x, green_area.position.x + green_area.size.x)
-	var spawn_y = randf_range(green_area.position.y, green_area.position.y + green_area.size.y)
-	new_spawn.position = Vector2(spawn_x, spawn_y)
-	spawner.add_child(new_spawn)
-	spawner.spawn_points.append(new_spawn)
-	return new_spawn.position
+	var collision = spawn_area.get_node("CollisionShape2D")
+	if collision and collision.shape is RectangleShape2D:
+		var rect_shape = collision.shape as RectangleShape2D
+		var extents = rect_shape.extents
+
+
+		var random_local = Vector2(
+			randf_range(-extents.x, extents.x),
+			randf_range(-extents.y, extents.y)
+		)
+		var global_pos = spawn_area.global_position + random_local
+		# Ou, se estiver usando multiplicação:
+		# var global_pos = spawn_area.global_transform * random_local
+		
+
+		return global_pos
+	else:
+		
+		return spawn_area.global_position
 
 func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier: float) -> void:
 	if position == Vector2.ZERO:
-		print("⚠️ ERRO: Nenhuma posição válida encontrada para spawn!")
 		return
 
 	var slime = preload("res://cenas/slime.tscn").instantiate()
 	if slime == null:
-		print("❌ ERRO: Falha ao instanciar Slime!")
 		return
 
 	slime.position = position
@@ -122,34 +114,39 @@ func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier:
 	slime.damage *= damage_multiplier
 
 	get_tree().get_root().get_node("cenario").add_child(slime)
-	slime.add_to_group("enemies")
+	slime.add_to_group("enemy")
 	slime.connect("enemy_died", Callable(self, "enemy_died"))
 
-	print("🐍 Slime spawnado na posição:", slime.position)
 	configure_enemy_collision(slime)
 
 func configure_enemy_collision(enemy):
-	print("🔎 Configurando colisão para:", enemy.name)
 	enemy.collision_layer = 1 << 2
 	enemy.collision_mask = (1 << 0) | (1 << 1)
 	var collision = enemy.get_node("CollisionShape2D")
 	if collision:
-		print("🔴 Desativando colisão do Slime antes do spawn")
 		collision.set_deferred("disabled", true)
 		await get_tree().process_frame
 		collision.set_deferred("disabled", false)
-		print("🟢 Colisão reativada para o Slime:", enemy.name)
-	else:
-		print("⚠️ ERRO: Slime não possui CollisionShape2D!")
 		
 func enemy_died() -> void:
 	enemies_alive -= 1
-	print("💀 Inimigo morreu! Restantes:", enemies_alive)
 	update_ui()
 
 	if enemies_alive <= 0:
-		print("🌊 Wave", current_wave, "completada!")
 		emit_signal("wave_completed", current_wave)
+		if waves_stopped:
+			return
 		await get_tree().create_timer(wave_interval).timeout
+		if waves_stopped:
+			return
 		current_wave += 1
 		start_wave()
+
+func stop_waves() -> void:
+	waves_stopped = true
+	var enemy_list = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemy_list:
+		enemy.queue_free()
+	current_wave = starting_wave
+	enemies_alive = 0
+	update_ui()

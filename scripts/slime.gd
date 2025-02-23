@@ -55,6 +55,7 @@ var min_distance: float = 10.0
 var charge_distance: float = 40.0
 
 func _ready() -> void:
+	
 	if player == null:
 		print("ERRO: Jogador não encontrado!")
 		return
@@ -129,7 +130,7 @@ func _physics_process(delta: float) -> void:
 func compute_separation() -> Vector2:
 	var repel_vector = Vector2.ZERO
 	var neighbor_count = 0
-	for other in get_tree().get_nodes_in_group("enemies"):
+	for other in get_tree().get_nodes_in_group("enemy"):
 		if other != self:
 			var dist = position.distance_to(other.position)
 			if dist < separation_range:
@@ -228,6 +229,7 @@ func _cancel_attack() -> void:
 # DANO E MORTE
 # -----------------------------------------
 func take_damage(damage: int, _knockback_force: Vector2 = Vector2.ZERO) -> void:
+	print("DEBUG Slime: recebendo dano =", damage)
 	if is_dead:
 		return
 	

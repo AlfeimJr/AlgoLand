@@ -37,6 +37,7 @@ texture = ExtResource("5_t1nvj")
 
 [node name="EnemiesLabel" type="Label" parent="enemiesCount"]
 texture_filter = 1
+layout_mode = 0
 offset_left = 4.0
 offset_top = 1.0
 offset_right = 89.0
