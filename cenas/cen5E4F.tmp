@@ -20,6 +20,7 @@ script = ExtResource("1_xi8ta")
 position = Vector2(599, 339)
 
 [node name="WaveManager" parent="enemySpawner" instance=ExtResource("6_j85rw")]
+max_enemies = 10
 max_waves = 10
 
 [node name="Terrains" parent="." instance=ExtResource("2_rmsv3")]
@@ -27,7 +28,7 @@ position = Vector2(-10, 14)
 
 [node name="Player" parent="." instance=ExtResource("5_4qs78")]
 position = Vector2(1050, 131)
-collision_mask = 255
+collision_mask = 62
 _knockback_strength = 50.0
 
 [node name="Merchant" parent="." instance=ExtResource("6_vktsx")]
@@ -50,4 +51,3 @@ position = Vector2(570, 342)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea"]
 position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_wpor1")
-disabled = true

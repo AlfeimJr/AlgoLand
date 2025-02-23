@@ -5,5 +5,4 @@
 [node name="WaveManager" type="Node2D"]
 position = Vector2(284, 135)
 script = ExtResource("1_c46d7")
-max_enemies = 5
 max_waves = 5000000
