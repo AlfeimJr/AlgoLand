@@ -22,8 +22,6 @@ func _ready() -> void:
 		# Conecta o sinal 'body_exited' apenas se ainda não estiver conectado
 		if not area_2d.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
 			area_2d.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
-	else:
-		printerr("Nó Area2D não encontrado!")
 
 func _process(delta: float) -> void:
 	# Verifica se o jogador está no alcance e pressiona o botão F para abrir o menu
@@ -39,14 +37,14 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.is_in_group("character"):
 		player_in_range = true
 		icon.visible = true  # Mostra o ícone
-		print("Jogador entrou na área do merchant!")
+
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	# Verifica se o corpo que saiu é o jogador
 	if body.is_in_group("character"):
 		player_in_range = false
 		icon.visible = false  # Oculta o ícone
-		print("Jogador saiu da área do merchant!")
+
 
 func _on_open_menu_pressed() -> void:
 	# Carrega a cena do menu
@@ -62,16 +60,13 @@ func _on_open_menu_pressed() -> void:
 	if menu_instance.has_method("connect_start_wave"):
 		menu_instance.connect_start_wave(Callable(self, "_on_start_wave_selected"))
 
-	print("Menu aberto!")
 
 func close_menu() -> void:
 	# Remove o menu da cena
 	if menu_instance != null:
 		menu_instance.queue_free()  # Libera o nó do menu
 		menu_instance = null
-		print("Menu fechado!")
 
 func _on_start_wave_selected() -> void:
 	# Emite o sinal para iniciar uma nova wave
 	emit_signal("start_wave_requested")
-	print("Solicitando início da próxima wave!")

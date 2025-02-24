@@ -4,8 +4,8 @@ signal wave_started(wave: int)
 signal wave_completed(wave: int)
 signal game_won()  
 
-@export var starting_wave: int = 1
-@export var max_enemies: int = 50
+@export var starting_wave: int = 10
+@export var max_enemies: int = 5
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 10
 @export var detection_increase_per_wave: float = 0.2
@@ -13,7 +13,7 @@ signal game_won()
 const MAX_ACTIVE_ENEMIES: int = 50
 
 # Em vez de usar um Rect2 para a área de spawn, exporte um NodePath para o Area2D
-@export var spawn_area_path = NodePath("../../SpawnArea")
+@export var spawn_area_path = NodePath("/root/cenario/SpawnArea")
 
 var current_wave: int = 1
 var enemies_alive: int = 0
@@ -22,16 +22,20 @@ var enemy_health_multiplier: float = 1.0
 var enemy_damage_multiplier: float = 1.0
 var spawner
 var waves_stopped: bool = false
-
+@onready var player = get_node("/root/cenario/Player")
 var spawn_area: Area2D
 
 func _ready() -> void:
 	await get_tree().process_frame
 	current_wave = starting_wave
-	spawner = get_tree().get_root().get_node("cenario/enemySpawner")
+	spawner = get_tree().get_root().get_node("/root/cenario/enemySpawner")
 	spawn_area = get_node(spawn_area_path)
 
 func start_wave() -> void:
+	# Se o player estiver morto ou se o jogo foi parado, não inicia nova wave
+	if player.isDead:
+		current_wave = 1
+		player.isDead = false
 	if waves_stopped:
 		return
 
@@ -70,8 +74,17 @@ func spawn_enemies(num_enemies: int, health_multiplier: float, damage_multiplier
 	spawner.spawn_points.shuffle()
 	
 	for i in range(num_enemies):
+		# Verifica se foi solicitado parar as waves
+		if waves_stopped:
+			return
+		
 		while get_tree().get_nodes_in_group("enemy").size() >= MAX_ACTIVE_ENEMIES:
+			if waves_stopped:
+				return
 			await get_tree().create_timer(0.5).timeout
+		
+		if waves_stopped:
+			return
 		
 		var spawn_position = get_random_position_in_area()
 		if spawn_position != Vector2.ZERO:
@@ -131,6 +144,7 @@ func enemy_died() -> void:
 		emit_signal("wave_completed", current_wave)
 		if waves_stopped:
 			return
+		# Aguarda antes de iniciar a próxima onda; durante essa espera, verifica se o jogo foi parado.
 		await get_tree().create_timer(wave_interval).timeout
 		if waves_stopped:
 			return
@@ -142,6 +156,7 @@ func stop_waves() -> void:
 	var enemy_list = get_tree().get_nodes_in_group("enemy")
 	for enemy in enemy_list:
 		enemy.queue_free()
-	current_wave = starting_wave
+	current_wave = 1
 	enemies_alive = 0
-	update_ui()
+	var ui = get_tree().get_root().get_node("cenario/UI")
+	ui.enemies_label.text = "Enemys"

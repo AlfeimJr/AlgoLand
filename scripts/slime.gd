@@ -24,7 +24,7 @@ var last_horizontal_direction: float = 1.0  # 1 para direita, -1 para esquerda
 # -----------------------------
 @export var attack_cooldown: float = 1.5
 var can_attack: bool = true
-var damage: int = 1
+var damage: float = 1
 
 # -----------------------------
 # VARIÁVEIS DE VIDA
@@ -61,7 +61,6 @@ var charge_distance: float = 40.0
 
 func _ready() -> void:
 	if player == null:
-		print("ERRO: Jogador não encontrado!")
 		return
 
 	# Ativa o AnimationTree e define estado inicial
@@ -251,7 +250,6 @@ func _set_animation_direction(dir: Vector2) -> void:
 # Supõe que o slime tenha um nó "DetectionArea" com um CollisionShape2D de tipo RectangleShape2D.
 func set_detection_scale(scale: float) -> void:
 	var detection_area = get_node_or_null("Area2D")
-	print(detection_area)
 	if detection_area:
 		var collision = detection_area.get_node_or_null("CollisionShape2D")
 		if collision and collision.shape is RectangleShape2D:
@@ -259,3 +257,6 @@ func set_detection_scale(scale: float) -> void:
 			# Ajusta os extents multiplicando pelo fator de escala
 			rect.extents *= scale
 			collision.shape = rect
+			
+func get_damage() -> int:
+	return damage

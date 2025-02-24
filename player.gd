@@ -27,11 +27,12 @@ extends CharacterBody2D
 
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
-
+@onready var hp_label = $"/root/cenario/UI/Hp"
 var nickname: String = ""
 signal customization_finished(hair: int, outfit: int, nickname: String)
 var damaged_enemies := []
-
+@export var isDead = false
+@onready var wave_manager = get_node("/root/cenario/enemySpawner/WaveManager")
 var curr_hair: int = 0
 var curr_outfit: int = 0
 var _state_machine: Object
@@ -73,25 +74,25 @@ func _ready() -> void:
 		if resource:
 			hair_attack_array.append(resource)
 		else:
-			print("Não foi possível carregar:", path)
+			return
 	for i in range(1, 8):
 		var path = "res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(" + str(i) + ").png"
 		var resource = load(path)
 		if resource:
 			outfit_attack_array.append(resource)
 		else:
-			print("Não foi possível carregar:", path)
+			return
 	if hair_attack_array.size() > 0:
 		attackHair.texture = hair_attack_array[curr_hair]
 	if outfit_attack_array.size() > 0:
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
 
 	if _animation_tree == null:
-		print("Erro: _animation_tree não foi atribuído corretamente!")
+		return
 	else:
 		_state_machine = _animation_tree["parameters/playback"]
 		if _state_machine == null:
-			print("Erro: _state_machine está null!")
+			return
 
 	$AttackArea.collision_layer = 1 << 1
 	$AttackArea.collision_mask  = 1 << 2
@@ -108,7 +109,6 @@ func _ready() -> void:
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):
 		node.connect(signal_name, Callable(self, method))
-		print("Sinal ", signal_name, " conectado ao método ", method)
 
 func _set_sprites_visible(is_attacking: bool) -> void:
 	bodySprite.visible    = not is_attacking
@@ -148,12 +148,15 @@ func _physics_process(delta: float) -> void:
 		var collision = get_slide_collision(i)
 		var collider = collision.get_collider()
 		if collider.is_in_group("enemy") and not invulnerable:
-			print("Player colidiu com o inimigo: ", collider.name)
 			var knockback_dir = (position - collider.position).normalized()
-			take_damage(1, knockback_dir * 300.0)
+			if collider.has_method("get_damage"):
+				var enemy_damage = collider.get_damage()
+				take_damage(enemy_damage, knockback_dir * 300.0)
+			else:
+				take_damage(1, knockback_dir * 300.0)
 			invulnerable = true
 			invul_timer = invul_time
-			break 
+			break
 
 func apply_knockback(force: Vector2) -> void:
 	_knockback = force
@@ -222,24 +225,17 @@ func _on_attack_timer_timeout() -> void:
 
 # Corrigindo a função: aplica dano no inimigo e não no player
 func _on_attack_body_entered(body: Node2D) -> void:
-	print("DEBUG: _on_attack_body_entered disparado com ", body.name)
 	if body.is_in_group("enemy"):
-		print("DEBUG: Ataque acertou o inimigo: ", body.name)
 		var knockback_dir = (body.position - position).normalized()
 		if body.has_method("take_damage"):
 			body.take_damage(_attack_damage, knockback_dir * 150.0)
-		else:
-			print("DEBUG: Inimigo ", body.name, " não possui o método take_damage")
 
 # Implementando o sinal area_entered para inimigos que são Area2D
 func _on_attack_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemy"):
-		print("Ataque (area) acertou o inimigo: ", area.name)
 		var knockback_dir = (area.global_position - position).normalized()
 		if area.has_method("take_damage"):
 			area.take_damage(_attack_damage, knockback_dir * 150.0)
-		else:
-			print("Inimigo (area) ", area.name, " não possui o método take_damage")
 
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
@@ -326,8 +322,6 @@ func unequip_sword_and_shield() -> void:
 	_move_speed -= 50
 
 func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
-	print(damage, "dano")
-	
 	current_hp = max(current_hp - damage, 0)
 	update_hp_bar()
 	
@@ -340,14 +334,13 @@ func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
 func update_hp_bar() -> void:
 	var fraction = float(current_hp) / float(max_hp)
 	hp_bar_full.scale.x = fraction
-
+	hp_label.text = str(current_hp) + "/" + str(max_hp)
+	
 func die() -> void:
-	print("Player morreu!")
+	isDead = true
 	emit_signal("player_died")
-	var wave_manager_scene = load("res://cenas/wave_manager.tscn")
-	var wave_manager = wave_manager_scene.instantiate()
-	add_child(wave_manager)
-	if wave_manager:
-		wave_manager.stop_waves()  
+	wave_manager.stop_waves()
+	
 	current_hp = max_hp
 	update_hp_bar()
+	
