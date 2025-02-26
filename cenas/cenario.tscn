@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://idfadyrk0auf" path="res://cenas/ui.tscn" id="8_js8mk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wpor1"]
-size = Vector2(907, 480)
+size = Vector2(905.25, 495.5)
 
 [node name="cenario" type="Node2D"]
 position = Vector2(6, 0)
@@ -48,6 +48,6 @@ scale_amount_max = 2.0
 position = Vector2(570, 342)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea"]
-position = Vector2(1, 0)
+position = Vector2(-9.625, 8.25)
 shape = SubResource("RectangleShape2D_wpor1")
 disabled = true

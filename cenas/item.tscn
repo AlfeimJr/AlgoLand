@@ -1,0 +1,68 @@
+[gd_scene load_steps=4 format=3 uid="uid://d0d8gckr1co47"]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_x6e3p"]
+[ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_irft0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w731v"]
+line_spacing = 5.0
+font = ExtResource("2_irft0")
+font_size = 8
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="Item" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -576.0
+offset_bottom = -324.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x6e3p")
+
+[node name="TextureButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="background" type="TextureRect" parent="TextureButton"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 36.0
+offset_bottom = 14.0
+scale = Vector2(0.59375, 1.5)
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="TextureButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -2.889
+anchor_top = -0.667
+anchor_right = -2.889
+anchor_bottom = -0.667
+offset_left = 73.56
+offset_top = 19.344
+offset_right = 89.56
+offset_bottom = 35.344
+expand_mode = 1
+
+[node name="Label" type="Label" parent="TextureButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -2.889
+anchor_top = -0.667
+anchor_right = -2.889
+anchor_bottom = -0.667
+offset_left = 73.336
+offset_top = 36.008
+offset_right = 89.336
+offset_bottom = 45.008
+label_settings = SubResource("LabelSettings_w731v")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[connection signal="pressed" from="TextureButton" to="." method="_on_texture_button_pressed"]

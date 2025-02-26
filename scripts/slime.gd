@@ -225,7 +225,6 @@ func _set_animation(anim_name: String) -> void:
 	if not animation_tree or not animation_state:
 		return
 
-	# Se o estado "damaged" for solicitado, usa "run" (não temos animação separada de dano)
 	if anim_name == "damaged":
 		anim_name = "run"
 	if animation_state.get_current_node() == anim_name:
@@ -246,8 +245,6 @@ func _set_animation_direction(dir: Vector2) -> void:
 	blend_position.y = 0
 	animation_tree.set("parameters/run/blend_position", blend_position)
 
-# NOVO: Método para ajustar a área de detecção do slime.
-# Supõe que o slime tenha um nó "DetectionArea" com um CollisionShape2D de tipo RectangleShape2D.
 func set_detection_scale(scale: float) -> void:
 	var detection_area = get_node_or_null("Area2D")
 	if detection_area:

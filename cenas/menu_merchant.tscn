@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=10 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
@@ -6,10 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/sem org/2 Bars/Band2_off.png" id="4_8psce"]
 [ext_resource type="Texture2D" uid="uid://bmro5omyyrlef" path="res://images/one_0108_v01.png" id="5_h533h"]
 [ext_resource type="Texture2D" uid="uid://4kypf3twlls3" path="res://UI/sem org/3 Icons/Icons_14.png" id="6_h2o4l"]
-[ext_resource type="Texture2D" uid="uid://cl1blpui1jpsu" path="res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 85.png" id="7_1lcy0"]
-[ext_resource type="Texture2D" uid="uid://de6ruauq6fkqw" path="res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 93.png" id="8_gdmqw"]
-[ext_resource type="Texture2D" uid="uid://v2l51cdcfwuu" path="res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 80.png" id="9_52afl"]
-[ext_resource type="Texture2D" uid="uid://d3e2lxnj2ud17" path="res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 76.png" id="10_3bpno"]
+[ext_resource type="PackedScene" uid="uid://gigb868grykh" path="res://cenas/item_spec.tscn" id="7_1qnbk"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_irua0"]
 font = ExtResource("2_bsqvj")
@@ -17,10 +14,6 @@ font_size = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4o8dq"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
-
-[sub_resource type="LabelSettings" id="LabelSettings_qvb5i"]
-font = ExtResource("2_bsqvj")
-font_size = 10
 
 [node name="MenuMerchant" type="CanvasLayer"]
 script = ExtResource("1_v7em4")
@@ -124,102 +117,25 @@ text = "BUILD
 "
 flat = true
 
-[node name="Build" type="Control" parent="."]
+[node name="ItemsContainer" type="GridContainer" parent="Container"]
 visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_left = 128.0
-offset_top = 55.0
-offset_right = 451.0
-offset_bottom = 255.0
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+grow_vertical = 2
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 30
+columns = 5
 
-[node name="item_1" type="Button" parent="Build"]
+[node name="ItemSpec" parent="Container" instance=ExtResource("7_1qnbk")]
+visible = false
 layout_mode = 0
-offset_left = 6.0
-offset_top = 3.0
-offset_right = 42.0
-offset_bottom = 48.0
-icon = ExtResource("7_1lcy0")
-expand_icon = true
-
-[node name="Label" type="Label" parent="Build/item_1"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 35.0
-offset_right = 29.0
-offset_bottom = 47.0
-text = "1000
-"
-label_settings = SubResource("LabelSettings_qvb5i")
-
-[node name="item_2" type="Button" parent="Build"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 3.0
-offset_right = 84.0
-offset_bottom = 48.0
-icon = ExtResource("8_gdmqw")
-expand_icon = true
-
-[node name="Label" type="Label" parent="Build/item_2"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 35.0
-offset_right = 29.0
-offset_bottom = 47.0
-text = "1000
-"
-label_settings = SubResource("LabelSettings_qvb5i")
-
-[node name="item_3" type="Button" parent="Build"]
-layout_mode = 0
-offset_left = 89.0
-offset_top = 3.0
-offset_right = 125.0
-offset_bottom = 48.0
-icon = ExtResource("9_52afl")
-expand_icon = true
-
-[node name="Label" type="Label" parent="Build/item_3"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 35.0
-offset_right = 29.0
-offset_bottom = 47.0
-text = "1000
-"
-label_settings = SubResource("LabelSettings_qvb5i")
-
-[node name="item_4" type="Button" parent="Build"]
-layout_mode = 0
-offset_left = 130.0
-offset_top = 3.0
-offset_right = 166.0
-offset_bottom = 48.0
-icon = ExtResource("10_3bpno")
-expand_icon = true
-
-[node name="Label" type="Label" parent="Build/item_4"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 35.0
-offset_right = 29.0
-offset_bottom = 47.0
-text = "1000
-"
-label_settings = SubResource("LabelSettings_qvb5i")
-
-[node name="BackButton" type="Button" parent="Build"]
-layout_mode = 0
-offset_top = 185.0
-offset_right = 28.0
-offset_bottom = 202.0
-icon = ExtResource("6_h2o4l")
-flat = true
-expand_icon = true
+offset_left = 170.0
+offset_top = 6.0
+offset_right = 320.0
+offset_bottom = 199.0
 
 [connection signal="pressed" from="Container/Weapons/Sword" to="." method="_on_sword_pressed"]
 [connection signal="pressed" from="Container/Weapons/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="Container/Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
 [connection signal="pressed" from="Container/Buttons/Build" to="." method="_on_build_pressed"]
-[connection signal="pressed" from="Build/BackButton" to="." method="_on_back_button_pressed"]

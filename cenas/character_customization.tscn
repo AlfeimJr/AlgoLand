@@ -10,7 +10,7 @@ script = ExtResource("1_pnp6h")
 
 [node name="Control" parent="." instance=ExtResource("1_qh50s")]
 texture_filter = 1
-position = Vector2(-290, -139)
+position = Vector2(-264, -138)
 metadata/_edit_use_anchors_ = true
 
 [node name="Player" parent="." instance=ExtResource("1_js52k")]

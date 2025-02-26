@@ -1,28 +1,20 @@
-extends Area2D
+extends Control  # Ou Button, dependendo do seu caso.
 
-@onready var main = get_node("/root/Main")
-@onready var lives_label = get_node("/root/Main/Hud/LivesLabel")
+var item_data: Dictionary
+signal item_clicked(item_data)
+func set_item_data(data: Dictionary) -> void:
+	item_data = data
+	print(item_data)
+	# Verifique se os nomes dos nós abaixo são EXATAMENTE os mesmos que aparecem na sua cena.
+	# Pela imagem: "TextureButton" > "TextureRect" e "Label"
+	$TextureButton/Label.text = data["price"]
+	$TextureButton/TextureRect.texture = load(data["icon"])
+	$TextureButton/background.texture = load("res://UI/sem org/2 Bars/Band2_off.png")
+func _ready() -> void:
+	pass
+	# (Opcional) Você pode testar um texto fixo para ver se aparece no editor
+	# $TextureButton/Label.text = "Teste estático"
 
-var item_type : int # 0: coffee, 1: health, 2: gun
 
-var health_box = preload("res://health_box.png")
-
-var textures = [health_box]
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	$Sprite2D.texture = textures[item_type]
-
-func _on_body_entered(body):
-	#coffee
-	if item_type == 0:
-		body.boost()
-	#health
-	elif item_type == 1:
-		main.lives += 1
-		lives_label.text = "X " + str(main.lives)
-	#gun
-	elif item_type == 2:
-		body.quick_fire()
-	#delete item
-	queue_free()
+func _on_texture_button_pressed() -> void:
+	emit_signal("item_clicked", item_data)
