@@ -25,6 +25,7 @@ config/icon="res://Tiles/icon.svg"
 CustomizationManager="*res://scripts/customization_manager.gd"
 IsCustomization="*res://scripts/is_customization.gd"
 ItemDatabase="*res://scripts/ItemDatabase.gd"
+GameData="*res://scripts/GameData.gd"
 
 [display]
 

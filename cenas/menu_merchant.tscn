@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=11 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bmro5omyyrlef" path="res://images/one_0108_v01.png" id="5_h533h"]
 [ext_resource type="Texture2D" uid="uid://4kypf3twlls3" path="res://UI/sem org/3 Icons/Icons_14.png" id="6_h2o4l"]
 [ext_resource type="PackedScene" uid="uid://gigb868grykh" path="res://cenas/item_spec.tscn" id="7_1qnbk"]
+[ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_n1i8u"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_irua0"]
 font = ExtResource("2_bsqvj")
@@ -69,16 +70,6 @@ offset_bottom = 59.0
 text = "SWORD"
 label_settings = SubResource("LabelSettings_irua0")
 
-[node name="BackButton" type="Button" parent="Container/Weapons"]
-layout_mode = 0
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 27.0
-offset_bottom = 16.0
-icon = ExtResource("6_h2o4l")
-flat = true
-expand_icon = true
-
 [node name="Buttons" type="Panel" parent="Container"]
 layout_mode = 0
 offset_right = 40.0
@@ -135,7 +126,22 @@ offset_top = 6.0
 offset_right = 320.0
 offset_bottom = 199.0
 
+[node name="Coins" parent="Container" instance=ExtResource("8_n1i8u")]
+visible = false
+offset_left = 1.0
+offset_top = 177.0
+offset_right = 41.0
+offset_bottom = 217.0
+
+[node name="BackButton" type="Button" parent="Container"]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 18.0
+icon = ExtResource("6_h2o4l")
+flat = true
+expand_icon = true
+
 [connection signal="pressed" from="Container/Weapons/Sword" to="." method="_on_sword_pressed"]
-[connection signal="pressed" from="Container/Weapons/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="Container/Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
 [connection signal="pressed" from="Container/Buttons/Build" to="." method="_on_build_pressed"]
+[connection signal="pressed" from="Container/BackButton" to="." method="_on_back_button_pressed"]

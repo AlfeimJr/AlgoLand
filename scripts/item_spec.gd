@@ -18,3 +18,4 @@ func set_item_data(data: Dictionary) -> void:
 	$ItemName.text = data["name"]
 	$ItemPrice.text = data["price"]
 	$ItemSelected/itemImage.texture = load(data["icon"])
+	$ItemDescription.text = data["description"]

@@ -39,7 +39,6 @@ func save_to_json(hair: int, outfit: int, nickname: String):
 	if file == null:
 		print("Erro ao abrir o arquivo para escrita.")
 		return
-	
 	# Criar os dados a serem salvos
 	var data = {
 		"curr_hair": hair,
