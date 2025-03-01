@@ -10,14 +10,14 @@
 [ext_resource type="PackedScene" uid="uid://idfadyrk0auf" path="res://cenas/ui.tscn" id="8_js8mk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wpor1"]
-size = Vector2(905.25, 495.5)
+size = Vector2(455.5, 261)
 
 [node name="cenario" type="Node2D"]
 position = Vector2(6, 0)
 script = ExtResource("1_xi8ta")
 
 [node name="enemySpawner" parent="." instance=ExtResource("5_jwhcr")]
-position = Vector2(599, 339)
+position = Vector2(215, 176)
 
 [node name="WaveManager" parent="enemySpawner" instance=ExtResource("6_j85rw")]
 max_waves = 10
@@ -26,13 +26,14 @@ max_waves = 10
 position = Vector2(-10, 14)
 
 [node name="Player" parent="." instance=ExtResource("5_4qs78")]
-position = Vector2(1050, 131)
+z_index = 1
+position = Vector2(584, 224)
 collision_mask = 255
 _attack_damage = 10
 
 [node name="Merchant" parent="." instance=ExtResource("6_vktsx")]
 z_index = 2
-position = Vector2(1047, 66)
+position = Vector2(569, 176)
 collision_layer = 32
 
 [node name="UI" parent="." instance=ExtResource("8_js8mk")]
@@ -45,9 +46,9 @@ scale_amount_min = 2.0
 scale_amount_max = 2.0
 
 [node name="SpawnArea" type="Area2D" parent="."]
-position = Vector2(570, 342)
+position = Vector2(210, 178)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea"]
-position = Vector2(-9.625, 8.25)
+position = Vector2(-22.25, -1.5)
 shape = SubResource("RectangleShape2D_wpor1")
 disabled = true

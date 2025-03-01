@@ -4,7 +4,7 @@ signal wave_started(wave: int)
 signal wave_completed(wave: int)
 signal game_won()
 
-@export var starting_wave: int = 1
+@export var starting_wave: int = 10
 @export var max_enemies: int = 5
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 10

@@ -28,6 +28,7 @@ vframes = 8
 frame = 20
 
 [node name="button" type="Sprite2D" parent="."]
+z_index = 15
 position = Vector2(0, -23)
 scale = Vector2(0.538463, 0.519231)
 texture = ExtResource("2_3fri6")
