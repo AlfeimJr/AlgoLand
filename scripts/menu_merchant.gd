@@ -12,7 +12,7 @@ var item_scene = preload("res://cenas/item.tscn")
 @onready var back_button = $Container/BackButton
 # Label de moedas específico do menu (Container/Coins)
 @onready var coins_container = $Container/Coins
-
+@onready var leave = $Container/Buttons/Leave
 func _ready() -> void:
 	back_button.visible = false
 	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
@@ -109,3 +109,8 @@ func update_coins_display() -> void:
 	var coins_label = coins_container.get_node("count") # Caso "count" seja o nome do Label
 	if coins_label and coins_label is Label:
 		coins_label.text = str(GameData.coins)
+
+
+func _on_leave_pressed() -> void:
+	emit_signal("menu_closed")
+	queue_free()

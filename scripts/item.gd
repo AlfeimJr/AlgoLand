@@ -7,7 +7,7 @@ func set_item_data(data: Dictionary) -> void:
 	print(item_data)
 	# Verifique se os nomes dos nós abaixo são EXATAMENTE os mesmos que aparecem na sua cena.
 	# Pela imagem: "TextureButton" > "TextureRect" e "Label"
-	$TextureButton/Label.text = data["price"]
+	$TextureButton/Label.text = str(data["price"])
 	$TextureButton/TextureRect.texture = load(data["icon"])
 	$TextureButton/background.texture = load("res://UI/sem org/2 Bars/Band2_off.png")
 func _ready() -> void:

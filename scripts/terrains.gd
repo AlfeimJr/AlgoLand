@@ -21,9 +21,8 @@ func _on_wave_started(wave: int) -> void:
 	barraca_fechada.visible = true
 	
 func _on_wave_completed(wave: int) -> void:
-	print("Wave completada: ", wave)
-	# Aqui você pode adicionar a lógica para tratar o término de uma wave,
-	# como atualizar a interface ou preparar a próxima wave.
+	barraca_aberta.visible = true
+	barraca_fechada.visible = false
 
 func _on_waves_stopped() -> void:
 	barraca_aberta.visible = true

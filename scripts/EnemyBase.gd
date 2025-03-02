@@ -18,7 +18,7 @@ var last_horizontal_direction: float = 1.0  # 1 para direita, -1 para esquerda
 # -----------------------------
 @export var attack_cooldown: float = 1.5
 var can_attack: bool = true
-var damage: float = 1
+var damage: float = 30
 
 # -----------------------------
 # VARIÁVEIS DE VIDA

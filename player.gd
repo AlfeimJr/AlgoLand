@@ -8,6 +8,9 @@ extends CharacterBody2D
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
 
+# Propriedade de defesa adicionada
+@export var _defense: int = 0
+
 @export_category("Objects")
 @export var _animation_tree: AnimationTree = null
 @export var _timer: Timer = null
@@ -61,7 +64,7 @@ var outfit_attack_array: Array[Texture2D] = []
 var _attack_direction: Vector2 = Vector2.DOWN
 
 # Vida do Player
-@export var max_hp: int = 10
+@export var max_hp: int = 200
 var current_hp: int = max_hp
 
 # Invulnerabilidade após tomar dano
@@ -156,7 +159,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_animate()
 
-	# Checa colisões com inimigos (caso não use AttackArea, ou se o inimigo encosta em você)
+	# Checa colisões com inimigos
 	for i in range(get_slide_collision_count()):
 		var collision = get_slide_collision(i)
 		var collider = collision.get_collider()
@@ -206,7 +209,7 @@ func _attack() -> void:
 		_timer.start()
 		$AttackArea.monitoring = true
 		$AttackArea.monitorable = true
-		_set_sprites_visible(true)  # Mostra sprites de ataque
+		_set_sprites_visible(true)
 		_animation_tree.set("parameters/AttackSwordSlash_1/blend_position", _attack_direction)
 
 func _animate() -> void:
@@ -254,7 +257,7 @@ func _set_sprites_visible(is_attacking: bool) -> void:
 	attackHair.visible            = is_attacking
 	attackOutfit.visible          = is_attacking
 
-# Botões de customização (exemplo)
+# Botões de customização
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
@@ -342,8 +345,10 @@ func unequip_sword_and_shield() -> void:
 	shield_sprite.visible = false
 	_move_speed -= 50
 
-# Sofrer dano
+# Sofrer dano (aplicando a defesa)
 func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
+	# Reduz dano pela defesa
+	damage = max(damage - _defense, 0)
 	current_hp = max(current_hp - damage, 0)
 	update_hp_bar()
 
@@ -363,7 +368,7 @@ func die() -> void:
 	emit_signal("player_died")
 	wave_manager.stop_waves()
 
-	# Exemplo: ao "morrer", zera a wave e reseta HP e as moedas
+	# Exemplo: ao "morrer", zera a wave e reseta HP e moedas
 	current_hp = max_hp
 	update_hp_bar()
 	coins = 1000
@@ -378,13 +383,14 @@ func apply_knockback(force: Vector2) -> void:
 		modulate.a = 1.0
 		await get_tree().create_timer(0.1).timeout
 
-# Métodos relacionados às moedas:
+# Métodos relacionados às moedas
 func add_coins(amount: int) -> void:
 	coins += amount
 	update_coins_label()
 
 func spend_coins(amount: int) -> void:
 	coins = max(coins - amount, 0)
+	GameData.coins = coins  # Sincroniza o GameData com o valor atualizado
 	update_coins_label()
 
 func update_coins_label() -> void:
