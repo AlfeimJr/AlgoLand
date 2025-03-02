@@ -69,7 +69,6 @@ func _ready() -> void:
 		$Area2D.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
 
 func _physics_process(delta: float) -> void:
-	print("Physics process executando...")
 	if is_dead or not has_method("_get_player"):
 		return
 	
@@ -228,14 +227,12 @@ func _get_player() -> Node2D:
 # -----------------------------
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body == _get_player():
-		print("Jogador detectado!")
 		is_chasing = true
 		is_patrolling = false
 		hit_player.emit()
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body == _get_player():
-		print("Jogador saiu da área!")
 		is_chasing = false
 		is_patrolling = true
 		patrol_timer = 0.0

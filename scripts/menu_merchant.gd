@@ -15,11 +15,9 @@ var item_scene = preload("res://cenas/item.tscn")
 
 func _ready() -> void:
 	back_button.visible = false
-	# Em vez de get_tree().get_node(...), use get_tree().get_root().get_node(...)
 	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
 	
 	if wave_manager and wave_manager.is_wave_running:
-		print("Não é possível abrir o Merchant agora, pois a wave está em andamento!")
 		queue_free()
 		return
 

@@ -3,14 +3,14 @@ extends Node
 signal wave_started(wave: int)
 signal wave_completed(wave: int)
 signal game_won()
-
+signal waves_stopped_signal
 @export var starting_wave: int = 10
 @export var max_enemies: int = 5
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 10
 @export var detection_increase_per_wave: float = 0.2
 @export var gold_base_reward: int = 100
-
+@onready var merchant = $"../../Merchant"
 const MAX_ACTIVE_ENEMIES: int = 50
 @export var spawn_area_path: NodePath = NodePath("/root/cenario/SpawnArea")
 
@@ -47,7 +47,7 @@ func start_wave() -> void:
 		return
 
 	emit_signal("wave_started", current_wave)
-
+	merchant.visible = false
 	# Indica que agora a wave está em andamento
 	is_wave_running = true
 
@@ -136,12 +136,12 @@ func configure_enemy_collision(enemy: Node) -> void:
 func enemy_died() -> void:
 	enemies_alive -= 1
 	update_ui()
-
+	
 	if enemies_alive <= 0:
 		# Wave terminou => jogador ganha moedas
 		var reward = gold_base_reward * current_wave
 		GameData.add_coins(reward)
-
+		merchant.visible = true
 		# Se a loja estiver aberta, peça para ela atualizar
 		var store = get_tree().get_root().get_node_or_null("cenario/UI/MerchantMenu")
 		if store and store.is_visible():
@@ -154,9 +154,12 @@ func enemy_died() -> void:
 
 		# A wave só vai iniciar novamente quando o jogador clicar no Menu
 		current_wave += 1
-
+	else:
+		merchant.visible = true
 func stop_waves() -> void:
 	waves_stopped = true
+	emit_signal("waves_stopped_signal")
+	merchant.visible = true
 	var enemy_list = get_tree().get_nodes_in_group("enemy")
 	for enemy in enemy_list:
 		enemy.queue_free()
@@ -168,3 +171,4 @@ func stop_waves() -> void:
 	var ui = get_tree().get_root().get_node("cenario/UI")
 	if ui:
 		ui.enemies_label.text = "Enemies"
+	
