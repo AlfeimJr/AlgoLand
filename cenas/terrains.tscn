@@ -3643,7 +3643,6 @@ tile_map_data = PackedByteArray("AAAgAAkACwAGAAEAAAAgAAoACwAGAAEAAAAgAAsACwAGAAE
 tile_set = SubResource("TileSet_hsj4p")
 
 [node name="BarracaAberta" type="Node2D" parent="."]
-visible = false
 
 [node name="Barraca" type="TileMapLayer" parent="BarracaAberta"]
 texture_filter = 1
@@ -3899,6 +3898,7 @@ tile_set = SubResource("TileSet_3iwfh")
 tile_set = SubResource("TileSet_3iwfh")
 
 [node name="BarraFechada" type="Node2D" parent="."]
+visible = false
 position = Vector2(-562, -156)
 scale = Vector2(2, 2)
 

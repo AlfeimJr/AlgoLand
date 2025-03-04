@@ -146,8 +146,9 @@ offset_bottom = 217.0
 
 [node name="BackButton" type="Button" parent="Container"]
 layout_mode = 0
+offset_top = 187.0
 offset_right = 20.0
-offset_bottom = 18.0
+offset_bottom = 205.0
 icon = ExtResource("6_h2o4l")
 flat = true
 expand_icon = true

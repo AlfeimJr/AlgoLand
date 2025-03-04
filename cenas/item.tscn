@@ -1,12 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://d0d8gckr1co47"]
+[gd_scene load_steps=5 format=3 uid="uid://d0d8gckr1co47"]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_x6e3p"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_irft0"]
+[ext_resource type="Texture2D" uid="uid://o67wn2b4tdtx" path="res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 1.png" id="2_ubutv"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_w731v"]
 line_spacing = 5.0
 font = ExtResource("2_irft0")
-font_size = 8
+font_size = 7
 shadow_size = 2
 shadow_color = Color(0, 0, 0, 1)
 
@@ -23,10 +24,10 @@ script = ExtResource("1_x6e3p")
 
 [node name="TextureButton" type="TextureButton" parent="."]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 29.0
+offset_bottom = 29.0
 
 [node name="background" type="TextureRect" parent="TextureButton"]
 layout_mode = 0
@@ -48,6 +49,7 @@ offset_left = 73.56
 offset_top = 19.344
 offset_right = 89.56
 offset_bottom = 35.344
+texture = ExtResource("2_ubutv")
 expand_mode = 1
 
 [node name="Label" type="Label" parent="TextureButton"]
@@ -57,10 +59,11 @@ anchor_left = -2.889
 anchor_top = -0.667
 anchor_right = -2.889
 anchor_bottom = -0.667
-offset_left = 73.336
+offset_left = 70.336
 offset_top = 36.008
-offset_right = 89.336
+offset_right = 93.336
 offset_bottom = 45.008
+text = "4000"
 label_settings = SubResource("LabelSettings_w731v")
 horizontal_alignment = 1
 autowrap_mode = 1

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://idfadyrk0auf"]
+[gd_scene load_steps=13 format=3 uid="uid://idfadyrk0auf"]
 
 [ext_resource type="Script" path="res://scripts/control.gd" id="1_uhhk1"]
 [ext_resource type="FontFile" uid="uid://dwub7qum41gaq" path="res://UI/Planes_ValMore.ttf" id="2_nwwd0"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://crcpsqbhgylr7" path="res://UI/sem org/2 Bars/Healthbar_full.png" id="6_p6ugm"]
 [ext_resource type="Texture2D" uid="uid://b4i4jaaj50hva" path="res://UI/sem org/2 Bars/Healthbar_empty.png" id="7_6xg6j"]
 [ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_dsu43"]
+[ext_resource type="PackedScene" uid="uid://dsd2y11vv3y3c" path="res://cenas/info_tab.tscn" id="9_tmm8h"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_drs66"]
 font = ExtResource("2_nwwd0")
@@ -94,3 +95,5 @@ offset_left = 246.0
 offset_top = 268.0
 offset_right = 311.0
 offset_bottom = 297.0
+
+[node name="InfoTab" parent="." instance=ExtResource("9_tmm8h")]

@@ -5,17 +5,17 @@
 [ext_resource type="PackedScene" uid="uid://bjss4nulwphgk" path="res://cenas/control.tscn" id="1_qh50s"]
 
 [node name="CharacterCustomization" type="Node2D"]
-position = Vector2(3, 1)
+position = Vector2(-1, 1)
 script = ExtResource("1_pnp6h")
 
 [node name="Control" parent="." instance=ExtResource("1_qh50s")]
 texture_filter = 1
-position = Vector2(-264, -138)
+position = Vector2(195, 113)
 metadata/_edit_use_anchors_ = true
 
 [node name="Player" parent="." instance=ExtResource("1_js52k")]
 texture_filter = 1
-position = Vector2(343, 160)
+position = Vector2(278, 81)
 scale = Vector2(1.5, 1.5)
 
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]

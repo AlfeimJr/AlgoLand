@@ -33,16 +33,12 @@ func _ready() -> void:
 
 	if $Container/Buttons/Build:
 		$Container/Buttons/Build.connect("pressed", Callable(self, "_on_build_pressed"))
-		print("Conectando sinal do BackButton...")
 	if $Container/BackButton:
 		$Container/BackButton.connect("pressed", Callable(self, "_on_back_button_pressed"))
 func _on_start_wave_pressed() -> void:
 	var wave_manager = get_parent().get_node("/root/cenario/enemySpawner/WaveManager")
 	if wave_manager:
 		wave_manager.start_wave()
-		print("Início da próxima wave solicitado!")
-	else:
-		print("WaveManager não encontrado na cena!")
 	on_close_button_pressed()
 
 func on_close_button_pressed() -> void:
@@ -58,9 +54,6 @@ func _on_sword_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player:
 		player.equip_sword_and_shield()
-		print("Espada equipada no Player!")
-	else:
-		print("Player não encontrado na cena atual!")
 
 func _on_build_pressed() -> void:
 	# Torna build_list e itens visíveis
@@ -82,7 +75,6 @@ func _on_build_pressed() -> void:
 	for key in ItemDatabase.items.keys():
 		var item_data = ItemDatabase.get_item_data(key)
 		if item_data.size() > 0:
-			print(item_data)
 			var item_instance = item_scene.instantiate()
 			item_instance.set_item_data(item_data)
 			item_instance.connect("item_clicked", Callable(self, "_on_item_clicked"))
@@ -93,7 +85,6 @@ func _on_item_clicked(clicked_item_data: Dictionary) -> void:
 	item_spec.set_item_data(clicked_item_data)
 
 func _on_back_button_pressed() -> void:
-	print("Botão BackButton clicado!")
 	main_menu.visible = true
 	back_button.visible = false
 	weapons_list.visible = false

@@ -1,0 +1,82 @@
+[gd_scene load_steps=4 format=3 uid="uid://dsd2y11vv3y3c"]
+
+[ext_resource type="Script" path="res://scripts/info_tab.gd" id="1_hbuxv"]
+[ext_resource type="FontFile" uid="uid://dwub7qum41gaq" path="res://UI/Planes_ValMore.ttf" id="2_wsgip"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_g7v7p"]
+font = ExtResource("2_wsgip")
+font_size = 10
+
+[node name="InfoTab" type="CanvasLayer"]
+script = ExtResource("1_hbuxv")
+
+[node name="CharacterInfo" type="Control" parent="."]
+layout_mode = 3
+anchor_left = 0.389
+anchor_top = 0.272
+anchor_right = 0.389
+anchor_bottom = 0.272
+offset_left = -16.064
+offset_top = -24.128
+offset_right = 159.936
+offset_bottom = 167.872
+
+[node name="Background" type="Panel" parent="CharacterInfo"]
+layout_mode = 0
+offset_right = 176.0
+offset_bottom = 192.0
+
+[node name="BackgroundStatus" type="Panel" parent="CharacterInfo"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 16.0
+offset_right = 165.0
+offset_bottom = 65.0
+
+[node name="BackgroundItemsPurchased" type="Panel" parent="CharacterInfo"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 83.0
+offset_right = 165.0
+offset_bottom = 187.0
+
+[node name="ItemsPurchased" type="GridContainer" parent="CharacterInfo/BackgroundItemsPurchased"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 30
+columns = 5
+
+[node name="PlayerStatus" type="GridContainer" parent="CharacterInfo"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 20.0
+offset_right = 161.0
+offset_bottom = 61.0
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+columns = 4
+
+[node name="StatusTitle" type="Label" parent="CharacterInfo"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 46.0
+offset_bottom = 15.0
+text = "STATUS"
+label_settings = SubResource("LabelSettings_g7v7p")
+
+[node name="ItemsTitle" type="Label" parent="CharacterInfo"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 69.0
+offset_right = 79.0
+offset_bottom = 80.0
+text = "ITENS ACTIVE"
+label_settings = SubResource("LabelSettings_g7v7p")

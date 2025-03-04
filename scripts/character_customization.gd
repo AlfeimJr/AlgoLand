@@ -7,6 +7,8 @@ extends Node2D
 func _ready() -> void:
 	print("Conectando sinal 'customization_finished'...")
 	player.connect("customization_finished", Callable(self, "_on_player_customization_finished"))
+	player.movement_enabled = false
+	player.get_node("Camera2D").hide()
 	IsCustomization.is_customization = true
 
 # Chamado a cada quadro. 'delta' é o tempo decorrido desde o quadro anterior.

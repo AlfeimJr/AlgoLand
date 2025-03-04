@@ -16,11 +16,9 @@ func set_item_data(data: Dictionary) -> void:
 	$ItemSelected/itemImage.texture = load(data["icon"])
 	$ItemDescription.text = data["description"]
 
-
 func _on_button_pressed() -> void:
 	var player = get_tree().get_root().get_node("cenario/Player")
 	if not player:
-		print("Player não encontrado!")
 		return
 
 	var price = current_item_data.get("price", 0)
@@ -28,24 +26,31 @@ func _on_button_pressed() -> void:
 		player.spend_coins(price)
 		var coins_label = coins.get_node("count") as Label
 		coins_label.text = str(player.coins)
-		# Aqui vem a lógica de aplicar as propriedades ao Player
-		# Se o item tiver 'defense', soma na defesa do Player
-		if current_item_data.has("defense"):
-			player._defense += current_item_data["defense"]
-			print("Defesa do Player agora é: ", player._defense)
-
-		# Se tiver 'damage', soma no ataque
-		if current_item_data.has("damage"):
-			player._attack_damage += current_item_data["damage"]
-			print("Dano do Player agora é: ", player._attack_damage)
-
-		# Se tiver 'max_hp', aumenta a vida máxima
-		if current_item_data.has("max_hp"):
-			player.max_hp += current_item_data["max_hp"]
-			player.current_hp += current_item_data["max_hp"]  # se quiser também curar
-			player.update_hp_bar()
-			print("HP máximo do Player agora é: ", player.max_hp)
-
 		
+		# Se o item possui a chave "effects", aplica cada efeito
+		if current_item_data.has("effects"):
+			var effects = current_item_data["effects"]
+			for key in effects.keys():
+				var value = effects[key]
+				match key:
+					"strength":
+						player.stats.strength += value
+						print("Força do Player agora é: ", player.stats.strength)
+					"defense":
+						player.stats.defense += value
+						print("Defesa do Player agora é: ", player.stats.defense)
+					"max_hp":
+						player.stats.max_hp += value
+						player.current_hp += value  # Se quiser curar também
+						player.update_hp_bar()
+						print("HP máximo do Player agora é: ", player.stats.max_hp)
+					_:
+						print("Efeito desconhecido: ", key)
+			# Recalcula os atributos derivados (como attack_damage)
+			player.stats.calculate_derived_stats()
+			if player.using_sword:
+				player.stats.move_speed += 50
+		# Adiciona o item comprado à lista de itens adquiridos
+		player.purchased_items.append(current_item_data)
 	else:
 		print("Moedas insuficientes para comprar este item!")

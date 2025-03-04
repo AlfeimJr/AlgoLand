@@ -29,11 +29,6 @@ position = Vector2(-10, 14)
 z_index = 1
 position = Vector2(582, 223)
 collision_mask = 255
-_friction = 0.3
-_acceleration = 0.3
-_knockback_strength = 200.0
-_knockback_decay = 0.1
-isDead = false
 
 [node name="Merchant" parent="." instance=ExtResource("6_vktsx")]
 z_index = 2
