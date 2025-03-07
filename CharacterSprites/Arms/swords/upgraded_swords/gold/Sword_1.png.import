@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4wola1keifmf"
-path="res://.godot/imported/slash_1.png-7a43b0d5ac0bb31b034c02669049743c.ctex"
+uid="uid://cm0w5o7p5m5q3"
+path="res://.godot/imported/Sword_1.png-584b7a40df725ad1ebdf968b418afdc7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://CharacterSprites/Arms/chields/attack/slash_1.png"
-dest_files=["res://.godot/imported/slash_1.png-7a43b0d5ac0bb31b034c02669049743c.ctex"]
+source_file="res://CharacterSprites/Arms/swords/upgraded_swords/gold/Sword_1.png"
+dest_files=["res://.godot/imported/Sword_1.png-584b7a40df725ad1ebdf968b418afdc7.ctex"]
 
 [params]
 

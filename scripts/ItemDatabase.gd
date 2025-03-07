@@ -34,7 +34,7 @@ var items: Dictionary = {
 		"price": 2000,
 		"description": "Gain 15 defense against physical damage",
 		"effects": {
-			"intelligence": 15
+			"vitality": 15
 		}
 	}
 }
