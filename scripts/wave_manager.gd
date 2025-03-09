@@ -34,6 +34,7 @@ func _ready() -> void:
 	spawn_area = get_node(spawn_area_path)
 
 func start_wave() -> void:
+	waves_stopped = false
 	if player.isDead:
 		current_wave = 1
 		player.isDead = false

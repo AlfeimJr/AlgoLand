@@ -15,28 +15,42 @@ signal menu_closed
 @onready var weapons_option_button = $Container/Buttons/weaponsOption
 @onready var build_button = $Container/Buttons/Build
 
+# Sprite da espada no menu
+@onready var merchant_arm_sprite: Sprite2D = $Container/Update/Arm
+
+# Label onde mostraremos o próximo nível
+@onready var level_label: Label = $Container/Update/Level
+
 var item_scene = preload("res://cenas/item.tscn")
 
 func _ready() -> void:
-	
 	update_coins_display()
 	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
 	if wave_manager and wave_manager.is_wave_running:
 		queue_free()
 		return
-	if start_wave_button:
+	
+	if start_wave_button and not start_wave_button.is_connected("pressed", Callable(self, "_on_start_wave_pressed")):
 		start_wave_button.disabled = true
 		start_wave_button.connect("pressed", Callable(self, "_on_start_wave_pressed"))
-	if weapons_option_button:
+
+	if weapons_option_button and not weapons_option_button.is_connected("pressed", Callable(self, "_on_weapons_pressed")):
 		weapons_option_button.connect("pressed", Callable(self, "_on_weapons_pressed"))
-	if $Container/Weapons/Sword:
-		$Container/Weapons/Sword.connect("pressed", Callable(self, "_on_sword_pressed"))
-	if build_button:
+
+	if has_node("Container/Weapons/Sword"):
+		var sword_button = $Container/Weapons/Sword
+		if sword_button and not sword_button.is_connected("pressed", Callable(self, "_on_sword_pressed")):
+			sword_button.connect("pressed", Callable(self, "_on_sword_pressed"))
+
+	if build_button and not build_button.is_connected("pressed", Callable(self, "_on_build_pressed")):
 		build_button.connect("pressed", Callable(self, "_on_build_pressed"))
-	if back_button:
+
+	if back_button and not back_button.is_connected("pressed", Callable(self, "_on_back_button_pressed")):
 		back_button.connect("pressed", Callable(self, "_on_back_button_pressed"))
-	if leave_button:
+
+	if leave_button and not leave_button.is_connected("pressed", Callable(self, "_on_leave_pressed")):
 		leave_button.connect("pressed", Callable(self, "_on_leave_pressed"))
+
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player and player.using_sword:
 		start_wave_button.disabled = false
@@ -45,8 +59,13 @@ func _process(delta: float) -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	var merchant = get_tree().get_root().get_node("cenario/Merchant")
 	if player and merchant:
+		# Fecha o menu se ficar longe
 		if player.global_position.distance_to(merchant.global_position) > detection_distance:
 			on_close_button_pressed()
+
+		# Copia a textura da espada para o Arm do menu
+		if player.sword_sprite and player.sword_sprite.texture:
+			merchant_arm_sprite.texture = player.sword_sprite.texture
 
 func _on_button_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
@@ -54,9 +73,9 @@ func _on_button_pressed() -> void:
 		return
 	player.equip_sword_and_shield()
 	if player.using_sword:
-		$Container/Weapons/Arm/Button/Text.text = 'UNEQUIP'
+		$Container/Weapons/Arm/Button/Text.text = "UNEQUIP"
 	else:
-		$Container/Weapons/Arm/Button/Text.text = 'EQUIP'
+		$Container/Weapons/Arm/Button/Text.text = "EQUIP"
 	if start_wave_button:
 		start_wave_button.disabled = not player.using_sword
 
@@ -108,6 +127,7 @@ func _on_back_button_pressed() -> void:
 	items_container.visible = false
 	items_spec.visible = false
 	coins_container.visible = false
+	$Container/Update.visible = false
 
 func update_coins_display() -> void:
 	var coins_label = coins_container.get_node("count")
@@ -117,3 +137,29 @@ func update_coins_display() -> void:
 func _on_leave_pressed() -> void:
 	emit_signal("menu_closed")
 	queue_free()
+
+func _on_uptade_click_pressed() -> void:
+	# Diz ao Player para iniciar o smithing
+	var player = get_tree().get_current_scene().get_node("Player")
+	if player:
+		player.start_smithing()
+	
+	# Fecha o menu
+	queue_free()
+
+func _on_update_pressed() -> void:
+	# Quando o jogador clica no botão "Update", mostramos a tela
+	$Container/Update.visible = true
+	main_menu.visible = false
+	back_button.visible = true
+	weapons_list.visible = false
+	build_list.visible = false
+	items_container.visible = false
+	items_spec.visible = false
+	coins_container.visible = false
+
+	# Mostramos qual será o próximo nível
+	var player = get_tree().get_current_scene().get_node("Player")
+	if player:
+		# Exemplo: "UPGRADE LV 2"
+		level_label.text = "UPGRADE LV " + str(player.sword_level + 1)

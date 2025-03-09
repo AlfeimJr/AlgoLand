@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=17 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
@@ -7,7 +7,10 @@
 [ext_resource type="Texture2D" uid="uid://bmro5omyyrlef" path="res://images/one_0108_v01.png" id="5_h533h"]
 [ext_resource type="Texture2D" uid="uid://4kypf3twlls3" path="res://UI/sem org/3 Icons/Icons_14.png" id="6_h2o4l"]
 [ext_resource type="PackedScene" uid="uid://gigb868grykh" path="res://cenas/item_spec.tscn" id="7_1qnbk"]
+[ext_resource type="Texture2D" uid="uid://c5r3s8tesyi7i" path="res://UI/sem org/2 Bars/Button_on.png" id="8_c0l5p"]
+[ext_resource type="Texture2D" uid="uid://cp23jmph3me7" path="res://CharacterSprites/Arms/swords/Sword_1.png" id="8_dr33g"]
 [ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_n1i8u"]
+[ext_resource type="Texture2D" uid="uid://c82gjhqvac6y2" path="res://UI/craftpix-679811-materials-for-crafting-pixel-art-icons/PNG/Background/Icon5.png" id="10_vlkxo"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_irua0"]
 font = ExtResource("2_bsqvj")
@@ -19,6 +22,15 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkw6o"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_qlgqn"]
+font = ExtResource("2_bsqvj")
+font_size = 24
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_lw6mx"]
+font = ExtResource("2_bsqvj")
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="MenuMerchant" type="CanvasLayer"]
 script = ExtResource("1_v7em4")
@@ -84,7 +96,7 @@ layout_mode = 0
 offset_left = 110.0
 offset_top = 46.0
 offset_right = 216.0
-offset_bottom = 77.0
+offset_bottom = 72.0
 theme_override_fonts/font = ExtResource("2_bsqvj")
 theme_override_styles/focus = SubResource("StyleBoxFlat_tkw6o")
 text = "START WAVE"
@@ -93,9 +105,9 @@ flat = true
 [node name="weaponsOption" type="Button" parent="Container/Buttons"]
 layout_mode = 0
 offset_left = 110.0
-offset_top = 77.0
+offset_top = 69.0
 offset_right = 216.0
-offset_bottom = 108.0
+offset_bottom = 95.0
 theme_override_fonts/font = ExtResource("2_bsqvj")
 text = "WEAPONS
 "
@@ -104,9 +116,9 @@ flat = true
 [node name="Build" type="Button" parent="Container/Buttons"]
 layout_mode = 0
 offset_left = 110.0
-offset_top = 103.0
+offset_top = 94.0
 offset_right = 216.0
-offset_bottom = 134.0
+offset_bottom = 120.0
 theme_override_fonts/font = ExtResource("2_bsqvj")
 text = "BUILD
 "
@@ -115,11 +127,22 @@ flat = true
 [node name="Leave" type="Button" parent="Container/Buttons"]
 layout_mode = 0
 offset_left = 133.0
-offset_top = 130.0
+offset_top = 149.0
 offset_right = 196.0
-offset_bottom = 156.0
+offset_bottom = 175.0
 theme_override_fonts/font = ExtResource("2_bsqvj")
 text = "LEAVE
+"
+flat = true
+
+[node name="Update" type="Button" parent="Container/Buttons"]
+layout_mode = 0
+offset_left = 131.0
+offset_top = 122.0
+offset_right = 197.0
+offset_bottom = 148.0
+theme_override_fonts/font = ExtResource("2_bsqvj")
+text = "ANVIL
 "
 flat = true
 
@@ -148,7 +171,55 @@ offset_top = 177.0
 offset_right = 41.0
 offset_bottom = 217.0
 
+[node name="Update" type="Control" parent="Container"]
+visible = false
+anchors_preset = 0
+offset_right = 325.0
+offset_bottom = 206.0
+
+[node name="Background" type="Sprite2D" parent="Container/Update"]
+position = Vector2(161, 82)
+scale = Vector2(3.33333, 3.83333)
+texture = ExtResource("8_c0l5p")
+
+[node name="Arm" type="Sprite2D" parent="Container/Update"]
+position = Vector2(182, 96.7779)
+scale = Vector2(2.5, 1.80556)
+texture = ExtResource("8_dr33g")
+hframes = 8
+vframes = 8
+frame = 12
+
+[node name="UptadeClick" type="TextureButton" parent="Container/Update"]
+layout_mode = 0
+offset_left = 142.0
+offset_top = 110.0
+offset_right = 180.0
+offset_bottom = 142.0
+texture_normal = ExtResource("10_vlkxo")
+stretch_mode = 0
+
+[node name="Anvil" type="Label" parent="Container/Update"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 2.0
+offset_right = 326.0
+offset_bottom = 30.0
+text = "ANVIL"
+label_settings = SubResource("LabelSettings_qlgqn")
+horizontal_alignment = 1
+
+[node name="Level" type="Label" parent="Container/Update"]
+layout_mode = 0
+offset_left = 107.0
+offset_top = 155.0
+offset_right = 218.0
+offset_bottom = 178.0
+text = "UPGRADE LV 2"
+label_settings = SubResource("LabelSettings_lw6mx")
+
 [node name="BackButton" type="Button" parent="Container"]
+visible = false
 layout_mode = 0
 offset_left = -2.0
 offset_top = -2.0
@@ -158,9 +229,11 @@ icon = ExtResource("6_h2o4l")
 flat = true
 expand_icon = true
 
-[connection signal="pressed" from="Container/Weapons/Arm/Button" to="." method="_on_band_2_on_pressed"]
 [connection signal="pressed" from="Container/Weapons/Arm/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Container/Weapons/Arm/Button" to="." method="_on_band_2_on_pressed"]
 [connection signal="pressed" from="Container/Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
 [connection signal="pressed" from="Container/Buttons/Build" to="." method="_on_build_pressed"]
 [connection signal="pressed" from="Container/Buttons/Leave" to="." method="_on_leave_pressed"]
+[connection signal="pressed" from="Container/Buttons/Update" to="." method="_on_update_pressed"]
+[connection signal="pressed" from="Container/Update/UptadeClick" to="." method="_on_uptade_click_pressed"]
 [connection signal="pressed" from="Container/BackButton" to="." method="_on_back_button_pressed"]

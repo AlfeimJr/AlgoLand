@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=3 uid="uid://y6c4hi6s1u75"]
+[gd_scene load_steps=86 format=3 uid="uid://y6c4hi6s1u75"]
 
 [ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/body_attack_sword.png" id="2_240al"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_byhnc"]
@@ -8,6 +8,11 @@
 [ext_resource type="Texture2D" uid="uid://b0wjcry5wd3g3" path="res://CharacterSprites/Arms/shields/attack/slash_1.png" id="4_itotg"]
 [ext_resource type="Texture2D" uid="uid://bsuewacssgjp5" path="res://CharacterSprites/Hair/Attack/slash_1_sword/hair (1).png" id="5_dhdeu"]
 [ext_resource type="Texture2D" uid="uid://mxo6i5b00rqu" path="res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(6).png" id="6_eyb2q"]
+[ext_resource type="Texture2D" uid="uid://eb5l3k8wo8r6" path="res://CharacterSprites/body_smithing/char_a_p4_0bas_humn_v00.png" id="8_wosc6"]
+[ext_resource type="Texture2D" uid="uid://clmrtv1b5reav" path="res://CharacterSprites/Outfit/outfit (5).png" id="9_g4yop"]
+[ext_resource type="Texture2D" uid="uid://bec6phxxxump4" path="res://CharacterSprites/body_smithing/hammer/char_a_p4_6tla_smth_v01.png" id="9_qshsm"]
+[ext_resource type="Texture2D" uid="uid://ned7w30mtbaj" path="res://CharacterSprites/body_smithing/Hair/hair (1).png" id="9_tc85l"]
+[ext_resource type="Texture2D" uid="uid://dhrbw3iux6qf2" path="res://CharacterSprites/body_smithing/Outfit/outfit (1).png" id="10_4q0f0"]
 
 [sub_resource type="Animation" id="Animation_qkuxn"]
 length = 0.001
@@ -490,6 +495,102 @@ tracks/39/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [7.0]
+}
+tracks/40/type = "value"
+tracks/40/imported = false
+tracks/40/enabled = true
+tracks/40/path = NodePath("Smithing/Body:frame")
+tracks/40/interp = 1
+tracks/40/loop_wrap = true
+tracks/40/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/41/type = "value"
+tracks/41/imported = false
+tracks/41/enabled = true
+tracks/41/path = NodePath("Smithing/Arm:frame")
+tracks/41/interp = 1
+tracks/41/loop_wrap = true
+tracks/41/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/42/type = "value"
+tracks/42/imported = false
+tracks/42/enabled = true
+tracks/42/path = NodePath("Smithing/Hair:frame")
+tracks/42/interp = 1
+tracks/42/loop_wrap = true
+tracks/42/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/43/type = "value"
+tracks/43/imported = false
+tracks/43/enabled = true
+tracks/43/path = NodePath("Smithing/Outfit:frame")
+tracks/43/interp = 1
+tracks/43/loop_wrap = true
+tracks/43/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/44/type = "value"
+tracks/44/imported = false
+tracks/44/enabled = true
+tracks/44/path = NodePath("Smithing/Hair:z_index")
+tracks/44/interp = 1
+tracks/44/loop_wrap = true
+tracks/44/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/45/type = "value"
+tracks/45/imported = false
+tracks/45/enabled = true
+tracks/45/path = NodePath("Smithing/Arm:z_index")
+tracks/45/interp = 1
+tracks/45/loop_wrap = true
+tracks/45/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/46/type = "value"
+tracks/46/imported = false
+tracks/46/enabled = true
+tracks/46/path = NodePath("Smithing/Body:z_index")
+tracks/46/interp = 1
+tracks/46/loop_wrap = true
+tracks/46/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/47/type = "value"
+tracks/47/imported = false
+tracks/47/enabled = true
+tracks/47/path = NodePath("Smithing/Outfit:z_index")
+tracks/47/interp = 1
+tracks/47/loop_wrap = true
+tracks/47/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
 }
 
 [sub_resource type="Animation" id="Animation_21cf8"]
@@ -1249,7 +1350,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [9]
+"values": [8]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -3435,6 +3536,131 @@ tracks/19/keys = {
 "update": 1,
 "values": [24.0, 24.0]
 }
+tracks/20/type = "value"
+tracks/20/imported = false
+tracks/20/enabled = true
+tracks/20/path = NodePath("BaseSprites/Hair:z_index")
+tracks/20/interp = 1
+tracks/20/loop_wrap = true
+tracks/20/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [2, 2, 2, 2]
+}
+tracks/21/type = "value"
+tracks/21/imported = false
+tracks/21/enabled = true
+tracks/21/path = NodePath("BaseSprites/Arm:z_index")
+tracks/21/interp = 1
+tracks/21/loop_wrap = true
+tracks/21/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [3, 3, 3, 3]
+}
+
+[sub_resource type="Animation" id="Animation_ta4i2"]
+resource_name = "smithing_left"
+length = 0.300003
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Smithing/Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2, 0.266667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Smithing/Arm:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2, 0.266667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Smithing/Hair:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2, 0.266667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Smithing/Outfit:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2, 0.266667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Smithing/Hair:z_index")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Smithing/Arm:z_index")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Smithing/Body:z_index")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Smithing/Outfit:z_index")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
 
 [sub_resource type="Animation" id="Animation_8gnlw"]
 resource_name = "sword_slash_1_down"
@@ -4576,109 +4802,109 @@ tracks/12/keys = {
 "values": [4, 5, 6, 7]
 }
 
-[sub_resource type="Animation" id="Animation_a3u44"]
-resource_name = "sword_slash_2_up"
+[sub_resource type="Animation" id="Animation_y1k18"]
+resource_name = "sword_slash_2_left"
 length = 0.233337
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("AttackSwordAnimation/SwordChieldBody:frame")
+tracks/0/path = NodePath("AttackSwordAnimation/Outfit:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [12, 13, 14, 15]
+"values": [28, 29, 30, 31]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("AttackSwordAnimation/SwordArm:frame")
+tracks/1/path = NodePath("AttackSwordAnimation/SwordChieldBody:frame")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [12, 13, 14, 15]
+"values": [28, 29, 30, 31]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("AttackSwordAnimation/Chield:frame")
+tracks/2/path = NodePath("AttackSwordAnimation/SwordArm:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [12, 13, 14, 15]
+"values": [28, 29, 30, 31]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("AttackSwordAnimation/Hair:frame")
+tracks/3/path = NodePath("AttackSwordAnimation/Chield:frame")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [12, 13, 14, 15]
+"values": [28, 29, 30, 31]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("AttackSwordAnimation/Outfit:frame")
+tracks/4/path = NodePath("AttackSwordAnimation/Hair:frame")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [12, 13, 14, 15]
+"values": [28, 29, 30, 31]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("AttackSwordAnimation/Chield:z_index")
+tracks/5/path = NodePath("AttackSwordAnimation/Hair:z_index")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0, 0.133333),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [3, 4]
+"values": [4]
 }
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("AttackSwordAnimation/SwordArm:z_index")
+tracks/6/path = NodePath("AttackSwordAnimation/SwordChieldBody:z_index")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [1]
+"values": [3]
 }
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("AttackSwordAnimation/Hair:z_index")
+tracks/7/path = NodePath("AttackSwordAnimation/SwordArm:z_index")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
-"times": PackedFloat32Array(0, 0.133333),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [2, 3]
+"values": [1]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("AttackSwordAnimation/SwordChieldBody:z_index")
+tracks/8/path = NodePath("AttackSwordAnimation/Chield:z_index")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
@@ -4697,7 +4923,7 @@ tracks/9/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [2]
+"values": [5]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
@@ -4706,10 +4932,10 @@ tracks/10/path = NodePath("../AttackArea/CollisionShape2D:shape:size")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(8, 10.5416), Vector2(48, 10.5416), Vector2(12, 10.5416)]
+"values": [Vector2(12, 10.5416), Vector2(12, 40), Vector2(12, 40), Vector2(12, 24)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
@@ -4730,10 +4956,10 @@ tracks/12/path = NodePath("../AttackArea/CollisionShape2D:position")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(3, -3), Vector2(-1, -24), Vector2(-3, -3)]
+"values": [Vector2(-3, -3), Vector2(-22, 1), Vector2(-22, 1), Vector2(7, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_noixg"]
@@ -4896,109 +5122,109 @@ tracks/12/keys = {
 "values": [Vector2(-1, -3), Vector2(23, 1), Vector2(23, 1), Vector2(-1, -5)]
 }
 
-[sub_resource type="Animation" id="Animation_y1k18"]
-resource_name = "sword_slash_2_left"
+[sub_resource type="Animation" id="Animation_a3u44"]
+resource_name = "sword_slash_2_up"
 length = 0.233337
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("AttackSwordAnimation/Outfit:frame")
+tracks/0/path = NodePath("AttackSwordAnimation/SwordChieldBody:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [28, 29, 30, 31]
+"values": [12, 13, 14, 15]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("AttackSwordAnimation/SwordChieldBody:frame")
+tracks/1/path = NodePath("AttackSwordAnimation/SwordArm:frame")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [28, 29, 30, 31]
+"values": [12, 13, 14, 15]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("AttackSwordAnimation/SwordArm:frame")
+tracks/2/path = NodePath("AttackSwordAnimation/Chield:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [28, 29, 30, 31]
+"values": [12, 13, 14, 15]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("AttackSwordAnimation/Chield:frame")
+tracks/3/path = NodePath("AttackSwordAnimation/Hair:frame")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [28, 29, 30, 31]
+"values": [12, 13, 14, 15]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("AttackSwordAnimation/Hair:frame")
+tracks/4/path = NodePath("AttackSwordAnimation/Outfit:frame")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [28, 29, 30, 31]
+"values": [12, 13, 14, 15]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("AttackSwordAnimation/Hair:z_index")
+tracks/5/path = NodePath("AttackSwordAnimation/Chield:z_index")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.133333),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [4]
+"values": [3, 4]
 }
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("AttackSwordAnimation/SwordChieldBody:z_index")
+tracks/6/path = NodePath("AttackSwordAnimation/SwordArm:z_index")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [3]
+"values": [1]
 }
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("AttackSwordAnimation/SwordArm:z_index")
+tracks/7/path = NodePath("AttackSwordAnimation/Hair:z_index")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.133333),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [1]
+"values": [2, 3]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("AttackSwordAnimation/Chield:z_index")
+tracks/8/path = NodePath("AttackSwordAnimation/SwordChieldBody:z_index")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
@@ -5017,7 +5243,7 @@ tracks/9/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [5]
+"values": [2]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
@@ -5026,10 +5252,10 @@ tracks/10/path = NodePath("../AttackArea/CollisionShape2D:shape:size")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.0666667, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(12, 10.5416), Vector2(12, 40), Vector2(12, 40), Vector2(12, 24)]
+"values": [Vector2(8, 10.5416), Vector2(48, 10.5416), Vector2(12, 10.5416)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
@@ -5050,10 +5276,10 @@ tracks/12/path = NodePath("../AttackArea/CollisionShape2D:position")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.0666667, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(-3, -3), Vector2(-22, 1), Vector2(-22, 1), Vector2(7, 1)]
+"values": [Vector2(3, -3), Vector2(-1, -24), Vector2(-3, -3)]
 }
 
 [sub_resource type="Animation" id="Animation_ee0xw"]
@@ -5216,8 +5442,8 @@ tracks/12/keys = {
 "values": [Vector2(3, -3), Vector2(6, 24), Vector2(-3, -3)]
 }
 
-[sub_resource type="Animation" id="Animation_i6qox"]
-resource_name = "sword_slash_3_up"
+[sub_resource type="Animation" id="Animation_ueqtj"]
+resource_name = "sword_slash_3_left"
 length = 0.233337
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -5229,7 +5455,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [40, 41, 42, 43]
+"values": [56, 57, 58, 59]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -5241,7 +5467,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [40, 41, 42, 43]
+"values": [56, 57, 58, 59]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -5253,7 +5479,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [40, 41, 42, 43]
+"values": [56, 57, 58, 59]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -5265,7 +5491,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [40, 41, 42, 43]
+"values": [56, 57, 58, 59]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -5277,7 +5503,7 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [40, 41, 42, 43]
+"values": [56, 57, 58, 59]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
@@ -5373,7 +5599,7 @@ tracks/12/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(3, -3), Vector2(-6, -25), Vector2(-6, -25), Vector2(-3, -3)]
+"values": [Vector2(3, -3), Vector2(-23, 1), Vector2(-1, -3), Vector2(-3, -3)]
 }
 
 [sub_resource type="Animation" id="Animation_mr0mo"]
@@ -5536,8 +5762,8 @@ tracks/12/keys = {
 "values": [Vector2(3, -3), Vector2(23, 1), Vector2(-1, -3), Vector2(-3, -3)]
 }
 
-[sub_resource type="Animation" id="Animation_ueqtj"]
-resource_name = "sword_slash_3_left"
+[sub_resource type="Animation" id="Animation_i6qox"]
+resource_name = "sword_slash_3_up"
 length = 0.233337
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -5549,7 +5775,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [56, 57, 58, 59]
+"values": [40, 41, 42, 43]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -5561,7 +5787,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [56, 57, 58, 59]
+"values": [40, 41, 42, 43]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -5573,7 +5799,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [56, 57, 58, 59]
+"values": [40, 41, 42, 43]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -5585,7 +5811,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [56, 57, 58, 59]
+"values": [40, 41, 42, 43]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -5597,7 +5823,7 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [56, 57, 58, 59]
+"values": [40, 41, 42, 43]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
@@ -5693,7 +5919,7 @@ tracks/12/keys = {
 "times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(3, -3), Vector2(-23, 1), Vector2(-1, -3), Vector2(-3, -3)]
+"values": [Vector2(3, -3), Vector2(-6, -25), Vector2(-6, -25), Vector2(-3, -3)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s34bx"]
@@ -5711,6 +5937,7 @@ _data = {
 "running_left": SubResource("Animation_sjjwe"),
 "running_right": SubResource("Animation_w4xl6"),
 "running_up": SubResource("Animation_yda7s"),
+"smithing_left": SubResource("Animation_ta4i2"),
 "sword_slash_1_down": SubResource("Animation_8gnlw"),
 "sword_slash_1_left": SubResource("Animation_bwqxr"),
 "sword_slash_1_right": SubResource("Animation_tdohp"),
@@ -5908,6 +6135,14 @@ blend_point_3/node = SubResource("AnimationNodeAnimation_0h51g")
 blend_point_3/pos = Vector2(-1, 0)
 blend_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8fo5y"]
+animation = &"smithing_left"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_581qb"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_8fo5y")
+blend_point_0/pos = Vector2(1, 0)
+blend_mode = 1
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_3l7eq"]
 states/AttackSwordSlash_1/node = SubResource("AnimationNodeBlendSpace2D_bms6g")
 states/AttackSwordSlash_1/position = Vector2(1053, 69)
@@ -5927,6 +6162,8 @@ states/run/node = SubResource("AnimationNodeBlendSpace2D_b7qor")
 states/run/position = Vector2(395, 100)
 states/running/node = SubResource("AnimationNodeBlendSpace2D_s6snu")
 states/running/position = Vector2(505, 100)
+states/smithing/node = SubResource("AnimationNodeBlendSpace2D_581qb")
+states/smithing/position = Vector2(423.485, 171)
 graph_offset = Vector2(-124.515, 0)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5o2sk"]
@@ -6001,6 +6238,7 @@ vframes = 8
 [node name="Outfit" type="Sprite2D" parent="CompositeSprites/BaseSprites"]
 z_index = 4
 texture_filter = 1
+texture = ExtResource("9_g4yop")
 hframes = 8
 vframes = 8
 
@@ -6041,6 +6279,34 @@ parameters/SwordChieldMove/blend_position = Vector2(-0.000794291, 0.477876)
 parameters/idle/blend_position = Vector2(-0.00160259, 0.0973451)
 parameters/run/blend_position = Vector2(0, 0)
 parameters/running/blend_position = Vector2(-0.000794291, 0.221239)
+parameters/smithing/blend_position = Vector2(0.0929309, -0.0106384)
+
+[node name="Smithing" type="Node2D" parent="CompositeSprites"]
+visible = false
+
+[node name="Body" type="Sprite2D" parent="CompositeSprites/Smithing"]
+z_index = 1
+texture = ExtResource("8_wosc6")
+hframes = 8
+vframes = 8
+
+[node name="Hair" type="Sprite2D" parent="CompositeSprites/Smithing"]
+z_index = 2
+texture = ExtResource("9_tc85l")
+hframes = 8
+vframes = 8
+
+[node name="Outfit" type="Sprite2D" parent="CompositeSprites/Smithing"]
+z_index = 2
+texture = ExtResource("10_4q0f0")
+hframes = 8
+vframes = 8
+
+[node name="Arm" type="Sprite2D" parent="CompositeSprites/Smithing"]
+z_index = 4
+texture = ExtResource("9_qshsm")
+hframes = 8
+vframes = 8
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_n2plp")

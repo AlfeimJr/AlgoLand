@@ -9,16 +9,30 @@ extends CharacterBody2D
 @export var _knockback_decay: float = 0.1
 var movement_enabled: bool = true
 
+# Variável que controla o nível da espada
+@export var sword_level: int = 1
+
 @export_category("Objects")
 @export var _animation_tree: AnimationTree = null
-@export var _timer: Timer = null  # Timer usado para controlar a duração de cada golpe
+@export var _timer: Timer = null  # Timer para controlar a duração de cada golpe
+signal smithing_finished
 
+# ---------------------------
+# BaseSprites
+# ---------------------------
 @onready var bodySprite = $CompositeSprites/BaseSprites/Body
 @onready var hairSprite = $CompositeSprites/BaseSprites/Hair
 @onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
 @onready var sword_sprite = $CompositeSprites/BaseSprites/Arm
 @onready var shield_sprite = $CompositeSprites/BaseSprites/Child
 
+# Arrays exclusivos do Smithing
+var smithing_hair_array: Array[Texture2D] = []
+var smithing_outfit_array: Array[Texture2D] = []
+
+# ---------------------------
+# AttackSwordAnimation
+# ---------------------------
 @onready var attackSwordChieldBody = $CompositeSprites/AttackSwordAnimation/SwordChieldBody
 @onready var attackSwordArm = $CompositeSprites/AttackSwordAnimation/SwordArm
 @onready var attackChield = $CompositeSprites/AttackSwordAnimation/Chield
@@ -44,7 +58,7 @@ var purchased_items: Array[Dictionary] = []
 var curr_hair: int = 0
 var curr_outfit: int = 0
 var _state_machine: Object
-
+var arms_status = preload("res://scripts/Arms_status.gd").new()
 var _knockback: Vector2 = Vector2.ZERO
 var knockback_timer: float = 0.0
 
@@ -64,22 +78,27 @@ var invul_timer: float = 0.0
 @onready var hp_bar_empty = $"/root/cenario/UI/HealthbarEmpty"
 
 # ---------------------------
-# VARIÁVEIS PARA COMBO
+# COMBO
 # ---------------------------
 var _is_attacking: bool = false
-var _combo_phase: int = 0  # 0=nenhum golpe, 1=1º golpe, 2=2º golpe, 3=3º golpe
+var _combo_phase: int = 0
 var _can_chain_combo: bool = false
-var _max_combo: int = 3  # Ajustado para 3 golpes
-
+var _max_combo: int = 3
 var _slash_1_time: float = 0.3
 var _slash_2_time: float = 0.3
-var _slash_3_time: float = 0.3  # Terceiro golpe
-
-# Timer adicional para “janela de combo”: se o jogador não apertar a tempo, o combo reseta
+var _slash_3_time: float = 0.3
 var _combo_window_timer: Timer
 
+# ---------------------------
+# SMITHING
+# ---------------------------
+@onready var smithing_node: Node2D = $CompositeSprites/Smithing
+@onready var smithing_body_sprite: Sprite2D = $CompositeSprites/Smithing/Body
+@onready var smithing_hair_sprite: Sprite2D = $CompositeSprites/Smithing/Hair
+@onready var smithing_outfit_sprite: Sprite2D = $CompositeSprites/Smithing/Outfit
+
 func _ready() -> void:
-	stats.calculate_derived_stats()
+	stats.calculate_derived_stats(using_sword)
 	current_hp = stats.max_hp
 
 	if _timer:
@@ -90,33 +109,36 @@ func _ready() -> void:
 	add_child(_combo_window_timer)
 	_combo_window_timer.connect("timeout", Callable(self, "_on_combo_window_timeout"))
 
-	# Ajusta sprites básicos
+	# Ajusta sprite básico do Body
 	bodySprite.texture = composite_sprites.body_spriteSheet[0]
-	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
-	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
-	attackSwordChieldBody.texture = load("res://CharacterSprites/Body_sword_chield/body_attack_sword.png")
 
-	# Carrega arrays de texturas de cabelo/outfit de ataque
+	# Carrega arrays de cabelo/outfit para ataques (base e attack)
 	for i in range(1, 28):
-		var path = "res://CharacterSprites/Hair/Attack/slash_1_sword/hair (" + str(i) + ").png"
-		var resource = load(path)
-		if resource:
-			hair_attack_array.append(resource)
+		var hair_path = "res://CharacterSprites/Hair/Attack/slash_1_sword/hair (%d).png" % i
+		var hair_resource = load(hair_path)
+		if hair_resource:
+			hair_attack_array.append(hair_resource)
 
 	for i in range(1, 8):
-		var outfit_path = "res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(" + str(i) + ").png"
+		var outfit_path = "res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(%d).png" % i
 		var outfit_resource = load(outfit_path)
 		if outfit_resource:
 			outfit_attack_array.append(outfit_resource)
 
-	if hair_attack_array.size() > 0:
+	# Ajusta texturas iniciais
+	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
+	attackSwordChieldBody.texture = load("res://CharacterSprites/Body_sword_chield/body_attack_sword.png")
+
+	if hair_attack_array.size() > 0 and curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-	if outfit_attack_array.size() > 0:
+	if outfit_attack_array.size() > 0 and curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
 
 	if _animation_tree:
 		_state_machine = _animation_tree.get("parameters/playback")
 
+	# Configura a área de ataque
 	$AttackArea.collision_layer = 1 << 1
 	$AttackArea.collision_mask = 1 << 2
 	$AttackArea.monitoring = false
@@ -125,8 +147,12 @@ func _ready() -> void:
 	connect_signal_if_not_connected($AttackArea, "body_entered", "_on_attack_body_entered")
 	connect_signal_if_not_connected($AttackArea, "area_entered", "_on_attack_area_entered")
 
+	# Carrega dados do JSON para o base 
 	var loaded_data = load_from_json()
 	apply_loaded_data(loaded_data)
+
+	# Oculta smithing no início
+	smithing_node.visible = false
 
 	_set_sprites_visible(false)
 	update_coins_label()
@@ -159,7 +185,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_animate()
 
-	# Checagem de colisão com inimigos
+	# Checa colisões com inimigos
 	for i in range(get_slide_collision_count()):
 		var collision = get_slide_collision(i)
 		var collider = collision.get_collider()
@@ -201,7 +227,7 @@ func _move(delta: float) -> void:
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 
 # ---------------------------
-# LÓGICA DE COMBO
+# COMBO
 # ---------------------------
 func _attack_combo_logic() -> void:
 	if not using_sword:
@@ -209,17 +235,12 @@ func _attack_combo_logic() -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		if _combo_phase == 0 and not _is_attacking:
-			# 1º golpe
 			_combo_phase = 1
 			start_attack_slash("AttackSwordSlash_1", _slash_1_time)
-			
 		elif _combo_phase == 1 and _can_chain_combo:
-			# 2º golpe
 			_combo_phase = 2
 			start_attack_slash("AttackSwordSlash_3", _slash_2_time)
-
 		elif _combo_phase == 2 and _can_chain_combo:
-			# 3º golpe
 			_combo_phase = 3
 			start_attack_slash("AttackSwordSlash_2", _slash_3_time)
 
@@ -233,7 +254,6 @@ func start_attack_slash(anim_name: String, slash_time: float) -> void:
 	_state_machine.travel(anim_name)
 
 	_timer.start(slash_time)
-
 	_can_chain_combo = true
 
 func _on_attack_timer_timeout() -> void:
@@ -242,22 +262,19 @@ func _on_attack_timer_timeout() -> void:
 	$AttackArea.monitorable = false
 	_set_sprites_visible(false)
 
-	# Se chegamos no 2º golpe ou no 3º golpe, resetar
-	if _combo_phase == 2 or _combo_phase == 3:
+	if _combo_phase in [2, 3]:
 		_combo_phase = 0
 		_can_chain_combo = false
 	else:
-		# Se foi só o 1º golpe, esperamos a janela
 		_combo_window_timer.start(0.2)
 
 func _on_combo_window_timeout() -> void:
-	# Se o jogador não apertar “attack” de novo a tempo, resetamos
 	if _combo_phase == 1:
 		_combo_phase = 0
 	_can_chain_combo = false
 
 # ---------------------------
-# Animação geral
+# Animação
 # ---------------------------
 func _animate() -> void:
 	if _is_attacking:
@@ -304,6 +321,10 @@ func _on_change_hair_pressed() -> void:
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
 
+	# Smithing hair
+	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
+		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+
 func _on_change_hair_back_pressed() -> void:
 	curr_hair = (curr_hair - 1) % composite_sprites.hair_spriteSheet.size()
 	if curr_hair < 0:
@@ -312,11 +333,17 @@ func _on_change_hair_back_pressed() -> void:
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
 
+	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
+		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+
 func _on_change_outfit_pressed() -> void:
 	curr_outfit = (curr_outfit + 1) % composite_sprites.outfit_spriteSheet.size()
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
+
+	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
+		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
 func _on_change_outfit_back_pressed() -> void:
 	curr_outfit = (curr_outfit - 1) % composite_sprites.outfit_spriteSheet.size()
@@ -325,6 +352,9 @@ func _on_change_outfit_back_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
+
+	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
+		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
 func save_customization():
 	emit_signal("customization_finished", curr_hair, curr_outfit, nickname)
@@ -352,10 +382,14 @@ func equip_sword_and_shield() -> void:
 		unequip_sword_and_shield()
 		return
 	using_sword = true
-	sword_sprite.texture = load("res://CharacterSprites/Arms/swords/Sword_1.png")
+	
+	# Carrega a espada de acordo com o nível
+	update_sword_textures()
+
+	# Se o escudo não muda, pode continuar fixo:
 	shield_sprite.texture = load("res://CharacterSprites/Arms/shields/shield_1.png")
-	attackSwordArm.texture = load("res://CharacterSprites/Arms/swords/Attack/slash_1.png")
 	attackChield.texture = load("res://CharacterSprites/Arms/shields/attack/slash_1.png")
+
 	sword_sprite.visible = true
 	shield_sprite.visible = true
 	stats.move_speed += 50
@@ -364,8 +398,8 @@ func unequip_sword_and_shield() -> void:
 	using_sword = false
 	sword_sprite.visible = false
 	shield_sprite.visible = false
-	stats.move_speed -= 50
-
+	stats.calculate_derived_stats(using_sword)
+	
 # ---------------------------
 # COMPRA DE ITENS
 # ---------------------------
@@ -396,7 +430,7 @@ func apply_item_effects(item_data: Dictionary) -> void:
 				stats.lifesteal += effect_value
 			_:
 				pass
-	stats.calculate_derived_stats()
+	stats.calculate_derived_stats(using_sword)
 
 # ---------------------------
 # DANO E MORTE
@@ -423,7 +457,7 @@ func die() -> void:
 	wave_manager.stop_waves()
 	current_hp = stats.max_hp
 	update_hp_bar()
-	GameData.coins = 1000
+	GameData.coins = 0
 	update_coins_label()
 
 func apply_knockback(force: Vector2) -> void:
@@ -436,7 +470,7 @@ func apply_knockback(force: Vector2) -> void:
 		await get_tree().create_timer(0.1).timeout
 
 # ---------------------------
-# CARREGAR/SALVAR CONFIG
+# CARREGAR/SALVAR
 # ---------------------------
 func load_from_json() -> Dictionary:
 	var documents_dir = OS.get_user_data_dir()
@@ -467,3 +501,130 @@ func apply_loaded_data(data: Dictionary):
 
 	if data.has("nickname"):
 		nickname = data["nickname"]
+
+	if data.has("sword_level"):
+		sword_level = data["sword_level"]
+		update_sword_textures()
+		var new_strength = arms_status.get_strength_for_level(sword_level)
+		stats.strength = new_strength
+		stats.calculate_derived_stats(using_sword)
+
+	# Atualize também se a espada está equipada
+	if data.has("using_sword"):
+		using_sword = data["using_sword"]
+		# Se estiver equipada, mantenha a animação adequada
+		if using_sword:
+			# Você pode definir o estado de animação que desejar aqui,
+			# por exemplo, "running" se o player estiver em movimento
+			_state_machine.travel("running")
+
+# ---------------------------
+# FUNÇÕES ESPECÍFICAS PARA SMITHING
+# ---------------------------
+func load_smithing_textures() -> void:
+	# Se já carregamos antes, não precisa recarregar
+	if smithing_hair_array.size() > 0:
+		return
+
+	# Carregamos apenas quando “Update” for clicado
+	for i in range(1, 28):
+		var hair_path = "res://CharacterSprites/body_smithing/Hair/hair (%d).png" % i
+		var hair_tex = load(hair_path)
+		if hair_tex:
+			smithing_hair_array.append(hair_tex)
+	
+	for i in range(1, 8):
+		var outfit_path = "res://CharacterSprites/body_smithing/Outfit/outfit (%d).png" % i
+		var outfit_tex = load(outfit_path)
+		if outfit_tex:
+			smithing_outfit_array.append(outfit_tex)
+
+func apply_smithing_data() -> void:
+	# Com base em curr_hair / curr_outfit, definimos smithing hair/outfit
+	if curr_hair < smithing_hair_array.size():
+		smithing_hair_sprite.texture = smithing_hair_array[curr_hair]
+	if curr_outfit < smithing_outfit_array.size():
+		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
+
+func start_smithing() -> void:
+	# 1. Carrega texturas de smithing
+	load_smithing_textures()
+
+	# 2. (Opcional) Carrega novamente do JSON
+	var loaded_data = load_from_json()
+	if loaded_data:
+		if loaded_data.has("curr_hair"):
+			curr_hair = loaded_data["curr_hair"]
+		if loaded_data.has("curr_outfit"):
+			curr_outfit = loaded_data["curr_outfit"]
+
+	# 3. Aplica a smithing_data
+	apply_smithing_data()
+
+	# 4. Desabilita o movimento
+	movement_enabled = false
+
+	# 5. Mostra smithing, esconde base
+	smithing_node.visible = true
+	$CompositeSprites/BaseSprites.visible = false
+
+	# 6. Toca animação "smithing"
+	if _animation_tree and _state_machine:
+		_state_machine.travel("smithing")
+
+	# 7. Depois de 5s, finaliza
+	var smithing_timer = Timer.new()
+	smithing_timer.wait_time = 5.0
+	smithing_timer.one_shot = true
+	add_child(smithing_timer)
+	smithing_timer.connect("timeout", Callable(self, "_on_smithing_finished"))
+	smithing_timer.start()
+
+func _on_smithing_finished() -> void:
+	smithing_node.visible = false
+	$CompositeSprites/BaseSprites.visible = true
+
+	if _animation_tree and _state_machine:
+		_state_machine.travel("idle")
+
+	movement_enabled = true
+
+	# Sobe 1 nível de espada
+	sword_level += 1
+
+	# Atualiza a textura conforme o nível
+	update_sword_textures()
+
+	# --- AQUI: Atualiza a força da espada ---
+	var new_strength = arms_status.get_strength_for_level(sword_level)
+	stats.strength = new_strength
+	stats.calculate_derived_stats(using_sword)
+
+	emit_signal("smithing_finished")
+
+
+func update_sword_textures():
+	# Se nível 1, carregamos do local original (fora da pasta upgraded_swords)
+	if sword_level == 1:
+		var base_sword_path = "res://CharacterSprites/Arms/swords/Sword_1.png"
+		var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/slash_1.png"
+
+		if ResourceLoader.exists(base_sword_path):
+			sword_sprite.texture = load(base_sword_path)
+		if ResourceLoader.exists(attack_sword_path):
+			attackSwordArm.texture = load(attack_sword_path)
+	else:
+		
+		# Se nível > 1, carregamos da pasta upgraded_swords
+		var base_sword_path = "res://CharacterSprites/Arms/swords/swords_upgraded/%d/Sword_1.png" % sword_level
+		var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/swords_upgraded/slash_1/%d/slash_1.png" % sword_level
+		print("trocando textura da arma", base_sword_path)
+		if ResourceLoader.exists(base_sword_path):
+			sword_sprite.texture = load(base_sword_path)
+		if ResourceLoader.exists(attack_sword_path):
+			attackSwordArm.texture = load(attack_sword_path)
+
+	# Caso também tenha escudo “upgradável”, ajuste aqui
+	# var base_shield_path = ...
+	# var attack_shield_path = ...
+	# etc.
