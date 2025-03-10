@@ -4,6 +4,7 @@ var item_data: Dictionary
 signal item_clicked(item_data)
 func set_item_data(data: Dictionary) -> void:
 	item_data = data
+	print("data", data)
 	# Verifique se os nomes dos nós abaixo são EXATAMENTE os mesmos que aparecem na sua cena.
 	# Pela imagem: "TextureButton" > "TextureRect" e "Label"
 	$TextureButton/Label.text = str(data["price"])

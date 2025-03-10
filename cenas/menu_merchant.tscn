@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=22 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
@@ -10,7 +10,10 @@
 [ext_resource type="Texture2D" uid="uid://c5r3s8tesyi7i" path="res://UI/sem org/2 Bars/Button_on.png" id="8_c0l5p"]
 [ext_resource type="Texture2D" uid="uid://cp23jmph3me7" path="res://CharacterSprites/Arms/swords/Sword_1.png" id="8_dr33g"]
 [ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_n1i8u"]
+[ext_resource type="Texture2D" uid="uid://b3foyophbvfvd" path="res://UI/sem org/3 Icons/Icons_15.png" id="10_2bjjs"]
+[ext_resource type="Texture2D" uid="uid://bol1st4w0cb8q" path="res://CharacterSprites/Arms/shields/shield_1.png" id="10_2orem"]
 [ext_resource type="Texture2D" uid="uid://c82gjhqvac6y2" path="res://UI/craftpix-679811-materials-for-crafting-pixel-art-icons/PNG/Background/Icon5.png" id="10_vlkxo"]
+[ext_resource type="Texture2D" uid="uid://dw1qn7awwyrm4" path="res://CharacterSprites/Arms/shields/shields_upgraded/2/shield_1.png" id="11_uy8d1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_irua0"]
 font = ExtResource("2_bsqvj")
@@ -23,12 +26,19 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkw6o"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2hf14"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
 [sub_resource type="LabelSettings" id="LabelSettings_qlgqn"]
 font = ExtResource("2_bsqvj")
 font_size = 24
 shadow_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_lw6mx"]
+font = ExtResource("2_bsqvj")
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_36vvr"]
 font = ExtResource("2_bsqvj")
 shadow_color = Color(0, 0, 0, 1)
 
@@ -177,18 +187,72 @@ anchors_preset = 0
 offset_right = 325.0
 offset_bottom = 206.0
 
-[node name="Background" type="Sprite2D" parent="Container/Update"]
-position = Vector2(161, 82)
+[node name="ContainerArms" type="Panel" parent="Container/Update"]
+layout_mode = 0
+offset_top = 50.0
+offset_right = 326.0
+offset_bottom = 96.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2hf14")
+
+[node name="ActualArm" type="Sprite2D" parent="Container/Update/ContainerArms"]
+position = Vector2(109, 23)
 scale = Vector2(3.33333, 3.83333)
 texture = ExtResource("8_c0l5p")
 
-[node name="Arm" type="Sprite2D" parent="Container/Update"]
-position = Vector2(182, 96.7779)
-scale = Vector2(2.5, 1.80556)
+[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/ActualArm"]
+position = Vector2(6.30001, 3.85511)
+scale = Vector2(0.750001, 0.471016)
 texture = ExtResource("8_dr33g")
 hframes = 8
 vframes = 8
 frame = 12
+
+[node name="ActualShield" type="Sprite2D" parent="Container/Update/ContainerArms"]
+position = Vector2(61, 22)
+scale = Vector2(3.33333, 3.83333)
+texture = ExtResource("8_c0l5p")
+
+[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/ActualShield"]
+position = Vector2(-1.2, -1.56522)
+scale = Vector2(0.750001, 0.471016)
+texture = ExtResource("10_2orem")
+hframes = 8
+vframes = 8
+frame = 32
+
+[node name="NextLevelArm" type="Sprite2D" parent="Container/Update/ContainerArms"]
+position = Vector2(215, 23)
+scale = Vector2(3.33333, 3.83333)
+texture = ExtResource("8_c0l5p")
+
+[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/NextLevelArm"]
+position = Vector2(6.30001, 3.85511)
+scale = Vector2(0.750001, 0.471016)
+hframes = 8
+vframes = 8
+frame = 12
+
+[node name="NextLevelShield" type="Sprite2D" parent="Container/Update/ContainerArms"]
+position = Vector2(262, 23)
+scale = Vector2(3.33333, 3.83333)
+texture = ExtResource("8_c0l5p")
+
+[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/NextLevelShield"]
+position = Vector2(-0.599997, -2.08696)
+scale = Vector2(0.750001, 0.471016)
+texture = ExtResource("11_uy8d1")
+hframes = 8
+vframes = 8
+frame = 32
+
+[node name="TextureRect" type="TextureRect" parent="Container/Update/ContainerArms"]
+layout_mode = 0
+offset_left = 149.0
+offset_top = 14.0
+offset_right = 174.0
+offset_bottom = 33.0
+texture = ExtResource("10_2bjjs")
+expand_mode = 1
 
 [node name="UptadeClick" type="TextureButton" parent="Container/Update"]
 layout_mode = 0
@@ -211,12 +275,21 @@ horizontal_alignment = 1
 
 [node name="Level" type="Label" parent="Container/Update"]
 layout_mode = 0
-offset_left = 107.0
-offset_top = 155.0
-offset_right = 218.0
-offset_bottom = 178.0
+offset_top = 145.0
+offset_right = 326.0
+offset_bottom = 168.0
 text = "UPGRADE LV 2"
 label_settings = SubResource("LabelSettings_lw6mx")
+horizontal_alignment = 1
+
+[node name="Alert" type="Label" parent="Container/Update"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 163.0
+offset_right = 325.0
+offset_bottom = 186.0
+label_settings = SubResource("LabelSettings_36vvr")
+horizontal_alignment = 1
 
 [node name="BackButton" type="Button" parent="Container"]
 visible = false

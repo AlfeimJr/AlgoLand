@@ -11,17 +11,27 @@ signal menu_closed
 @onready var back_button = $Container/BackButton
 @onready var coins_container = $Container/Coins
 @onready var start_wave_button: Button = $Container/Buttons/StartWave
-@onready var leave_button = $Container/Buttons/Leave
-@onready var weapons_option_button = $Container/Buttons/weaponsOption
-@onready var build_button = $Container/Buttons/Build
+@onready var update_button: Button = $Container/Buttons/Update
+@onready var leave_button: Button = $Container/Buttons/Leave
+@onready var weapons_option_button: Button = $Container/Buttons/weaponsOption
+@onready var build_button: Button = $Container/Buttons/Build
 
-# Sprite da espada no menu
-@onready var merchant_arm_sprite: Sprite2D = $Container/Update/Arm
+# ContainerArms: exibe arma atual e próxima arma
+@onready var actual_arm_sprite: Sprite2D = $Container/Update/ContainerArms/ActualArm/Arm
+@onready var next_level_arm_sprite: Sprite2D = $Container/Update/ContainerArms/NextLevelArm/Arm
 
-# Label onde mostraremos o próximo nível
 @onready var level_label: Label = $Container/Update/Level
+@onready var alert_label: Label = $Container/Update/Alert
 
 var item_scene = preload("res://cenas/item.tscn")
+
+# Mantemos o dicionário de waves para mensagens
+var wave_thresholds = {
+	1: 4,   # libera lvl 2 na wave 4
+	2: 9,   # libera lvl 3 na wave 9
+	3: 20,  # libera lvl 4 na wave 20
+	4: 35   # libera lvl 5 na wave 35
+}
 
 func _ready() -> void:
 	update_coins_display()
@@ -50,22 +60,24 @@ func _ready() -> void:
 
 	if leave_button and not leave_button.is_connected("pressed", Callable(self, "_on_leave_pressed")):
 		leave_button.connect("pressed", Callable(self, "_on_leave_pressed"))
-
+	
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player and player.using_sword:
 		start_wave_button.disabled = false
-
+	if player:
+		if player.using_sword:
+			$Container/Weapons/Arm/Button/Text.text = "UNEQUIP"
+		else:
+			$Container/Weapons/Arm/Button/Text.text = "EQUIP"
 func _process(delta: float) -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
+	if player:
+		update_button.disabled = not player.using_sword
+		start_wave_button.disabled = not player.using_sword
 	var merchant = get_tree().get_root().get_node("cenario/Merchant")
 	if player and merchant:
-		# Fecha o menu se ficar longe
 		if player.global_position.distance_to(merchant.global_position) > detection_distance:
 			on_close_button_pressed()
-
-		# Copia a textura da espada para o Arm do menu
-		if player.sword_sprite and player.sword_sprite.texture:
-			merchant_arm_sprite.texture = player.sword_sprite.texture
 
 func _on_button_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
@@ -76,11 +88,13 @@ func _on_button_pressed() -> void:
 		$Container/Weapons/Arm/Button/Text.text = "UNEQUIP"
 	else:
 		$Container/Weapons/Arm/Button/Text.text = "EQUIP"
+
 	if start_wave_button:
 		start_wave_button.disabled = not player.using_sword
 
 func _on_start_wave_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
+	print("Start wave pressed, using_sword:", player.using_sword)
 	if player and not player.using_sword:
 		return
 	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
@@ -107,6 +121,7 @@ func _on_build_pressed() -> void:
 	for child in items_container.get_children():
 		child.queue_free()
 	update_coins_display()
+	# Aqui segue o carregamento dos itens; ajuste se necessário.
 	for key in ItemDatabase.items.keys():
 		var item_data = ItemDatabase.get_item_data(key)
 		if item_data.size() > 0:
@@ -138,17 +153,53 @@ func _on_leave_pressed() -> void:
 	emit_signal("menu_closed")
 	queue_free()
 
-func _on_uptade_click_pressed() -> void:
-	# Diz ao Player para iniciar o smithing
-	var player = get_tree().get_current_scene().get_node("Player")
-	if player:
-		player.start_smithing()
-	
-	# Fecha o menu
-	queue_free()
+### Funções de Upgrade (Smithing) usando arms_database
 
 func _on_update_pressed() -> void:
-	# Quando o jogador clica no botão "Update", mostramos a tela
+	var player = get_tree().get_current_scene().get_node("Player")
+	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
+	if not player or not wave_manager:
+		return
+	
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+
+	# Espada
+	var next_sword_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, player.sword_level + 1)
+	var current_sword_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, player.sword_level)
+
+	# Escudo
+	var next_shield_data = arms_db_instance.get_weapon_level_data(player.current_shield_id, player.shield_level + 1)
+	var current_shield_data = arms_db_instance.get_weapon_level_data(player.current_shield_id, player.shield_level)
+
+	# Se não existir próximo nível de espada OU escudo, exibe "Full" (ajuste conforme desejar)
+	if next_sword_data.size() == 0 or next_shield_data.size() == 0:
+		level_label.text = "Full"
+		# ...
+		return
+
+	# Caso contrário, mostra texturas da espada e do escudo atual e do próximo nível
+	if current_sword_data.has("texture"):
+		actual_arm_sprite.texture = current_sword_data["texture"]
+	if next_sword_data.has("texture"):
+		next_level_arm_sprite.texture = next_sword_data["texture"]
+	
+	# Supondo que você tenha “actual_shield_sprite” e “next_level_shield_sprite” no menu
+	if current_shield_data.has("texture"):
+		$Container/Update/ContainerArms/ActualShield/Arm.texture = current_shield_data["texture"]
+	if next_shield_data.has("texture"):
+		$Container/Update/ContainerArms/NextLevelShield/Arm.texture = next_shield_data["texture"]
+
+	# wave_required (assumindo que ambos precisam do mesmo wave_required, ou pegue o maior se quiser)
+	var needed_wave = max(
+		next_sword_data.get("wave_required", 9999),
+		next_shield_data.get("wave_required", 9999)
+	)
+	level_label.text = "UPGRADE LV " + str(player.sword_level + 1)
+	alert_label.text = "OPENS BY WINNING WAVE " + str(needed_wave)
+
+	_show_upgrade_menu()
+
+func _show_upgrade_menu() -> void:
 	$Container/Update.visible = true
 	main_menu.visible = false
 	back_button.visible = true
@@ -158,8 +209,29 @@ func _on_update_pressed() -> void:
 	items_spec.visible = false
 	coins_container.visible = false
 
-	# Mostramos qual será o próximo nível
+func _on_uptade_click_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
-	if player:
-		# Exemplo: "UPGRADE LV 2"
-		level_label.text = "UPGRADE LV " + str(player.sword_level + 1)
+	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
+	if not player or not wave_manager:
+		queue_free()
+		return
+	
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var next_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, player.sword_level + 1)
+	if next_data.size() == 0:
+		level_label.text = "Full"
+		queue_free()
+		return
+	
+	var needed_wave = next_data.get("wave_required", 9999)
+	if wave_manager.current_wave >= needed_wave:
+		# Realiza o upgrade chamando start_smithing() do player
+		player.start_smithing()
+		# Se após o upgrade não houver próximo nível, exibe "Full"
+		var check_next = arms_db_instance.get_weapon_level_data(player.current_weapon_id, player.sword_level + 1)
+		if check_next.size() == 0:
+			level_label.text = "Full"
+	else:
+		return
+	
+	queue_free()

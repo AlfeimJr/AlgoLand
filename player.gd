@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+# Preload do banco de dados de armas (nome: arms_database)
+var arms_database = preload("res://scripts/arms_database.gd")
+
 @onready var stats = preload("res://scripts/player_stats.gd").new()
 
 @export_category("Variables")
@@ -7,10 +10,14 @@ extends CharacterBody2D
 @export var _acceleration: float = 0.3
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
+@export var shield_level: int = 1
+var current_shield_id: String = "shield_basic"
 var movement_enabled: bool = true
 
-# Variável que controla o nível da espada
+# Variável que controla o nível da arma
 @export var sword_level: int = 1
+# Identificador da arma equipada – permite trocar para outras armas futuramente
+var current_weapon_id: String = "sword_basic"
 
 @export_category("Objects")
 @export var _animation_tree: AnimationTree = null
@@ -321,7 +328,6 @@ func _on_change_hair_pressed() -> void:
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
 
-	# Smithing hair
 	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
 		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 
@@ -382,13 +388,9 @@ func equip_sword_and_shield() -> void:
 		unequip_sword_and_shield()
 		return
 	using_sword = true
-	
-	# Carrega a espada de acordo com o nível
-	update_sword_textures()
 
-	# Se o escudo não muda, pode continuar fixo:
-	shield_sprite.texture = load("res://CharacterSprites/Arms/shields/shield_1.png")
-	attackChield.texture = load("res://CharacterSprites/Arms/shields/attack/slash_1.png")
+	update_sword_textures()
+	update_shield_textures()
 
 	sword_sprite.visible = true
 	shield_sprite.visible = true
@@ -404,7 +406,8 @@ func unequip_sword_and_shield() -> void:
 # COMPRA DE ITENS
 # ---------------------------
 func purchase_item(item_id: String) -> void:
-	var item_data = ItemDatabase.get_item_data(item_id)
+	# Aqui alteramos para usar arms_database (assegure-se de que esse método exista no arms_database se for para itens)
+	var item_data = arms_database.get_item_data(item_id)
 	if item_data == {}:
 		return
 	if GameData.coins >= item_data.price:
@@ -504,29 +507,25 @@ func apply_loaded_data(data: Dictionary):
 
 	if data.has("sword_level"):
 		sword_level = data["sword_level"]
+		# Atualiza a arma consultando o arms_database
 		update_sword_textures()
 		var new_strength = arms_status.get_strength_for_level(sword_level)
 		stats.strength = new_strength
 		stats.calculate_derived_stats(using_sword)
 
-	# Atualize também se a espada está equipada
+	# Atualiza também se a espada está equipada
 	if data.has("using_sword"):
 		using_sword = data["using_sword"]
-		# Se estiver equipada, mantenha a animação adequada
-		if using_sword:
-			# Você pode definir o estado de animação que desejar aqui,
-			# por exemplo, "running" se o player estiver em movimento
+		if using_sword and _state_machine:
 			_state_machine.travel("running")
 
 # ---------------------------
 # FUNÇÕES ESPECÍFICAS PARA SMITHING
 # ---------------------------
 func load_smithing_textures() -> void:
-	# Se já carregamos antes, não precisa recarregar
 	if smithing_hair_array.size() > 0:
 		return
 
-	# Carregamos apenas quando “Update” for clicado
 	for i in range(1, 28):
 		var hair_path = "res://CharacterSprites/body_smithing/Hair/hair (%d).png" % i
 		var hair_tex = load(hair_path)
@@ -540,17 +539,13 @@ func load_smithing_textures() -> void:
 			smithing_outfit_array.append(outfit_tex)
 
 func apply_smithing_data() -> void:
-	# Com base em curr_hair / curr_outfit, definimos smithing hair/outfit
 	if curr_hair < smithing_hair_array.size():
 		smithing_hair_sprite.texture = smithing_hair_array[curr_hair]
 	if curr_outfit < smithing_outfit_array.size():
 		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
 
 func start_smithing() -> void:
-	# 1. Carrega texturas de smithing
 	load_smithing_textures()
-
-	# 2. (Opcional) Carrega novamente do JSON
 	var loaded_data = load_from_json()
 	if loaded_data:
 		if loaded_data.has("curr_hair"):
@@ -558,21 +553,14 @@ func start_smithing() -> void:
 		if loaded_data.has("curr_outfit"):
 			curr_outfit = loaded_data["curr_outfit"]
 
-	# 3. Aplica a smithing_data
 	apply_smithing_data()
-
-	# 4. Desabilita o movimento
 	movement_enabled = false
-
-	# 5. Mostra smithing, esconde base
 	smithing_node.visible = true
 	$CompositeSprites/BaseSprites.visible = false
 
-	# 6. Toca animação "smithing"
 	if _animation_tree and _state_machine:
 		_state_machine.travel("smithing")
 
-	# 7. Depois de 5s, finaliza
 	var smithing_timer = Timer.new()
 	smithing_timer.wait_time = 5.0
 	smithing_timer.one_shot = true
@@ -589,42 +577,69 @@ func _on_smithing_finished() -> void:
 
 	movement_enabled = true
 
-	# Sobe 1 nível de espada
+	# Incrementa 1 nível de espada e 1 nível de escudo
 	sword_level += 1
+	shield_level += 1  # se quiser que o escudo acompanhe a espada
 
-	# Atualiza a textura conforme o nível
 	update_sword_textures()
+	update_shield_textures()
 
-	# --- AQUI: Atualiza a força da espada ---
 	var new_strength = arms_status.get_strength_for_level(sword_level)
 	stats.strength = new_strength
 	stats.calculate_derived_stats(using_sword)
-
 	emit_signal("smithing_finished")
 
-
-func update_sword_textures():
-	# Se nível 1, carregamos do local original (fora da pasta upgraded_swords)
-	if sword_level == 1:
-		var base_sword_path = "res://CharacterSprites/Arms/swords/Sword_1.png"
-		var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/slash_1.png"
-
-		if ResourceLoader.exists(base_sword_path):
-			sword_sprite.texture = load(base_sword_path)
-		if ResourceLoader.exists(attack_sword_path):
-			attackSwordArm.texture = load(attack_sword_path)
+# ---------------------------
+# ATUALIZAÇÃO DAS TEXTURAS DA ARMA
+# ---------------------------
+func update_sword_textures() -> void:
+	# Cria uma instância do arms_database para obter os dados da arma
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var level_data = arms_db_instance.get_weapon_level_data(current_weapon_id, sword_level)
+	if level_data.size() > 0 and level_data.has("texture"):
+		# Atualiza a textura principal com a do database
+		sword_sprite.texture = level_data["texture"]
+		# Se houver uma textura para ataque, atualiza; caso contrário, não altera attackSwordArm (para preservar as animações)
+		if level_data.has("attack_texture"):
+			attackSwordArm.texture = level_data["attack_texture"]
 	else:
-		
-		# Se nível > 1, carregamos da pasta upgraded_swords
-		var base_sword_path = "res://CharacterSprites/Arms/swords/swords_upgraded/%d/Sword_1.png" % sword_level
-		var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/swords_upgraded/slash_1/%d/slash_1.png" % sword_level
-		print("trocando textura da arma", base_sword_path)
-		if ResourceLoader.exists(base_sword_path):
-			sword_sprite.texture = load(base_sword_path)
-		if ResourceLoader.exists(attack_sword_path):
-			attackSwordArm.texture = load(attack_sword_path)
-
-	# Caso também tenha escudo “upgradável”, ajuste aqui
-	# var base_shield_path = ...
-	# var attack_shield_path = ...
-	# etc.
+		# Fallback para o sistema antigo
+		if sword_level == 1:
+			var base_sword_path = "res://CharacterSprites/Arms/swords/Sword_1.png"
+			var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/slash_1.png"
+			if ResourceLoader.exists(base_sword_path):
+				sword_sprite.texture = load(base_sword_path)
+			if ResourceLoader.exists(attack_sword_path):
+				attackSwordArm.texture = load(attack_sword_path)
+		else:
+			var base_sword_path = "res://CharacterSprites/Arms/swords/swords_upgraded/%d/Sword_1.png" % sword_level
+			var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/swords_upgraded/slash_1/%d/slash_1.png" % sword_level
+			print("trocando textura da arma", base_sword_path)
+			if ResourceLoader.exists(base_sword_path):
+				sword_sprite.texture = load(base_sword_path)
+			if ResourceLoader.exists(attack_sword_path):
+				attackSwordArm.texture = load(attack_sword_path)
+				
+func update_shield_textures() -> void:
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var level_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
+	if level_data.size() > 0 and level_data.has("texture"):
+		shield_sprite.texture = level_data["texture"]
+		if level_data.has("attack_texture"):
+			attackChield.texture = level_data["attack_texture"]
+	else:
+		# Fallback se não achar no database
+		if shield_level == 1:
+			var base_shield_path = "res://CharacterSprites/Arms/shields/shield_1.png"
+			var attack_shield_path = "res://CharacterSprites/Arms/shields/attack/slash_1.png"
+			if ResourceLoader.exists(base_shield_path):
+				shield_sprite.texture = load(base_shield_path)
+			if ResourceLoader.exists(attack_shield_path):
+				attackChield.texture = load(attack_shield_path)
+		else:
+			var base_shield_path = "res://CharacterSprites/Arms/shields/upgraded_shields/%d/shield_1.png" % shield_level
+			var attack_shield_path = "res://CharacterSprites/Arms/shields/attack/shields_upgrade/slash_1/%d/slash_1.png" % shield_level
+			if ResourceLoader.exists(base_shield_path):
+				shield_sprite.texture = load(base_shield_path)
+			if ResourceLoader.exists(attack_shield_path):
+				attackChield.texture = load(attack_shield_path)

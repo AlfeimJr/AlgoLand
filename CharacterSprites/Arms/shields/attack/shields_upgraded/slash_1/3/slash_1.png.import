@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4wola1keifmf"
-path="res://.godot/imported/slash_1.png-0a7ad22aa1d6318e79966778974165eb.ctex"
+uid="uid://823hadvil7av"
+path="res://.godot/imported/slash_1.png-71fc6642b65a3838b57ae4e8c724a289.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://CharacterSprites/Arms/shields/attack/shields_upgrade/slash_1/slash_1.png"
-dest_files=["res://.godot/imported/slash_1.png-0a7ad22aa1d6318e79966778974165eb.ctex"]
+source_file="res://CharacterSprites/Arms/shields/attack/shields_upgraded/slash_1/3/slash_1.png"
+dest_files=["res://.godot/imported/slash_1.png-71fc6642b65a3838b57ae4e8c724a289.ctex"]
 
 [params]
 
