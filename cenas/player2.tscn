@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3 uid="uid://y6c4hi6s1u75"]
+[gd_scene load_steps=93 format=3 uid="uid://y6c4hi6s1u75"]
 
 [ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/body_attack_sword.png" id="2_240al"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_byhnc"]
@@ -13,6 +13,13 @@
 [ext_resource type="Texture2D" uid="uid://bec6phxxxump4" path="res://CharacterSprites/body_smithing/hammer/char_a_p4_6tla_smth_v01.png" id="9_qshsm"]
 [ext_resource type="Texture2D" uid="uid://ned7w30mtbaj" path="res://CharacterSprites/body_smithing/Hair/hair (1).png" id="9_tc85l"]
 [ext_resource type="Texture2D" uid="uid://dhrbw3iux6qf2" path="res://CharacterSprites/body_smithing/Outfit/outfit (1).png" id="10_4q0f0"]
+[ext_resource type="Texture2D" uid="uid://teb5b4tnci73" path="res://CharacterSprites/Body_spear_combat/body_spear_combat.png" id="13_qgqgs"]
+[ext_resource type="Texture2D" uid="uid://dxaq6bttxa75q" path="res://CharacterSprites/Hair/Attack/slash_1_spear/hair (1).png" id="14_bm8yk"]
+[ext_resource type="Texture2D" uid="uid://6scvwoi3pqxo" path="res://CharacterSprites/Arms/spears/Attack/slash_1.png" id="15_n1wqr"]
+[ext_resource type="Texture2D" uid="uid://dyejmv36my6dh" path="res://CharacterSprites/Outfit/Attack/slash_1_spear/outfit (1).png" id="16_0dke8"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_x3lpk"]
+points = PackedVector2Array(11, 50, 50, 55, 45, 45, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 [sub_resource type="Animation" id="Animation_qkuxn"]
 length = 0.001
@@ -591,6 +598,126 @@ tracks/47/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [2]
+}
+tracks/48/type = "value"
+tracks/48/imported = false
+tracks/48/enabled = true
+tracks/48/path = NodePath("AttackSpearAnimation/Body:frame")
+tracks/48/interp = 1
+tracks/48/loop_wrap = true
+tracks/48/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/49/type = "value"
+tracks/49/imported = false
+tracks/49/enabled = true
+tracks/49/path = NodePath("AttackSpearAnimation/Hair:frame")
+tracks/49/interp = 1
+tracks/49/loop_wrap = true
+tracks/49/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/50/type = "value"
+tracks/50/imported = false
+tracks/50/enabled = true
+tracks/50/path = NodePath("AttackSpearAnimation/Spear:frame")
+tracks/50/interp = 1
+tracks/50/loop_wrap = true
+tracks/50/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/51/type = "value"
+tracks/51/imported = false
+tracks/51/enabled = true
+tracks/51/path = NodePath("AttackSpearAnimation/Outfit:frame")
+tracks/51/interp = 1
+tracks/51/loop_wrap = true
+tracks/51/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/52/type = "value"
+tracks/52/imported = false
+tracks/52/enabled = true
+tracks/52/path = NodePath("AttackSpearAnimation/Body:z_index")
+tracks/52/interp = 1
+tracks/52/loop_wrap = true
+tracks/52/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/53/type = "value"
+tracks/53/imported = false
+tracks/53/enabled = true
+tracks/53/path = NodePath("AttackSpearAnimation/Hair:z_index")
+tracks/53/interp = 1
+tracks/53/loop_wrap = true
+tracks/53/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/54/type = "value"
+tracks/54/imported = false
+tracks/54/enabled = true
+tracks/54/path = NodePath("AttackSpearAnimation/Spear:z_index")
+tracks/54/interp = 1
+tracks/54/loop_wrap = true
+tracks/54/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+tracks/55/type = "value"
+tracks/55/imported = false
+tracks/55/enabled = true
+tracks/55/path = NodePath("AttackSpearAnimation/Outfit:z_index")
+tracks/55/interp = 1
+tracks/55/loop_wrap = true
+tracks/55/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+tracks/56/type = "value"
+tracks/56/imported = false
+tracks/56/enabled = true
+tracks/56/path = NodePath("../AttackArea/CollisionShape2D:shape:points")
+tracks/56/interp = 1
+tracks/56/loop_wrap = true
+tracks/56/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [PackedVector2Array(11, 50, 50, 55, 45, 45, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+}
+tracks/57/type = "value"
+tracks/57/imported = false
+tracks/57/enabled = true
+tracks/57/path = NodePath("../AttackArea/CollisionShape2D:shape")
+tracks/57/interp = 1
+tracks/57/loop_wrap = true
+tracks/57/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("ConvexPolygonShape2D_x3lpk")]
 }
 
 [sub_resource type="Animation" id="Animation_21cf8"]
@@ -5922,6 +6049,172 @@ tracks/12/keys = {
 "values": [Vector2(3, -3), Vector2(-6, -25), Vector2(-6, -25), Vector2(-3, -3)]
 }
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sn58p"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3r4dk"]
+size = Vector2(8, 10.5416)
+
+[sub_resource type="Animation" id="Animation_nh1v8"]
+resource_name = "spear_slash_1_down"
+length = 0.233337
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AttackSpearAnimation/Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AttackSpearAnimation/Hair:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AttackSpearAnimation/Spear:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AttackSpearAnimation/Outfit:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("AttackSpearAnimation/Body:z_index")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("AttackSpearAnimation/Hair:z_index")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("AttackSpearAnimation/Spear:z_index")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("AttackSpearAnimation/Outfit:z_index")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("../AttackArea/CollisionShape2D:disabled")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [true, false, false, true]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("../AttackArea/CollisionShape2D:shape:size")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector2(8, 10.5416), Vector2(58, 10), Vector2(20, 20)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("../AttackArea/CollisionShape2D:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(-1, 5), Vector2(-32, -16), Vector2(0, 32), Vector2(0, 8)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("../AttackArea/CollisionShape2D:shape:points")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.0666667),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [PackedVector2Array(11, 50, 50, 55, 45, 45, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("../AttackArea/CollisionShape2D:shape")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0.0666667, 0.133333, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [SubResource("ConvexPolygonShape2D_x3lpk"), SubResource("RectangleShape2D_sn58p"), SubResource("RectangleShape2D_3r4dk")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s34bx"]
 _data = {
 "RESET": SubResource("Animation_qkuxn"),
@@ -5938,6 +6231,7 @@ _data = {
 "running_right": SubResource("Animation_w4xl6"),
 "running_up": SubResource("Animation_yda7s"),
 "smithing_left": SubResource("Animation_ta4i2"),
+"spear_slash_1_down": SubResource("Animation_nh1v8"),
 "sword_slash_1_down": SubResource("Animation_8gnlw"),
 "sword_slash_1_left": SubResource("Animation_bwqxr"),
 "sword_slash_1_right": SubResource("Animation_tdohp"),
@@ -6170,9 +6464,6 @@ graph_offset = Vector2(-124.515, 0)
 radius = 7.0
 height = 24.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xakdp"]
-size = Vector2(16, 10.5416)
-
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_animation_tree", "_timer") groups=["character"]]
 position = Vector2(585, 443)
 script = ExtResource("2_chf58")
@@ -6220,6 +6511,7 @@ hframes = 8
 vframes = 8
 
 [node name="BaseSprites" type="Node2D" parent="CompositeSprites"]
+visible = false
 
 [node name="Body" type="Sprite2D" parent="CompositeSprites/BaseSprites"]
 z_index = 3
@@ -6268,9 +6560,7 @@ libraries = {
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="CompositeSprites/Animation"]
-root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_3l7eq")
-anim_player = NodePath("../AnimationPlayer")
 parameters/AttackSwordSlash_1/blend_position = Vector2(-0.00238281, 0.371681)
 parameters/AttackSwordSlash_2/blend_position = Vector2(-0.0039714, 0.989362)
 parameters/AttackSwordSlash_3/blend_position = Vector2(0, 0)
@@ -6308,6 +6598,32 @@ texture = ExtResource("9_qshsm")
 hframes = 8
 vframes = 8
 
+[node name="AttackSpearAnimation" type="Node2D" parent="CompositeSprites"]
+
+[node name="Body" type="Sprite2D" parent="CompositeSprites/AttackSpearAnimation"]
+z_index = 1
+texture = ExtResource("13_qgqgs")
+hframes = 8
+vframes = 8
+
+[node name="Hair" type="Sprite2D" parent="CompositeSprites/AttackSpearAnimation"]
+z_index = 2
+texture = ExtResource("14_bm8yk")
+hframes = 8
+vframes = 8
+
+[node name="Spear" type="Sprite2D" parent="CompositeSprites/AttackSpearAnimation"]
+z_index = 3
+texture = ExtResource("15_n1wqr")
+hframes = 8
+vframes = 8
+
+[node name="Outfit" type="Sprite2D" parent="CompositeSprites/AttackSpearAnimation"]
+z_index = 3
+texture = ExtResource("16_0dke8")
+hframes = 8
+vframes = 8
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_n2plp")
 
@@ -6317,13 +6633,14 @@ position = Vector2(-1, 1)
 shape = SubResource("CapsuleShape2D_5o2sk")
 
 [node name="AttackArea" type="Area2D" parent="." groups=["character"]]
-visible = false
+position = Vector2(-1, -11)
 collision_layer = 16
 collision_mask = 255
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+visible = false
 position = Vector2(-1, -3)
-shape = SubResource("RectangleShape2D_xakdp")
+shape = SubResource("ConvexPolygonShape2D_x3lpk")
 disabled = true
 
 [node name="AttackTimer" type="Timer" parent="." groups=["character"]]

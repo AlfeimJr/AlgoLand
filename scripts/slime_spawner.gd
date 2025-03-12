@@ -42,37 +42,42 @@ func get_random_spawn_point() -> Marker2D:
 	return spawn_points[index]
 
 func spawn_enemy_at(spawn: Marker2D, health_multiplier: float, damage_multiplier: float) -> bool:
-	if spawn == null:
+	if spawn == null or not is_instance_valid(spawn):
 		return false
-	
+
 	var slime = slime_scene.instantiate()
 	if slime == null:
 		return false
-	
+
 	slime.name = "Slime_" + str(randi() % 1000)
 	var offset = Vector2(randf_range(-10, 10), randf_range(-10, 10))
 	slime.position = spawn.global_position + offset
-	
+
 	if slime.has_variable("health"):
 		slime.health *= health_multiplier
 	if slime.has_variable("damage"):
 		slime.damage *= damage_multiplier
-	
-	main.add_child(slime)
+
+	if is_instance_valid(main):
+		main.add_child(slime)
+	else:
+		return false
+
 	await get_tree().process_frame
 	if not slime.is_inside_tree():
 		return false
-	
+
 	slime.add_to_group("enemy")
-	if wave_manager:
+	if wave_manager and is_instance_valid(wave_manager):
 		slime.connect("enemy_died", Callable(wave_manager, "enemy_died"))
 	if slime.has_method("verify_lifespan"):
 		slime.call_deferred("verify_lifespan")
-	
+
 	if slime.has_node("CollisionShape2D"):
 		var collision = slime.get_node("CollisionShape2D")
-		if collision:
+		if collision and is_instance_valid(collision):
 			collision.set_deferred("disabled", true)
 			await get_tree().process_frame
-			collision.set_deferred("disabled", false)
+			if is_instance_valid(collision):
+				collision.set_deferred("disabled", false)
 	return true

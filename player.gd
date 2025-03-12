@@ -4,7 +4,7 @@ extends CharacterBody2D
 var arms_database = preload("res://scripts/arms_database.gd")
 
 @onready var stats = preload("res://scripts/player_stats.gd").new()
-
+@export var hair_color: Color = Color(1, 1, 1)  # Branco como padrão
 @export_category("Variables")
 @export var _friction: float = 0.3
 @export var _acceleration: float = 0.3
@@ -52,7 +52,7 @@ var smithing_outfit_array: Array[Texture2D] = []
 @onready var hp_label = $"/root/cenario/UI/Hp"
 @onready var coins_label: Label = $"/root/cenario/UI/Coins/count"
 
-signal customization_finished(hair: int, outfit: int, nickname: String)
+signal customization_finished(hair: int, outfit: int, hair_color: Color, nickname: String)
 signal player_died
 
 @export var isDead = false
@@ -120,7 +120,7 @@ func _ready() -> void:
 	bodySprite.texture = composite_sprites.body_spriteSheet[0]
 
 	# Carrega arrays de cabelo/outfit para ataques (base e attack)
-	for i in range(1, 28):
+	for i in range(1, 3):
 		var hair_path = "res://CharacterSprites/Hair/Attack/slash_1_sword/hair (%d).png" % i
 		var hair_resource = load(hair_path)
 		if hair_resource:
@@ -139,6 +139,7 @@ func _ready() -> void:
 
 	if hair_attack_array.size() > 0 and curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
+		attackHair.modulate = hair_color  # Aplica a cor também no sprite de ataque
 	if outfit_attack_array.size() > 0 and curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
 
@@ -325,9 +326,12 @@ func _set_sprites_visible(is_attacking: bool) -> void:
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+	# Reaplica a cor salva após atualizar a textura
+	hairSprite.modulate = hair_color
+
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-
+		attackHair.modulate = hair_color  # Aplica a modulação no attackHair
 	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
 		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 
@@ -336,9 +340,11 @@ func _on_change_hair_back_pressed() -> void:
 	if curr_hair < 0:
 		curr_hair = composite_sprites.hair_spriteSheet.size() - 1
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+	hairSprite.modulate = hair_color  # Reaplica a cor
+
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-
+		attackHair.modulate = hair_color  # Aplica a modulação no attackHair
 	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
 		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 
@@ -347,7 +353,6 @@ func _on_change_outfit_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
-
 	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
 		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
@@ -358,12 +363,11 @@ func _on_change_outfit_back_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
-
 	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
 		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
 func save_customization():
-	emit_signal("customization_finished", curr_hair, curr_outfit, nickname)
+	emit_signal("customization_finished", curr_hair, curr_outfit, hair_color, nickname)
 
 # ---------------------------
 # MOEDAS / UI
@@ -495,6 +499,7 @@ func apply_loaded_data(data: Dictionary):
 		hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 		if curr_hair < hair_attack_array.size():
 			attackHair.texture = hair_attack_array[curr_hair]
+			attackHair.modulate = hair_color  # Aplica a modulação também aqui
 
 	if data.has("curr_outfit"):
 		curr_outfit = data["curr_outfit"]
@@ -505,6 +510,15 @@ func apply_loaded_data(data: Dictionary):
 	if data.has("nickname"):
 		nickname = data["nickname"]
 
+	if data.has("hair_color"):
+		# Aqui, data["hair_color"] é um dicionário com as chaves "r", "g", "b" e "a"
+		var col_dict = data["hair_color"]
+		var saved_hair_color = Color(col_dict["r"], col_dict["g"], col_dict["b"], col_dict["a"])
+		hair_color = saved_hair_color
+		# Aplica a cor ao sprite do cabelo
+		hairSprite.modulate = saved_hair_color
+		attackHair.modulate = saved_hair_color  # Aplica a cor também no attackHair
+
 	if data.has("sword_level"):
 		sword_level = data["sword_level"]
 		# Atualiza a arma consultando o arms_database
@@ -513,7 +527,6 @@ func apply_loaded_data(data: Dictionary):
 		stats.strength = new_strength
 		stats.calculate_derived_stats(using_sword)
 
-	# Atualiza também se a espada está equipada
 	if data.has("using_sword"):
 		using_sword = data["using_sword"]
 		if using_sword and _state_machine:
@@ -526,7 +539,7 @@ func load_smithing_textures() -> void:
 	if smithing_hair_array.size() > 0:
 		return
 
-	for i in range(1, 28):
+	for i in range(1, 3):
 		var hair_path = "res://CharacterSprites/body_smithing/Hair/hair (%d).png" % i
 		var hair_tex = load(hair_path)
 		if hair_tex:
@@ -541,6 +554,7 @@ func load_smithing_textures() -> void:
 func apply_smithing_data() -> void:
 	if curr_hair < smithing_hair_array.size():
 		smithing_hair_sprite.texture = smithing_hair_array[curr_hair]
+		smithing_hair_sprite.modulate = hair_color  # Aplica a cor do cabelo no sprite de smithing
 	if curr_outfit < smithing_outfit_array.size():
 		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
 

@@ -28,7 +28,7 @@ var is_wave_running: bool = false
 @onready var player = get_node("/root/cenario/Player")
 
 func _ready() -> void:
-	await get_tree().process_frame
+	await get_tree().create_timer(0.0).timeout
 	current_wave = starting_wave
 	spawner = get_tree().get_root().get_node("/root/cenario/enemySpawner")
 	spawn_area = get_node(spawn_area_path)
