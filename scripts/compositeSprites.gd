@@ -8,8 +8,6 @@ func _init():
 	# Inicializa o body_spriteSheet (exemplo)
 	body_spriteSheet = {
 		0: load("res://CharacterSprites/Body/body_1.png"),
-		1: load("res://CharacterSprites/Body/body_2.png"),
-		2: load("res://CharacterSprites/Body/body_3.png")
 	}
 	
 	# Supondo que você tenha arquivos de hair (1).png até hair (107).png

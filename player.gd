@@ -161,9 +161,14 @@ func _ready() -> void:
 
 	# Oculta smithing no início
 	smithing_node.visible = false
-
+	wave_manager.connect("wave_completed", Callable(self, "_on_wave_completed"))
 	_set_sprites_visible(false)
 	update_coins_label()
+	update_hp_bar()
+
+func _on_wave_completed(wave: int) -> void:
+	# Quando a wave é finalizada, restaura o HP
+	current_hp = stats.max_hp
 	update_hp_bar()
 
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:

@@ -4,14 +4,14 @@ signal wave_started(wave: int)
 signal wave_completed(wave: int)
 signal game_won()
 signal waves_stopped_signal
-@export var starting_wave: int = 35
+@export var starting_wave: int = 1
 @export var max_enemies: int = 5
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 1000
 @export var detection_increase_per_wave: float = 0.2
 @export var gold_base_reward: int = 100
 @onready var merchant = $"../../Merchant"
-const MAX_ACTIVE_ENEMIES: int = 50
+const MAX_ACTIVE_ENEMIES: int = 70
 @export var spawn_area_path: NodePath = NodePath("/root/cenario/SpawnArea")
 
 var current_wave: int = 1
