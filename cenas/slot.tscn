@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://delx88t4jwfoh"]
+
+[ext_resource type="Script" path="res://scripts/slot.gd" id="1_trewy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_drht8"]
+
+[node name="Slot" type="Node2D"]
+script = ExtResource("1_trewy")
+
+[node name="Area2D" type="Area2D" parent="." groups=["shield", "sword"]]
+collision_layer = 2048
+collision_mask = 1024
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["shield", "sword"]]
+light_mask = 2048
+visibility_layer = 1024
+shape = SubResource("RectangleShape2D_drht8")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

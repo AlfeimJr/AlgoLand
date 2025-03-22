@@ -1,25 +1,27 @@
 extends CharacterBody2D
 
-@onready var icon: Sprite2D = $button  # Ícone que aparece quando o jogador está próximo
-var player_in_range: bool = false     # Controla se o jogador está na área de detecção
-var menu_instance: CanvasLayer = null # Referência ao menu aberto
+@onready var icon: Sprite2D = $button
+@onready var menu_instance: Node2D = $MenuMerchant
+
+var player_in_range: bool = false
 
 signal start_wave_requested
 
 func _ready() -> void:
 	add_to_group("merchant")
 	icon.visible = false
-	var area_2d = $Area2D
-	if area_2d:
-		if not area_2d.is_connected("body_entered", Callable(self, "_on_area_2d_body_entered")):
-			area_2d.connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
-		if not area_2d.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
-			area_2d.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
+	menu_instance.visible = false  # Inicialmente oculto
+	
+	# Conectar sinais do menu
+	if menu_instance.has_method("connect_menu_closed"):
+		menu_instance.connect_menu_closed(Callable(self, "close_menu"))
+	if menu_instance.has_method("connect_start_wave"):
+		menu_instance.connect_start_wave(Callable(self, "_on_start_wave_selected"))
 
 func _process(delta: float) -> void:
 	if player_in_range and Input.is_action_just_pressed("open_menu"):
-		_on_open_menu_pressed()
-	if menu_instance != null and Input.is_action_just_pressed("close_menu"):
+		open_menu()
+	if menu_instance.visible and Input.is_action_just_pressed("close_menu"):
 		close_menu()
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
@@ -31,22 +33,31 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body.is_in_group("character"):
 		player_in_range = false
 		icon.visible = false
-		if menu_instance != null:
-			close_menu()
+		close_menu()
 
-func _on_open_menu_pressed() -> void:
-	var menu_scene = preload("res://cenas/menu_merchant.tscn")
-	menu_instance = menu_scene.instantiate()
-	add_child(menu_instance)
-	if menu_instance.has_method("connect_menu_closed"):
-		menu_instance.connect_menu_closed(Callable(self, "close_menu"))
-	if menu_instance.has_method("connect_start_wave"):
-		menu_instance.connect_start_wave(Callable(self, "_on_start_wave_selected"))
+func open_menu() -> void:
+	menu_instance.visible = true
+	
+	# Configurar explicitamente as camadas de colisão para slots e itens
+	var slots = menu_instance.find_children("*", "Slot", true, false)
+	for slot in slots:
+		if slot.has_node("Area2D"):
+			slot.get_node("Area2D").collision_layer = 12
+			slot.get_node("Area2D").collision_mask = 11
+	
+	var items = menu_instance.find_children("*", "Item", true, false)
+	for item in items:
+		if item.has_node("Area2D"):
+			item.get_node("Area2D").collision_layer = 11
+			item.get_node("Area2D").collision_mask = 12
 
 func close_menu() -> void:
-	if menu_instance != null:
-		menu_instance.queue_free()
-		menu_instance = null
+	menu_instance.visible = false
+	
+	# Reiniciar estado do menu se necessário
+	if menu_instance.has_method("reset_menu"):
+		menu_instance.reset_menu()
 
 func _on_start_wave_selected() -> void:
 	emit_signal("start_wave_requested")
+	close_menu()

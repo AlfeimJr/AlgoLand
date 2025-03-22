@@ -23,7 +23,7 @@ func _ready() -> void:
 			hair_sprites.append(hair_res)
 	
 	# 2) Carrega as sprites de roupa (exemplo de 1 a 8)
-	for i in range(1, 9):
+	for i in range(1, 8):
 		var outfit_path = "res://CharacterSprites/Outfit/outfit (%d).png" % i
 		var outfit_res = load(outfit_path)
 		if outfit_res:

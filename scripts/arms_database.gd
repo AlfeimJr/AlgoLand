@@ -60,7 +60,18 @@ var weapons = {
 				"wave_required": 35
 			},
 		}
-	}
+	},
+	"spear_basic": {
+		"name": "Basic Spear",
+		"levels": {
+			1: {
+				"texture": preload("res://CharacterSprites/Arms/spears/spear_1.png"),
+				"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/slash_1.png"),
+				"wave_required": 0
+			},
+			
+		}
+	},
 	# ... outras armas se necessário
 }
 

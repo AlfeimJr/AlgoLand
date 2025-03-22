@@ -4,8 +4,9 @@ signal wave_started(wave: int)
 signal wave_completed(wave: int)
 signal game_won()
 signal waves_stopped_signal
-@export var starting_wave: int = 1
-@export var max_enemies: int = 5
+
+@export var starting_wave: int = 35
+@export var max_enemies: int = 10	
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 1000
 @export var detection_increase_per_wave: float = 0.2
@@ -54,62 +55,13 @@ func start_wave() -> void:
 	if wave_banner:
 		wave_banner.show_wave_number(current_wave)
 	update_ui()
-	spawn_enemies(enemies_alive, enemy_health_multiplier, enemy_damage_multiplier, detection_scale)
+	# Utiliza o método do spawner para criar os inimigos
+	spawner.spawn_enemies(enemies_alive, enemy_health_multiplier, enemy_damage_multiplier)
 
 func update_ui() -> void:
 	var ui = get_tree().get_root().get_node("cenario/UI")
 	if ui:
 		ui.enemies_label.text = "Enemies: " + str(enemies_alive)
-
-func spawn_enemies(num_enemies: int, health_multiplier: float, damage_multiplier: float, detection_scale: float) -> void:
-	if not spawner or spawner.spawn_points.is_empty():
-		return
-	spawner.spawn_points.shuffle()
-	for i in range(num_enemies):
-		if waves_stopped:
-			return
-		while get_tree().get_nodes_in_group("enemy").size() >= MAX_ACTIVE_ENEMIES:
-			if waves_stopped:
-				return
-			await get_tree().create_timer(0.5).timeout
-		if waves_stopped:
-			return
-		var spawn_position = get_random_position_in_area()
-		if spawn_position != Vector2.ZERO:
-			spawn_enemy(spawn_position, health_multiplier, damage_multiplier, detection_scale)
-		await get_tree().create_timer(0.1).timeout
-	enemies_alive = get_tree().get_nodes_in_group("enemy").size()
-
-func get_random_position_in_area() -> Vector2:
-	if not spawn_area:
-		return Vector2.ZERO
-	var collision = spawn_area.get_node("CollisionShape2D")
-	if collision and collision.shape is RectangleShape2D:
-		var rect_shape = collision.shape as RectangleShape2D
-		var extents = rect_shape.extents
-		var random_local = Vector2(randf_range(-extents.x, extents.x), randf_range(-extents.y, extents.y))
-		return spawn_area.global_position + random_local
-	else:
-		return spawn_area.global_position
-
-func spawn_enemy(position: Vector2, health_multiplier: float, damage_multiplier: float, detection_scale: float) -> void:
-	if position == Vector2.ZERO:
-		return
-	var slime_scene = preload("res://cenas/slime.tscn")
-	if not slime_scene:
-		return
-	var slime = slime_scene.instantiate()
-	slime.position = position
-	slime.health *= health_multiplier
-	slime.damage *= damage_multiplier
-	get_tree().get_root().get_node("cenario").add_child(slime)
-	slime.add_to_group("enemy")
-	slime.connect("enemy_died", Callable(self, "enemy_died"))
-	slime.call_deferred("set_detection_scale", detection_scale)
-	configure_enemy_collision(slime)
-
-func configure_enemy_collision(enemy: Node) -> void:
-	pass
 
 func enemy_died() -> void:
 	enemies_alive -= 1

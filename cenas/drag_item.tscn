@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7a5pnwnmpemh"]
+
+[ext_resource type="Script" path="res://scripts/global.gd" id="1_p7dcy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pwtma"]
+size = Vector2(34, 35)
+
+[node name="TextureRect" type="Area2D" groups=["dropable"]]
+z_index = 1000
+collision_layer = 128
+script = ExtResource("1_p7dcy")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -16.0
+offset_right = 17.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 0.5)
+shape = SubResource("RectangleShape2D_pwtma")

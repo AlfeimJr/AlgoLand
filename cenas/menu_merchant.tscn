@@ -1,19 +1,16 @@
-[gd_scene load_steps=22 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=20 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
 [ext_resource type="Texture2D" uid="uid://7e6qicro5c8o" path="res://UI/sem org/2 Bars/Band2_on.png" id="3_dmibo"]
 [ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/sem org/2 Bars/Band2_off.png" id="4_8psce"]
 [ext_resource type="Texture2D" uid="uid://bmro5omyyrlef" path="res://images/one_0108_v01.png" id="5_h533h"]
+[ext_resource type="Texture2D" uid="uid://bxbxhg818jes0" path="res://CharacterSprites/Arms/spears/spear_1.png" id="6_f8pq4"]
 [ext_resource type="Texture2D" uid="uid://4kypf3twlls3" path="res://UI/sem org/3 Icons/Icons_14.png" id="6_h2o4l"]
 [ext_resource type="PackedScene" uid="uid://gigb868grykh" path="res://cenas/item_spec.tscn" id="7_1qnbk"]
-[ext_resource type="Texture2D" uid="uid://c5r3s8tesyi7i" path="res://UI/sem org/2 Bars/Button_on.png" id="8_c0l5p"]
-[ext_resource type="Texture2D" uid="uid://cp23jmph3me7" path="res://CharacterSprites/Arms/swords/Sword_1.png" id="8_dr33g"]
 [ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_n1i8u"]
-[ext_resource type="Texture2D" uid="uid://b3foyophbvfvd" path="res://UI/sem org/3 Icons/Icons_15.png" id="10_2bjjs"]
-[ext_resource type="Texture2D" uid="uid://bol1st4w0cb8q" path="res://CharacterSprites/Arms/shields/shield_1.png" id="10_2orem"]
-[ext_resource type="Texture2D" uid="uid://c82gjhqvac6y2" path="res://UI/craftpix-679811-materials-for-crafting-pixel-art-icons/PNG/Background/Icon5.png" id="10_vlkxo"]
-[ext_resource type="Texture2D" uid="uid://dw1qn7awwyrm4" path="res://CharacterSprites/Arms/shields/shields_upgraded/2/shield_1.png" id="11_uy8d1"]
+[ext_resource type="FontFile" uid="uid://dirq4dnsbaakj" path="res://UI/craftpix-781165-game-ui-pixel-art (1)/Font/Planes_ValMore.ttf" id="11_w1b0y"]
+[ext_resource type="PackedScene" uid="uid://delx88t4jwfoh" path="res://cenas/slot.tscn" id="12_q3u1m"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_irua0"]
 font = ExtResource("2_bsqvj")
@@ -26,46 +23,58 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tkw6o"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2hf14"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-
 [sub_resource type="LabelSettings" id="LabelSettings_qlgqn"]
 font = ExtResource("2_bsqvj")
 font_size = 24
 shadow_color = Color(0, 0, 0, 1)
 
-[sub_resource type="LabelSettings" id="LabelSettings_lw6mx"]
-font = ExtResource("2_bsqvj")
-shadow_color = Color(0, 0, 0, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bxn4l"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h0ns6"]
+bg_color = Color(0.517561, 0.580081, 0.863594, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [sub_resource type="LabelSettings" id="LabelSettings_36vvr"]
 font = ExtResource("2_bsqvj")
 shadow_color = Color(0, 0, 0, 1)
 
-[node name="MenuMerchant" type="CanvasLayer"]
+[sub_resource type="LabelSettings" id="LabelSettings_7wpx7"]
+font = ExtResource("2_bsqvj")
+font_size = 12
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="MenuMerchant" type="Node2D"]
+z_index = 500
+scale = Vector2(0.7, 0.7)
 script = ExtResource("1_v7em4")
 
 [node name="Container" type="Panel" parent="."]
-offset_left = 127.0
-offset_top = 53.0
-offset_right = 453.0
-offset_bottom = 257.0
+offset_left = -160.0
+offset_top = -57.1428
+offset_right = 160.0
+offset_bottom = 142.857
+mouse_filter = 2
 
-[node name="Weapons" type="Control" parent="Container"]
+[node name="Weapons" type="Control" parent="."]
 visible = false
 layout_mode = 3
 anchors_preset = 0
-offset_left = 1.0
-offset_top = -1.0
-offset_right = 325.0
-offset_bottom = 203.0
+offset_left = -159.0
+offset_top = -58.1428
+offset_right = 165.0
+offset_bottom = 145.857
+mouse_filter = 2
 
-[node name="Arm" type="Control" parent="Container/Weapons"]
+[node name="Arm" type="Control" parent="Weapons"]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Button" type="TextureButton" parent="Container/Weapons/Arm"]
+[node name="Button" type="TextureButton" parent="Weapons/Arm"]
 layout_mode = 0
 offset_left = 14.0
 offset_top = 59.0
@@ -75,7 +84,7 @@ texture_normal = ExtResource("3_dmibo")
 texture_pressed = ExtResource("4_8psce")
 stretch_mode = 0
 
-[node name="Text" type="Label" parent="Container/Weapons/Arm/Button"]
+[node name="Text" type="Label" parent="Weapons/Arm/Button"]
 layout_mode = 0
 offset_right = 50.0
 offset_bottom = 12.0
@@ -83,25 +92,66 @@ text = "EQUIP"
 label_settings = SubResource("LabelSettings_irua0")
 horizontal_alignment = 1
 
-[node name="Band2Off" type="Sprite2D" parent="Container/Weapons/Arm"]
+[node name="Band2Off" type="Sprite2D" parent="Weapons/Arm"]
 position = Vector2(38.5, 38)
 scale = Vector2(1.65625, 3.33333)
 texture = ExtResource("4_8psce")
 
-[node name="sword" type="Sprite2D" parent="Container/Weapons/Arm"]
-position = Vector2(38.75, 32.5)
+[node name="sword" type="Sprite2D" parent="Weapons/Arm"]
+position = Vector2(39, 32)
 scale = Vector2(2.16667, 1.59524)
 texture = ExtResource("5_h533h")
 hframes = 17
 vframes = 6
 
-[node name="Buttons" type="Panel" parent="Container"]
+[node name="Spear" type="Control" parent="Weapons"]
+anchors_preset = 0
+offset_left = 69.0
+offset_top = -1.0
+offset_right = 144.0
+offset_bottom = 82.0
+
+[node name="spear" type="TextureButton" parent="Weapons/Spear"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 14.0
+offset_top = 59.0
+offset_right = 64.0
+offset_bottom = 71.0
+texture_normal = ExtResource("3_dmibo")
+texture_pressed = ExtResource("4_8psce")
+stretch_mode = 0
+
+[node name="Text" type="Label" parent="Weapons/Spear/spear"]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 12.0
+text = "EQUIP"
+label_settings = SubResource("LabelSettings_irua0")
+horizontal_alignment = 1
+
+[node name="Band2Off" type="Sprite2D" parent="Weapons/Spear"]
+position = Vector2(38.5, 38)
+scale = Vector2(1.65625, 3.33333)
+texture = ExtResource("4_8psce")
+
+[node name="sword" type="Sprite2D" parent="Weapons/Spear"]
+position = Vector2(50, 46)
+scale = Vector2(1.3, 0.957)
+texture = ExtResource("6_f8pq4")
+hframes = 8
+vframes = 8
+frame = 14
+
+[node name="Buttons" type="Panel" parent="."]
+visible = false
+offset_left = -160.0
+offset_top = -57.1428
+offset_right = -120.0
+offset_bottom = -17.1428
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4o8dq")
 
-[node name="StartWave" type="Button" parent="Container/Buttons"]
+[node name="StartWave" type="Button" parent="Buttons"]
 layout_mode = 0
 offset_left = 110.0
 offset_top = 46.0
@@ -112,7 +162,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_tkw6o")
 text = "START WAVE"
 flat = true
 
-[node name="weaponsOption" type="Button" parent="Container/Buttons"]
+[node name="weaponsOption" type="Button" parent="Buttons"]
 layout_mode = 0
 offset_left = 110.0
 offset_top = 69.0
@@ -123,7 +173,7 @@ text = "WEAPONS
 "
 flat = true
 
-[node name="Build" type="Button" parent="Container/Buttons"]
+[node name="Build" type="Button" parent="Buttons"]
 layout_mode = 0
 offset_left = 110.0
 offset_top = 94.0
@@ -134,7 +184,7 @@ text = "BUILD
 "
 flat = true
 
-[node name="Leave" type="Button" parent="Container/Buttons"]
+[node name="Leave" type="Button" parent="Buttons"]
 layout_mode = 0
 offset_left = 133.0
 offset_top = 149.0
@@ -145,7 +195,7 @@ text = "LEAVE
 "
 flat = true
 
-[node name="Update" type="Button" parent="Container/Buttons"]
+[node name="Update" type="Button" parent="Buttons"]
 layout_mode = 0
 offset_left = 131.0
 offset_top = 122.0
@@ -156,115 +206,43 @@ text = "ANVIL
 "
 flat = true
 
-[node name="ItemsContainer" type="GridContainer" parent="Container"]
+[node name="ItemsContainer" type="GridContainer" parent="."]
 visible = false
-layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -57.1428
+offset_right = -160.0
+offset_bottom = -57.1428
 grow_vertical = 2
 theme_override_constants/h_separation = 30
 theme_override_constants/v_separation = 30
 columns = 5
 
-[node name="ItemSpec" parent="Container" instance=ExtResource("7_1qnbk")]
+[node name="ItemSpec" parent="." instance=ExtResource("7_1qnbk")]
 visible = false
-layout_mode = 0
-offset_left = 170.0
-offset_top = 6.0
-offset_right = 320.0
-offset_bottom = 199.0
+offset_left = 10.0
+offset_top = -51.1428
+offset_right = 160.0
+offset_bottom = 141.857
+mouse_filter = 2
 
-[node name="Coins" parent="Container" instance=ExtResource("8_n1i8u")]
+[node name="Coins" parent="." instance=ExtResource("8_n1i8u")]
 visible = false
-offset_left = 1.0
-offset_top = 177.0
-offset_right = 41.0
-offset_bottom = 217.0
+offset_left = -159.0
+offset_top = 119.857
+offset_right = -119.0
+offset_bottom = 159.857
+mouse_filter = 2
 
-[node name="Update" type="Control" parent="Container"]
-visible = false
-anchors_preset = 0
-offset_right = 325.0
-offset_bottom = 206.0
+[node name="Update" type="Node2D" parent="."]
+position = Vector2(-160, -57.1428)
 
-[node name="ContainerArms" type="Panel" parent="Container/Update"]
-layout_mode = 0
-offset_top = 50.0
-offset_right = 326.0
-offset_bottom = 96.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_2hf14")
+[node name="Slot" parent="Update" groups=["shield", "sword"] instance=ExtResource("12_q3u1m")]
+z_index = 100
+position = Vector2(160, 57.1429)
 
-[node name="ActualArm" type="Sprite2D" parent="Container/Update/ContainerArms"]
-position = Vector2(109, 23)
-scale = Vector2(3.33333, 3.83333)
-texture = ExtResource("8_c0l5p")
-
-[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/ActualArm"]
-position = Vector2(6.30001, 3.85511)
-scale = Vector2(0.750001, 0.471016)
-texture = ExtResource("8_dr33g")
-hframes = 8
-vframes = 8
-frame = 12
-
-[node name="ActualShield" type="Sprite2D" parent="Container/Update/ContainerArms"]
-position = Vector2(61, 22)
-scale = Vector2(3.33333, 3.83333)
-texture = ExtResource("8_c0l5p")
-
-[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/ActualShield"]
-position = Vector2(-1.2, -1.56522)
-scale = Vector2(0.750001, 0.471016)
-texture = ExtResource("10_2orem")
-hframes = 8
-vframes = 8
-frame = 32
-
-[node name="NextLevelArm" type="Sprite2D" parent="Container/Update/ContainerArms"]
-position = Vector2(215, 23)
-scale = Vector2(3.33333, 3.83333)
-texture = ExtResource("8_c0l5p")
-
-[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/NextLevelArm"]
-position = Vector2(6.30001, 3.85511)
-scale = Vector2(0.750001, 0.471016)
-hframes = 8
-vframes = 8
-frame = 12
-
-[node name="NextLevelShield" type="Sprite2D" parent="Container/Update/ContainerArms"]
-position = Vector2(262, 23)
-scale = Vector2(3.33333, 3.83333)
-texture = ExtResource("8_c0l5p")
-
-[node name="Arm" type="Sprite2D" parent="Container/Update/ContainerArms/NextLevelShield"]
-position = Vector2(-0.599997, -2.08696)
-scale = Vector2(0.750001, 0.471016)
-texture = ExtResource("11_uy8d1")
-hframes = 8
-vframes = 8
-frame = 32
-
-[node name="TextureRect" type="TextureRect" parent="Container/Update/ContainerArms"]
-layout_mode = 0
-offset_left = 149.0
-offset_top = 14.0
-offset_right = 174.0
-offset_bottom = 33.0
-texture = ExtResource("10_2bjjs")
-expand_mode = 1
-
-[node name="UptadeClick" type="TextureButton" parent="Container/Update"]
-layout_mode = 0
-offset_left = 142.0
-offset_top = 110.0
-offset_right = 180.0
-offset_bottom = 142.0
-texture_normal = ExtResource("10_vlkxo")
-stretch_mode = 0
-
-[node name="Anvil" type="Label" parent="Container/Update"]
-layout_mode = 0
+[node name="Anvil" type="Label" parent="Update"]
 offset_left = 1.0
 offset_top = 2.0
 offset_right = 326.0
@@ -273,40 +251,52 @@ text = "ANVIL"
 label_settings = SubResource("LabelSettings_qlgqn")
 horizontal_alignment = 1
 
-[node name="Level" type="Label" parent="Container/Update"]
-layout_mode = 0
-offset_top = 145.0
-offset_right = 326.0
-offset_bottom = 168.0
+[node name="UptadeClick" type="Button" parent="Update"]
+offset_left = 110.0
+offset_top = 168.571
+offset_right = 213.0
+offset_bottom = 190.571
+theme_override_fonts/font = ExtResource("11_w1b0y")
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxFlat_bxn4l")
+theme_override_styles/normal = SubResource("StyleBoxFlat_h0ns6")
 text = "UPGRADE LV 2"
-label_settings = SubResource("LabelSettings_lw6mx")
-horizontal_alignment = 1
 
-[node name="Alert" type="Label" parent="Container/Update"]
-layout_mode = 0
+[node name="Alert" type="Label" parent="Update"]
 offset_left = -1.0
-offset_top = 163.0
+offset_top = 175.857
 offset_right = 325.0
-offset_bottom = 186.0
+offset_bottom = 198.857
 label_settings = SubResource("LabelSettings_36vvr")
 horizontal_alignment = 1
 
-[node name="BackButton" type="Button" parent="Container"]
-visible = false
-layout_mode = 0
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 14.0
-offset_bottom = 13.0
+[node name="Sprite2D" type="Sprite2D" parent="Update"]
+position = Vector2(160, 57.1428)
+scale = Vector2(0.714286, 1.90476)
+texture = ExtResource("3_dmibo")
+
+[node name="Label" type="Label" parent="Update"]
+offset_left = 114.286
+offset_top = 77.1428
+offset_right = 308.286
+offset_bottom = 100.143
+text = "DRAG THE EQUIP "
+label_settings = SubResource("LabelSettings_7wpx7")
+
+[node name="BackButton" type="Button" parent="."]
+offset_left = -162.0
+offset_top = -59.1428
+offset_right = -146.0
+offset_bottom = -44.1428
 icon = ExtResource("6_h2o4l")
 flat = true
 expand_icon = true
 
-[connection signal="pressed" from="Container/Weapons/Arm/Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="Container/Weapons/Arm/Button" to="." method="_on_band_2_on_pressed"]
-[connection signal="pressed" from="Container/Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
-[connection signal="pressed" from="Container/Buttons/Build" to="." method="_on_build_pressed"]
-[connection signal="pressed" from="Container/Buttons/Leave" to="." method="_on_leave_pressed"]
-[connection signal="pressed" from="Container/Buttons/Update" to="." method="_on_update_pressed"]
-[connection signal="pressed" from="Container/Update/UptadeClick" to="." method="_on_uptade_click_pressed"]
-[connection signal="pressed" from="Container/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Weapons/Arm/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Weapons/Spear/spear" to="." method="_on_spear_pressed"]
+[connection signal="pressed" from="Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
+[connection signal="pressed" from="Buttons/Build" to="." method="_on_build_pressed"]
+[connection signal="pressed" from="Buttons/Leave" to="." method="_on_leave_pressed"]
+[connection signal="pressed" from="Buttons/Update" to="." method="_on_update_pressed"]
+[connection signal="pressed" from="Update/UptadeClick" to="." method="_on_uptade_click_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

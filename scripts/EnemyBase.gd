@@ -1,12 +1,10 @@
 extends CharacterBody2D
-
 class_name EnemyBase
 
 # -----------------------------
 # CONFIGURAÇÕES DE MOVIMENTO
 # -----------------------------
 @export var speed: int = 30
-@export var charge_speed: int = 100
 @export var patrol_speed: int = 20
 @export var separation_range: float = 50.0
 @export var separation_force: float = 20.0
@@ -17,6 +15,7 @@ var last_horizontal_direction: float = 1.0  # 1 para direita, -1 para esquerda
 # CONFIGURAÇÕES DE ATAQUE
 # -----------------------------
 @export var attack_cooldown: float = 1.5
+@export var attack_range: float = 20.0   # Distância mínima para que o attack animado seja priorizado
 var can_attack: bool = true
 var damage: float = 30
 
@@ -30,16 +29,19 @@ var is_dead: bool = false
 # ESTADOS
 # -----------------------------
 var is_chasing: bool = false
-var is_charging: bool = false
 var is_recoiling: bool = false
-var attack_cancelled: bool = false
 var is_damaged: bool = false
 var is_patrolling: bool = true
 var patrol_direction: Vector2 = Vector2.RIGHT
 var patrol_timer: float = 0.0
 @export var patrol_duration: float = 2.0
 @export var min_distance: float = 10.0
-@export var charge_distance: float = 40.0
+
+# Flag para indicar se o player está na área de ataque.
+var in_attack_area: bool = false
+
+# Flag para indicar se o inimigo está atacando.
+var is_attacking: bool = false
 
 # -----------------------------
 # NÓS DE ANIMAÇÃO E COLISÃO
@@ -53,22 +55,31 @@ signal hit_player
 signal enemy_died
 
 func _ready() -> void:
+	print("[EnemyBase] _ready() chamado.")
+	# Ativa a AnimationTree e define o estado "run"
 	if animation_tree:
+		print("[EnemyBase] AnimationTree encontrado. Ativando e definindo 'run'.")
 		animation_tree.active = true
-		_set_animation("run")  # Estado inicial padrão
+		_set_animation("run")
+	else:
+		print("[EnemyBase] AnimationTree NÃO encontrado.")
 	
-	$Area2D.monitoring = true
-	$Area2D.monitorable = true
-	$Area2D.set_collision_mask_value(2, true)
-
-	# Conecta os sinais do Area2D se ainda não estiverem conectados
-	if not $Area2D.is_connected("body_entered", Callable(self, "_on_area_2d_body_entered")):
-		$Area2D.connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
-	
-	if not $Area2D.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
-		$Area2D.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
+	# Configura a área de DETECÇÃO
+	if $DetectionArea:
+		print("[EnemyBase] DetectionArea encontrado, configurando monitoring e mask.")
+		$DetectionArea.monitoring = true
+		$DetectionArea.monitorable = true
+		$DetectionArea.set_collision_mask_value(2, true)
+		if not $DetectionArea.is_connected("body_entered", Callable(self, "_on_area_2d_body_entered")):
+			$DetectionArea.connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
+		if not $DetectionArea.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
+			$DetectionArea.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
+	else:
+		print("[EnemyBase] NÓ DetectionArea NÃO ENCONTRADO!")
 
 func _physics_process(delta: float) -> void:
+	# Não chama super() para evitar a lógica da classe base que impede movimento durante ataque
+	
 	if is_dead or not has_method("_get_player"):
 		return
 	
@@ -76,6 +87,7 @@ func _physics_process(delta: float) -> void:
 
 	# Se estiver recuando (knockback)
 	if is_recoiling:
+		print("[SlimeSlippery] is_recoiling == true, executando move_and_slide() e retornando.")
 		move_and_slide()
 		return
 
@@ -85,6 +97,7 @@ func _physics_process(delta: float) -> void:
 		if patrol_timer >= patrol_duration:
 			patrol_timer = 0.0
 			patrol_direction = -patrol_direction
+			print("[SlimeSlippery] Invertendo patrulha, novo patrol_direction =", patrol_direction)
 		_set_animation_direction(patrol_direction)
 		base_velocity = patrol_direction * patrol_speed + compute_separation()
 
@@ -99,16 +112,17 @@ func _physics_process(delta: float) -> void:
 			else:
 				direction = Vector2.ZERO
 				base_velocity = Vector2.ZERO
-			if distance_to_player < charge_distance and can_attack and not is_damaged:
-				charge_attack()
-				return
+
+			if distance_to_player < attack_range and can_attack and not is_damaged:
+				print("[SlimeSlippery] Player muito perto (d <", attack_range, "). Attack animado deverá ser disparado via area_attack.")
 			base_velocity = direction * speed
 	else:
 		base_velocity = Vector2.ZERO
-		_set_animation_direction(Vector2(last_horizontal_direction, 0))  # Mantém a última direção horizontal
+		_set_animation_direction(Vector2(last_horizontal_direction, 0))
 
 	velocity = base_velocity
 	move_and_slide()
+
 
 func compute_separation() -> Vector2:
 	var repel_vector = Vector2.ZERO
@@ -125,54 +139,41 @@ func compute_separation() -> Vector2:
 		repel_vector *= separation_force
 	return repel_vector
 
-func charge_attack() -> void:
-	if is_charging or not can_attack or is_damaged:
-		return
-	attack_cancelled = false
-	can_attack = false
-	is_charging = true
-	_set_animation_direction(direction)
-	await get_tree().create_timer(0.3).timeout
-	if attack_cancelled:
-		_cancel_attack()
-		return
-	velocity = direction * charge_speed
-	move_and_slide()
-	if attack_cancelled:
-		_cancel_attack()
-		return
-	is_charging = false
-	velocity = Vector2.ZERO
-	await get_tree().create_timer(attack_cooldown).timeout
-	can_attack = true
-
-func _cancel_attack() -> void:
-	is_charging = false
-	velocity = Vector2.ZERO
-	await get_tree().create_timer(attack_cooldown).timeout
-	can_attack = true
-
-func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
+func take_damage(damage_amount: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
 	if is_dead:
+		print("[EnemyBase] take_damage() ignorado pois is_dead == true.")
 		return
-	health -= damage
+
+	print("[EnemyBase] take_damage(): Recebi dano =", damage_amount)
+	health -= damage_amount
+	print("[EnemyBase] Nova health =", health)
+
 	if health <= 0:
 		die()
 		return
-	_set_animation("run")
+
+	# Só altera a animação se não estiver atacando
+	if not is_attacking:
+		_set_animation("run")
+
 	if knockback_force == Vector2.ZERO:
 		knockback_force = (position - _get_player().position).normalized() * 300.0
+
 	is_recoiling = true
 	velocity = knockback_force
 	move_and_slide()
+
 	await get_tree().create_timer(0.3).timeout
 	is_recoiling = false
 	velocity = Vector2.ZERO
+
 	_blink_damage()
 	await get_tree().create_timer(0.5).timeout
-	_set_animation("run")
+	if not is_attacking:
+		_set_animation("run")
 
 func _blink_damage() -> void:
+	print("[EnemyBase] _blink_damage() piscando sprite")
 	for i in range(5):
 		sprite.modulate.a = 0.3
 		await get_tree().create_timer(0.1).timeout
@@ -181,8 +182,10 @@ func _blink_damage() -> void:
 
 func die() -> void:
 	if is_dead:
+		print("[EnemyBase] die() ignorado pois is_dead == true.")
 		return
 	is_dead = true
+	print("[EnemyBase] Morri! _set_animation('dead')")
 	_set_animation("dead")
 	await get_tree().create_timer(0.2).timeout
 	emit_signal("enemy_died")
@@ -190,9 +193,12 @@ func die() -> void:
 
 func _set_animation(anim_name: String) -> void:
 	if not animation_tree or not animation_state:
+		print("[EnemyBase] _set_animation() abortado: animation_tree ou animation_state inexistente.")
 		return
 	if animation_state.get_current_node() == anim_name:
+		print("[EnemyBase] Já estou na animação", anim_name)
 		return
+	print("[EnemyBase] _set_animation(): travel('", anim_name, "')")
 	animation_state.travel(anim_name)
 
 func _set_animation_direction(dir: Vector2) -> void:
@@ -202,12 +208,13 @@ func _set_animation_direction(dir: Vector2) -> void:
 		last_horizontal_direction = -1.0
 	elif dir.x > 0:
 		last_horizontal_direction = 1.0
+
 	blend_position.x = last_horizontal_direction
 	blend_position.y = 0
 	animation_tree.set("parameters/run/blend_position", blend_position)
 
 func set_detection_scale(scale: float) -> void:
-	var detection_area = get_node_or_null("Area2D")
+	var detection_area = get_node_or_null("DetectionArea")
 	if detection_area:
 		var collision = detection_area.get_node_or_null("CollisionShape2D")
 		if collision and collision.shape is RectangleShape2D:
@@ -218,7 +225,7 @@ func set_detection_scale(scale: float) -> void:
 func get_damage() -> int:
 	return damage
 
-# Deve ser implementado nos filhos (Ex: Slime.gd)
+# Para ser sobrescrito nos filhos (Ex: SlimeSlippery.gd)
 func _get_player() -> Node2D:
 	return null
 
@@ -226,14 +233,19 @@ func _get_player() -> Node2D:
 # DETECÇÃO DO JOGADOR
 # -----------------------------
 func _on_area_2d_body_entered(body: Node2D) -> void:
+	print("[EnemyBase] _on_area_2d_body_entered com:", body)
 	if body == _get_player():
+		print("[EnemyBase] É o player! is_chasing = true, is_patrolling = false")
 		is_chasing = true
 		is_patrolling = false
 		hit_player.emit()
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
+	print("[EnemyBase] _on_area_2d_body_exited com:", body)
 	if body == _get_player():
-		is_chasing = false
-		is_patrolling = true
-		patrol_timer = 0.0
-		patrol_direction = Vector2.RIGHT
+		if not in_attack_area:
+			print("[EnemyBase] Player saiu da DetectionArea. is_chasing = false, is_patrolling = true")
+			is_chasing = false
+			is_patrolling = true
+			patrol_timer = 0.0
+			patrol_direction = Vector2.RIGHT

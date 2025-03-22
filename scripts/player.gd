@@ -2,26 +2,40 @@ extends CharacterBody2D
 
 # Preload do banco de dados de armas (nome: arms_database)
 var arms_database = preload("res://scripts/arms_database.gd")
-
+signal equipment_changed
 @onready var stats = preload("res://scripts/player_stats.gd").new()
+
 @export var hair_color: Color = Color(1, 1, 1)  # Branco como padrão
+var attacks_blocked: bool = false
 @export_category("Variables")
 @export var _friction: float = 0.3
 @export var _acceleration: float = 0.3
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
 @export var shield_level: int = 1
+
 var current_shield_id: String = "shield_basic"
 var movement_enabled: bool = true
 
-# Variável que controla o nível da arma
+@export var current_item_type: String = ""  # "sword", "spear", etc.
+
+# >>> Escudo controlado separadamente <<<
+@export var using_shield: bool = false
+
+# Variável que controla o nível da arma (espada)
 @export var sword_level: int = 1
-# Identificador da arma equipada – permite trocar para outras armas futuramente
 var current_weapon_id: String = "sword_basic"
+@export var using_sword: bool = false
+
+# Variáveis para controlar a lança
+@export var using_spear: bool = false
+@export var spear_level: int = 1
+var current_spear_id: String = "spear_basic"
 
 @export_category("Objects")
 @export var _animation_tree: AnimationTree = null
 @export var _timer: Timer = null  # Timer para controlar a duração de cada golpe
+
 signal smithing_finished
 
 # ---------------------------
@@ -32,19 +46,28 @@ signal smithing_finished
 @onready var outfit_sprite = $CompositeSprites/BaseSprites/Outfit
 @onready var sword_sprite = $CompositeSprites/BaseSprites/Arm
 @onready var shield_sprite = $CompositeSprites/BaseSprites/Child
+@onready var spear_sprite = $CompositeSprites/BaseSprites/spear
 
 # Arrays exclusivos do Smithing
 var smithing_hair_array: Array[Texture2D] = []
 var smithing_outfit_array: Array[Texture2D] = []
 
 # ---------------------------
-# AttackSwordAnimation
+# AttackSwordAnimation (espada)
 # ---------------------------
 @onready var attackSwordChieldBody = $CompositeSprites/AttackSwordAnimation/SwordChieldBody
 @onready var attackSwordArm = $CompositeSprites/AttackSwordAnimation/SwordArm
 @onready var attackChield = $CompositeSprites/AttackSwordAnimation/Chield
 @onready var attackHair = $CompositeSprites/AttackSwordAnimation/Hair
 @onready var attackOutfit = $CompositeSprites/AttackSwordAnimation/Outfit
+
+# ---------------------------
+# AttackSpearAnimation (lança)
+# ---------------------------
+@onready var attackSpearChieldBody = $CompositeSprites/AttackSpearAnimation/Body
+@onready var attackSpearArm = $CompositeSprites/AttackSpearAnimation/Spear
+@onready var attackSpearHair = $CompositeSprites/AttackSpearAnimation/Hair
+@onready var attackSpearOutfit = $CompositeSprites/AttackSpearAnimation/Outfit
 
 @onready var composite_sprites: Composite = Composite.new()
 @onready var camera: Camera2D = $Camera2D
@@ -69,10 +92,14 @@ var arms_status = preload("res://scripts/Arms_status.gd").new()
 var _knockback: Vector2 = Vector2.ZERO
 var knockback_timer: float = 0.0
 
-@export var using_sword: bool = false
-
 var hair_attack_array: Array[Texture2D] = []
 var outfit_attack_array: Array[Texture2D] = []
+
+# >>> Arrays de cabelo para spear <<<
+var hair_attack_array_spear: Array[Texture2D] = []
+
+# >>> Arrays de outfit para spear <<<
+var outfit_attack_array_spear: Array[Texture2D] = []
 
 var _attack_direction: Vector2 = Vector2.DOWN
 var current_hp: int
@@ -91,9 +118,17 @@ var _is_attacking: bool = false
 var _combo_phase: int = 0
 var _can_chain_combo: bool = false
 var _max_combo: int = 3
+
+# Tempos para cada slash da espada
 var _slash_1_time: float = 0.3
 var _slash_2_time: float = 0.3
 var _slash_3_time: float = 0.3
+
+# >>> Tempos para a lança (ordem 2 -> 3 -> 1) <<<
+var _spear_slash_2_time: float = 0.3
+var _spear_slash_3_time: float = 0.3
+var _spear_slash_1_time: float = 0.3
+
 var _combo_window_timer: Timer
 
 # ---------------------------
@@ -103,6 +138,8 @@ var _combo_window_timer: Timer
 @onready var smithing_body_sprite: Sprite2D = $CompositeSprites/Smithing/Body
 @onready var smithing_hair_sprite: Sprite2D = $CompositeSprites/Smithing/Hair
 @onready var smithing_outfit_sprite: Sprite2D = $CompositeSprites/Smithing/Outfit
+
+@onready var anim_player: AnimationPlayer = $CompositeSprites/Animation/AnimationPlayer
 
 func _ready() -> void:
 	stats.calculate_derived_stats(using_sword)
@@ -119,7 +156,9 @@ func _ready() -> void:
 	# Ajusta sprite básico do Body
 	bodySprite.texture = composite_sprites.body_spriteSheet[0]
 
-	# Carrega arrays de cabelo/outfit para ataques (base e attack)
+	# ---------------------------
+	# Carrega arrays (espada)
+	# ---------------------------
 	for i in range(1, 3):
 		var hair_path = "res://CharacterSprites/Hair/Attack/slash_1_sword/hair (%d).png" % i
 		var hair_resource = load(hair_path)
@@ -132,6 +171,20 @@ func _ready() -> void:
 		if outfit_resource:
 			outfit_attack_array.append(outfit_resource)
 
+	# >>> Arrays de cabelo para spear <<<
+	for i in range(1, 3):
+		var hair_path_spear = "res://CharacterSprites/Hair/Attack/slash_1_spear/hair (%d).png" % i
+		var hair_resource_spear = load(hair_path_spear)
+		if hair_resource_spear:
+			hair_attack_array_spear.append(hair_resource_spear)
+
+	# >>> Arrays de outfit para spear <<<
+	for i in range(1, 8):
+		var outfit_path_spear = "res://CharacterSprites/Outfit/Attack/slash_1_spear/outfit (%d).png" % i
+		var outfit_resource_spear = load(outfit_path_spear)
+		if outfit_resource_spear:
+			outfit_attack_array_spear.append(outfit_resource_spear)
+
 	# Ajusta texturas iniciais
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
@@ -139,9 +192,19 @@ func _ready() -> void:
 
 	if hair_attack_array.size() > 0 and curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-		attackHair.modulate = hair_color  # Aplica a cor também no sprite de ataque
+		attackHair.modulate = hair_color
+
 	if outfit_attack_array.size() > 0 and curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
+
+	# Lança
+	if hair_attack_array_spear.size() > 0 and curr_hair < hair_attack_array_spear.size():
+		attackSpearHair.texture = hair_attack_array_spear[curr_hair]
+		attackSpearHair.modulate = hair_color
+
+	if outfit_attack_array_spear.size() > 0 and curr_outfit < outfit_attack_array_spear.size():
+		attackSpearOutfit.texture = outfit_attack_array_spear[curr_outfit]
+		attackSpearOutfit.modulate = Color(1, 1, 1)
 
 	if _animation_tree:
 		_state_machine = _animation_tree.get("parameters/playback")
@@ -155,11 +218,9 @@ func _ready() -> void:
 	connect_signal_if_not_connected($AttackArea, "body_entered", "_on_attack_body_entered")
 	connect_signal_if_not_connected($AttackArea, "area_entered", "_on_attack_area_entered")
 
-	# Carrega dados do JSON para o base 
 	var loaded_data = load_from_json()
 	apply_loaded_data(loaded_data)
 
-	# Oculta smithing no início
 	smithing_node.visible = false
 	wave_manager.connect("wave_completed", Callable(self, "_on_wave_completed"))
 	_set_sprites_visible(false)
@@ -167,9 +228,11 @@ func _ready() -> void:
 	update_hp_bar()
 
 func _on_wave_completed(wave: int) -> void:
-	# Quando a wave é finalizada, restaura o HP
 	current_hp = stats.max_hp
 	update_hp_bar()
+
+func block_attacks(block: bool) -> void:
+	attacks_blocked = block
 
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):
@@ -229,7 +292,7 @@ func _move(delta: float) -> void:
 		velocity.y = lerp(velocity.y, dir.y * stats.move_speed, _acceleration)
 		_attack_direction = dir
 
-		if using_sword:
+		if using_sword or using_spear:
 			_animation_tree.set("parameters/idle/blend_position", dir)
 			_animation_tree.set("parameters/running/blend_position", dir)
 		else:
@@ -240,32 +303,53 @@ func _move(delta: float) -> void:
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 
 # ---------------------------
-# COMBO
+# COMBO / ATAQUE
 # ---------------------------
 func _attack_combo_logic() -> void:
-	if not using_sword:
+	if attacks_blocked or get_viewport().gui_get_focus_owner() != null:
 		return
 
-	if Input.is_action_just_pressed("attack"):
-		if _combo_phase == 0 and not _is_attacking:
-			_combo_phase = 1
-			start_attack_slash("AttackSwordSlash_1", _slash_1_time)
-		elif _combo_phase == 1 and _can_chain_combo:
-			_combo_phase = 2
-			start_attack_slash("AttackSwordSlash_3", _slash_2_time)
-		elif _combo_phase == 2 and _can_chain_combo:
-			_combo_phase = 3
-			start_attack_slash("AttackSwordSlash_2", _slash_3_time)
+	if using_sword:
+		if Input.is_action_just_pressed("attack"):
+			if _combo_phase == 0 and not _is_attacking:
+				_combo_phase = 1
+				start_attack_slash("AttackSwordSlash_1", _slash_1_time)
+			elif _combo_phase == 1 and _can_chain_combo:
+				_combo_phase = 2
+				start_attack_slash("AttackSwordSlash_3", _slash_2_time)
+			elif _combo_phase == 2 and _can_chain_combo:
+				_combo_phase = 3
+				start_attack_slash("AttackSwordSlash_2", _slash_3_time)
+	elif using_spear:
+		if Input.is_action_just_pressed("attack"):
+			if _combo_phase == 0 and not _is_attacking:
+				_combo_phase = 1
+				start_attack_slash_spear("AttackSpearSlash_2", _spear_slash_2_time)
+			elif _combo_phase == 1 and _can_chain_combo:
+				_combo_phase = 2
+				start_attack_slash_spear("AttackSpearSlash_3", _spear_slash_3_time)
+			elif _combo_phase == 2 and _can_chain_combo:
+				_combo_phase = 3
+				start_attack_slash_spear("AttackSpearSlash_1", _spear_slash_1_time)
 
 func start_attack_slash(anim_name: String, slash_time: float) -> void:
 	_is_attacking = true
 	$AttackArea.monitoring = true
 	$AttackArea.monitorable = true
 	_set_sprites_visible(true)
-
 	_animation_tree.set("parameters/%s/blend_position" % anim_name, _attack_direction)
 	_state_machine.travel(anim_name)
+	_timer.start(slash_time)
+	_can_chain_combo = true
 
+func start_attack_slash_spear(anim_name: String, slash_time: float) -> void:
+	anim_player.speed_scale = 0.2
+	_is_attacking = true
+	$AttackArea.monitoring = true
+	$AttackArea.monitorable = true
+	_set_sprites_visible(true)
+	_animation_tree.set("parameters/%s/blend_position" % anim_name, _attack_direction)
+	_state_machine.travel(anim_name)
 	_timer.start(slash_time)
 	_can_chain_combo = true
 
@@ -274,12 +358,20 @@ func _on_attack_timer_timeout() -> void:
 	$AttackArea.monitoring = false
 	$AttackArea.monitorable = false
 	_set_sprites_visible(false)
+	anim_player.speed_scale = 1.0
 
-	if _combo_phase in [2, 3]:
-		_combo_phase = 0
-		_can_chain_combo = false
-	else:
-		_combo_window_timer.start(0.2)
+	if using_sword:
+		if _combo_phase in [2, 3]:
+			_combo_phase = 0
+			_can_chain_combo = false
+		else:
+			_combo_window_timer.start(0.2)
+	elif using_spear:
+		if _combo_phase in [2, 3]:
+			_combo_phase = 0
+			_can_chain_combo = false
+		else:
+			_combo_window_timer.start(0.2)
 
 func _on_combo_window_timeout() -> void:
 	if _combo_phase == 1:
@@ -292,9 +384,8 @@ func _on_combo_window_timeout() -> void:
 func _animate() -> void:
 	if _is_attacking:
 		return
-
 	if velocity.length() > 2:
-		if using_sword:
+		if using_sword or using_spear:
 			_state_machine.travel("running")
 		else:
 			_state_machine.travel("run")
@@ -313,17 +404,32 @@ func _on_attack_area_entered(area: Area2D) -> void:
 		if area.has_method("take_damage"):
 			area.take_damage(stats.attack_damage, knockback_dir * 150.0)
 
+# ---------------------------
+# Visibilidade dos sprites
+# ---------------------------
 func _set_sprites_visible(is_attacking: bool) -> void:
 	bodySprite.visible = not is_attacking
 	hairSprite.visible = not is_attacking
 	outfit_sprite.visible = not is_attacking
-	sword_sprite.visible = not is_attacking
-	shield_sprite.visible = not is_attacking
-	attackSwordChieldBody.visible = is_attacking
-	attackSwordArm.visible = is_attacking
-	attackChield.visible = is_attacking
-	attackHair.visible = is_attacking
-	attackOutfit.visible = is_attacking
+
+	sword_sprite.visible = (not is_attacking) and using_sword
+	spear_sprite.visible = (not is_attacking) and using_spear
+
+	# Escudo só aparece se using_shield
+	shield_sprite.visible = (not is_attacking) and using_shield
+
+	# -- Animação de ataque com espada --
+	attackSwordChieldBody.visible = is_attacking and using_sword
+	attackSwordArm.visible = is_attacking and using_sword
+	attackChield.visible = is_attacking and using_shield
+	attackHair.visible = is_attacking and using_sword
+	attackOutfit.visible = is_attacking and using_sword
+
+	# -- Animação de ataque com lança --
+	attackSpearChieldBody.visible = is_attacking and using_spear and using_shield
+	attackSpearArm.visible = is_attacking and using_spear
+	attackSpearHair.visible = is_attacking and using_spear
+	attackSpearOutfit.visible = is_attacking and using_spear
 
 # ---------------------------
 # CUSTOMIZAÇÃO
@@ -331,33 +437,41 @@ func _set_sprites_visible(is_attacking: bool) -> void:
 func _on_change_hair_pressed() -> void:
 	curr_hair = (curr_hair + 1) % composite_sprites.hair_spriteSheet.size()
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
-	# Reaplica a cor salva após atualizar a textura
 	hairSprite.modulate = hair_color
-
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-		attackHair.modulate = hair_color  # Aplica a modulação no attackHair
+		attackHair.modulate = hair_color
+	if curr_hair < hair_attack_array_spear.size():
+		attackSpearHair.texture = hair_attack_array_spear[curr_hair]
+		attackSpearHair.modulate = hair_color
 	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
 		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+		smithing_hair_sprite.modulate = hair_color
 
 func _on_change_hair_back_pressed() -> void:
 	curr_hair = (curr_hair - 1) % composite_sprites.hair_spriteSheet.size()
 	if curr_hair < 0:
 		curr_hair = composite_sprites.hair_spriteSheet.size() - 1
 	hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
-	hairSprite.modulate = hair_color  # Reaplica a cor
-
+	hairSprite.modulate = hair_color
 	if curr_hair < hair_attack_array.size():
 		attackHair.texture = hair_attack_array[curr_hair]
-		attackHair.modulate = hair_color  # Aplica a modulação no attackHair
+		attackHair.modulate = hair_color
+	if curr_hair < hair_attack_array_spear.size():
+		attackSpearHair.texture = hair_attack_array_spear[curr_hair]
+		attackSpearHair.modulate = hair_color
 	if smithing_hair_sprite and curr_hair < composite_sprites.hair_spriteSheet.size():
 		smithing_hair_sprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
+		smithing_hair_sprite.modulate = hair_color
 
 func _on_change_outfit_pressed() -> void:
 	curr_outfit = (curr_outfit + 1) % composite_sprites.outfit_spriteSheet.size()
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
+	if curr_outfit < outfit_attack_array_spear.size():
+		attackSpearOutfit.texture = outfit_attack_array_spear[curr_outfit]
+		attackSpearOutfit.modulate = Color(1, 1, 1)
 	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
 		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
@@ -368,15 +482,15 @@ func _on_change_outfit_back_pressed() -> void:
 	outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 	if curr_outfit < outfit_attack_array.size():
 		attackOutfit.texture = outfit_attack_array[curr_outfit]
+	if curr_outfit < outfit_attack_array_spear.size():
+		attackSpearOutfit.texture = outfit_attack_array_spear[curr_outfit]
+		attackSpearOutfit.modulate = Color(1, 1, 1)
 	if smithing_outfit_sprite and curr_outfit < composite_sprites.outfit_spriteSheet.size():
 		smithing_outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 
-func save_customization():
+func save_customization() -> void:
 	emit_signal("customization_finished", curr_hair, curr_outfit, hair_color, nickname)
 
-# ---------------------------
-# MOEDAS / UI
-# ---------------------------
 func add_coins(amount: int) -> void:
 	GameData.coins += amount
 	update_coins_label()
@@ -390,32 +504,73 @@ func update_coins_label() -> void:
 		coins_label.text = str(GameData.coins)
 
 # ---------------------------
-# EQUIPAR / DESEQUIPAR
+# FUNÇÕES DE EQUIPAR/UNEQUIP
+# (agora separadas)
 # ---------------------------
-func equip_sword_and_shield() -> void:
+
+func equip_sword() -> void:
+	# Se já estiver usando espada, remover
 	if using_sword:
-		unequip_sword_and_shield()
+		unequip_sword()
 		return
+
+	# Se estiver usando lança, remover antes
+	if using_spear:
+		unequip_spear()
+
+	current_item_type = "sword"
 	using_sword = true
-
 	update_sword_textures()
-	update_shield_textures()
-
 	sword_sprite.visible = true
-	shield_sprite.visible = true
 	stats.move_speed += 50
+	emit_signal("equipment_changed")
 
-func unequip_sword_and_shield() -> void:
+func unequip_sword() -> void:
 	using_sword = false
 	sword_sprite.visible = false
-	shield_sprite.visible = false
 	stats.calculate_derived_stats(using_sword)
-	
+	emit_signal("equipment_changed")
+
+func equip_spear() -> void:
+	if using_spear:
+		unequip_spear()
+		return
+
+	if using_sword:
+		unequip_sword()
+
+	current_item_type = "spear"
+	using_spear = true
+	update_spear_textures()
+	spear_sprite.visible = true
+	stats.move_speed += 50
+	emit_signal("equipment_changed")
+
+func unequip_spear() -> void:
+	using_spear = false
+	spear_sprite.visible = false
+	stats.calculate_derived_stats(using_spear)
+	emit_signal("equipment_changed")
+
+func equip_shield() -> void:
+	if using_shield:
+		unequip_shield()
+		return
+
+	using_shield = true
+	shield_sprite.visible = true
+	update_shield_textures()
+	emit_signal("equipment_changed")
+
+func unequip_shield() -> void:
+	using_shield = false
+	shield_sprite.visible = false
+	emit_signal("equipment_changed")
+
 # ---------------------------
-# COMPRA DE ITENS
+# COMPRAS
 # ---------------------------
 func purchase_item(item_id: String) -> void:
-	# Aqui alteramos para usar arms_database (assegure-se de que esse método exista no arms_database se for para itens)
 	var item_data = arms_database.get_item_data(item_id)
 	if item_data == {}:
 		return
@@ -445,7 +600,7 @@ func apply_item_effects(item_data: Dictionary) -> void:
 	stats.calculate_derived_stats(using_sword)
 
 # ---------------------------
-# DANO E MORTE
+# DANO / MORTE
 # ---------------------------
 func take_damage(damage: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
 	damage = max(damage - stats.defense, 0)
@@ -475,14 +630,38 @@ func die() -> void:
 func apply_knockback(force: Vector2) -> void:
 	_knockback = force
 	knockback_timer = 0.1
+
+	var sprites_to_flash = [
+		$CompositeSprites/BaseSprites/Body,
+		$CompositeSprites/BaseSprites/Hair,
+		$CompositeSprites/BaseSprites/Outfit,
+		$CompositeSprites/BaseSprites/Arm,
+		$CompositeSprites/BaseSprites/Child,
+		$CompositeSprites/BaseSprites/spear,
+		$CompositeSprites/AttackSwordAnimation/SwordChieldBody,
+		$CompositeSprites/AttackSwordAnimation/SwordArm,
+		$CompositeSprites/AttackSwordAnimation/Chield,
+		$CompositeSprites/AttackSwordAnimation/Hair,
+		$CompositeSprites/AttackSwordAnimation/Outfit,
+		$CompositeSprites/AttackSpearAnimation/Body,
+		$CompositeSprites/AttackSpearAnimation/Spear,
+		$CompositeSprites/AttackSpearAnimation/Hair,
+		$CompositeSprites/AttackSpearAnimation/Outfit
+	]
+
 	for i in range(5):
-		modulate.a = 0.2
+		for sprite in sprites_to_flash:
+			if sprite:
+				sprite.modulate.a = 0.2
 		await get_tree().create_timer(0.1).timeout
-		modulate.a = 1.0
+
+		for sprite in sprites_to_flash:
+			if sprite:
+				sprite.modulate.a = 1.0
 		await get_tree().create_timer(0.1).timeout
 
 # ---------------------------
-# CARREGAR/SALVAR
+# SALVAR / CARREGAR
 # ---------------------------
 func load_from_json() -> Dictionary:
 	var documents_dir = OS.get_user_data_dir()
@@ -498,35 +677,39 @@ func load_from_json() -> Dictionary:
 		return {}
 	return json.get_data()
 
-func apply_loaded_data(data: Dictionary):
+func apply_loaded_data(data: Dictionary) -> void:
 	if data.has("curr_hair"):
 		curr_hair = data["curr_hair"]
 		hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
 		if curr_hair < hair_attack_array.size():
 			attackHair.texture = hair_attack_array[curr_hair]
-			attackHair.modulate = hair_color  # Aplica a modulação também aqui
+			attackHair.modulate = hair_color
+		if curr_hair < hair_attack_array_spear.size():
+			attackSpearHair.texture = hair_attack_array_spear[curr_hair]
+			attackSpearHair.modulate = hair_color
 
 	if data.has("curr_outfit"):
 		curr_outfit = data["curr_outfit"]
 		outfit_sprite.texture = composite_sprites.outfit_spriteSheet[curr_outfit]
 		if curr_outfit < outfit_attack_array.size():
 			attackOutfit.texture = outfit_attack_array[curr_outfit]
+		if curr_outfit < outfit_attack_array_spear.size():
+			attackSpearOutfit.texture = outfit_attack_array_spear[curr_outfit]
+			attackSpearOutfit.modulate = Color(1,1,1)
 
 	if data.has("nickname"):
 		nickname = data["nickname"]
 
 	if data.has("hair_color"):
-		# Aqui, data["hair_color"] é um dicionário com as chaves "r", "g", "b" e "a"
 		var col_dict = data["hair_color"]
 		var saved_hair_color = Color(col_dict["r"], col_dict["g"], col_dict["b"], col_dict["a"])
 		hair_color = saved_hair_color
-		# Aplica a cor ao sprite do cabelo
 		hairSprite.modulate = saved_hair_color
-		attackHair.modulate = saved_hair_color  # Aplica a cor também no attackHair
+		attackHair.modulate = saved_hair_color
+		attackSpearHair.modulate = saved_hair_color
 
 	if data.has("sword_level"):
 		sword_level = data["sword_level"]
-		# Atualiza a arma consultando o arms_database
 		update_sword_textures()
 		var new_strength = arms_status.get_strength_for_level(sword_level)
 		stats.strength = new_strength
@@ -537,19 +720,26 @@ func apply_loaded_data(data: Dictionary):
 		if using_sword and _state_machine:
 			_state_machine.travel("running")
 
-# ---------------------------
-# FUNÇÕES ESPECÍFICAS PARA SMITHING
-# ---------------------------
+	if data.has("spear_level"):
+		spear_level = data["spear_level"]
+		update_spear_textures()
+
+	if data.has("using_spear"):
+		using_spear = data["using_spear"]
+
+	# Se quiser salvar/carregar se escudo estava equipado
+	if data.has("using_shield"):
+		using_shield = data["using_shield"]
+
 func load_smithing_textures() -> void:
 	if smithing_hair_array.size() > 0:
 		return
-
 	for i in range(1, 3):
 		var hair_path = "res://CharacterSprites/body_smithing/Hair/hair (%d).png" % i
 		var hair_tex = load(hair_path)
 		if hair_tex:
 			smithing_hair_array.append(hair_tex)
-	
+
 	for i in range(1, 8):
 		var outfit_path = "res://CharacterSprites/body_smithing/Outfit/outfit (%d).png" % i
 		var outfit_tex = load(outfit_path)
@@ -559,7 +749,8 @@ func load_smithing_textures() -> void:
 func apply_smithing_data() -> void:
 	if curr_hair < smithing_hair_array.size():
 		smithing_hair_sprite.texture = smithing_hair_array[curr_hair]
-		smithing_hair_sprite.modulate = hair_color  # Aplica a cor do cabelo no sprite de smithing
+		smithing_hair_sprite.modulate = hair_color
+
 	if curr_outfit < smithing_outfit_array.size():
 		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
 
@@ -590,39 +781,32 @@ func start_smithing() -> void:
 func _on_smithing_finished() -> void:
 	smithing_node.visible = false
 	$CompositeSprites/BaseSprites.visible = true
-
 	if _animation_tree and _state_machine:
 		_state_machine.travel("idle")
 
 	movement_enabled = true
-
-	# Incrementa 1 nível de espada e 1 nível de escudo
 	sword_level += 1
-	shield_level += 1  # se quiser que o escudo acompanhe a espada
-
+	shield_level += 1
 	update_sword_textures()
 	update_shield_textures()
 
 	var new_strength = arms_status.get_strength_for_level(sword_level)
 	stats.strength = new_strength
 	stats.calculate_derived_stats(using_sword)
+
 	emit_signal("smithing_finished")
 
 # ---------------------------
-# ATUALIZAÇÃO DAS TEXTURAS DA ARMA
+# ATUALIZAÇÃO DAS TEXTURAS
 # ---------------------------
 func update_sword_textures() -> void:
-	# Cria uma instância do arms_database para obter os dados da arma
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_weapon_id, sword_level)
 	if level_data.size() > 0 and level_data.has("texture"):
-		# Atualiza a textura principal com a do database
 		sword_sprite.texture = level_data["texture"]
-		# Se houver uma textura para ataque, atualiza; caso contrário, não altera attackSwordArm (para preservar as animações)
 		if level_data.has("attack_texture"):
 			attackSwordArm.texture = level_data["attack_texture"]
 	else:
-		# Fallback para o sistema antigo
 		if sword_level == 1:
 			var base_sword_path = "res://CharacterSprites/Arms/swords/Sword_1.png"
 			var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/slash_1.png"
@@ -631,14 +815,37 @@ func update_sword_textures() -> void:
 			if ResourceLoader.exists(attack_sword_path):
 				attackSwordArm.texture = load(attack_sword_path)
 		else:
-			var base_sword_path = "res://CharacterSprites/Arms/swords/swords_upgraded/%d/Sword_1.png" % sword_level
-			var attack_sword_path = "res://CharacterSprites/Arms/swords/Attack/swords_upgraded/slash_1/%d/slash_1.png" % sword_level
-			print("trocando textura da arma", base_sword_path)
-			if ResourceLoader.exists(base_sword_path):
-				sword_sprite.texture = load(base_sword_path)
-			if ResourceLoader.exists(attack_sword_path):
-				attackSwordArm.texture = load(attack_sword_path)
-				
+			var base_sword_path2 = "res://CharacterSprites/Arms/swords/swords_upgraded/%d/Sword_1.png" % sword_level
+			var attack_sword_path2 = "res://CharacterSprites/Arms/swords/Attack/swords_upgraded/slash_1/%d/slash_1.png" % sword_level
+			if ResourceLoader.exists(base_sword_path2):
+				sword_sprite.texture = load(base_sword_path2)
+			if ResourceLoader.exists(attack_sword_path2):
+				attackSwordArm.texture = load(attack_sword_path2)
+
+func update_spear_textures() -> void:
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var level_data = arms_db_instance.get_weapon_level_data(current_spear_id, spear_level)
+	if level_data.size() > 0:
+		if level_data.has("texture"):
+			spear_sprite.texture = level_data["texture"]
+		if level_data.has("attack_texture"):
+			attackSpearArm.texture = level_data["attack_texture"]
+	else:
+		if spear_level == 1:
+			var base_spear_path = "res://CharacterSprites/Arms/spears/spear_1.png"
+			var attack_spear_path = "res://CharacterSprites/Arms/spears/Attack/slash_1.png"
+			if ResourceLoader.exists(base_spear_path):
+				spear_sprite.texture = load(base_spear_path)
+			if ResourceLoader.exists(attack_spear_path):
+				attackSpearArm.texture = load(attack_spear_path)
+		else:
+			var base_spear_path2 = "res://CharacterSprites/Arms/spears/spears_upgraded/%d/spear_1.png" % spear_level
+			var attack_spear_path2 = "res://CharacterSprites/Arms/spears/Attack/slash_1.png"
+			if ResourceLoader.exists(base_spear_path2):
+				spear_sprite.texture = load(base_spear_path2)
+			if ResourceLoader.exists(attack_spear_path2):
+				attackSpearArm.texture = load(attack_spear_path2)
+
 func update_shield_textures() -> void:
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
@@ -647,7 +854,6 @@ func update_shield_textures() -> void:
 		if level_data.has("attack_texture"):
 			attackChield.texture = level_data["attack_texture"]
 	else:
-		# Fallback se não achar no database
 		if shield_level == 1:
 			var base_shield_path = "res://CharacterSprites/Arms/shields/shield_1.png"
 			var attack_shield_path = "res://CharacterSprites/Arms/shields/attack/slash_1.png"
@@ -656,9 +862,9 @@ func update_shield_textures() -> void:
 			if ResourceLoader.exists(attack_shield_path):
 				attackChield.texture = load(attack_shield_path)
 		else:
-			var base_shield_path = "res://CharacterSprites/Arms/shields/upgraded_shields/%d/shield_1.png" % shield_level
-			var attack_shield_path = "res://CharacterSprites/Arms/shields/attack/shields_upgrade/slash_1/%d/slash_1.png" % shield_level
-			if ResourceLoader.exists(base_shield_path):
-				shield_sprite.texture = load(base_shield_path)
-			if ResourceLoader.exists(attack_shield_path):
-				attackChield.texture = load(attack_shield_path)
+			var base_shield_path2 = "res://CharacterSprites/Arms/shields/upgraded_shields/%d/shield_1.png" % shield_level
+			var attack_shield_path2 = "res://CharacterSprites/Arms/shields/attack/shields_upgrade/slash_1/%d/slash_1.png" % shield_level
+			if ResourceLoader.exists(base_shield_path2):
+				shield_sprite.texture = load(base_shield_path2)
+			if ResourceLoader.exists(attack_shield_path2):
+				attackChield.texture = load(attack_shield_path2)

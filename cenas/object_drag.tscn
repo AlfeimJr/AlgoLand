@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://dwfkttqs3kxsu"]
+
+[ext_resource type="Texture2D" uid="uid://cp23jmph3me7" path="res://CharacterSprites/Arms/swords/Sword_1.png" id="1_ib2xj"]
+[ext_resource type="Script" path="res://scripts/object_drag.gd" id="1_tm7gb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_adiux"]
+
+[node name="object" type="Node2D"]
+script = ExtResource("1_tm7gb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 4096
+position = Vector2(-1, 0)
+texture = ExtResource("1_ib2xj")
+hframes = 8
+vframes = 8
+frame = 41
+
+[node name="Area2D" type="Area2D" parent="."]
+z_index = 4000
+collision_mask = 128
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+z_index = 3000
+shape = SubResource("RectangleShape2D_adiux")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
