@@ -84,10 +84,10 @@ text = "INVENTORY"
 label_settings = SubResource("LabelSettings_apmlk")
 horizontal_alignment = 1
 
-[node name="Item" parent="." groups=["draggable_items", "sword"] instance=ExtResource("7_jy1ed")]
+[node name="Item" parent="." groups=["draggable_items", "sword_basic"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(136, 144)
 
-[node name="Item2" parent="." groups=["draggable_items", "shield"] instance=ExtResource("7_jy1ed")]
+[node name="Item2" parent="." groups=["draggable_items", "shield_basic"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(184, 144)

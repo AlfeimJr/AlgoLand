@@ -505,9 +505,7 @@ func update_coins_label() -> void:
 
 # ---------------------------
 # FUNÇÕES DE EQUIPAR/UNEQUIP
-# (agora separadas)
 # ---------------------------
-
 func equip_sword() -> void:
 	# Se já estiver usando espada, remover
 	if using_sword:
@@ -518,7 +516,7 @@ func equip_sword() -> void:
 	if using_spear:
 		unequip_spear()
 
-	current_item_type = "sword"
+	current_item_type = ""
 	using_sword = true
 	update_sword_textures()
 	sword_sprite.visible = true
@@ -727,7 +725,7 @@ func apply_loaded_data(data: Dictionary) -> void:
 	if data.has("using_spear"):
 		using_spear = data["using_spear"]
 
-	# Se quiser salvar/carregar se escudo estava equipado
+	# Se quiser salvar/carregar se o escudo estava equipado
 	if data.has("using_shield"):
 		using_shield = data["using_shield"]
 
@@ -754,7 +752,7 @@ func apply_smithing_data() -> void:
 	if curr_outfit < smithing_outfit_array.size():
 		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
 
-func start_smithing() -> void:
+func start_smithing(item_type: String) -> void:
 	load_smithing_textures()
 	var loaded_data = load_from_json()
 	if loaded_data:
@@ -775,26 +773,36 @@ func start_smithing() -> void:
 	smithing_timer.wait_time = 5.0
 	smithing_timer.one_shot = true
 	add_child(smithing_timer)
-	smithing_timer.connect("timeout", Callable(self, "_on_smithing_finished"))
+	smithing_timer.connect("timeout", Callable(self, "_on_smithing_finished").bind(item_type))
 	smithing_timer.start()
 
-func _on_smithing_finished() -> void:
+func _on_smithing_finished(item_type: String) -> void:
 	smithing_node.visible = false
 	$CompositeSprites/BaseSprites.visible = true
 	if _animation_tree and _state_machine:
 		_state_machine.travel("idle")
-
 	movement_enabled = true
-	sword_level += 1
-	shield_level += 1
-	update_sword_textures()
-	update_shield_textures()
+	
+	# Atualiza somente o item refinado
+	if item_type == "sword_basic":
+		sword_level += 1
+		update_sword_textures()
+	elif item_type == "shield_basic":
+		shield_level += 1
+		update_shield_textures()
+	elif item_type == "spear":
+		spear_level += 1
+		update_spear_textures()
 
-	var new_strength = arms_status.get_strength_for_level(sword_level)
+	# Não chame update_sword_textures() ou update_shield_textures() aqui de forma incondicional
+	
+	# Atualiza os stats se necessário (aqui é importante usar o nível correto da arma refinada)
+	var new_strength = arms_status.get_strength_for_level(sword_level)  # Se for refinamento de espada
 	stats.strength = new_strength
 	stats.calculate_derived_stats(using_sword)
-
+	
 	emit_signal("smithing_finished")
+
 
 # ---------------------------
 # ATUALIZAÇÃO DAS TEXTURAS
@@ -868,3 +876,11 @@ func update_shield_textures() -> void:
 				shield_sprite.texture = load(base_shield_path2)
 			if ResourceLoader.exists(attack_shield_path2):
 				attackChield.texture = load(attack_shield_path2)
+
+func update_weapon_appearance() -> void:
+	if using_sword:
+		update_sword_textures()
+	elif using_spear:
+		update_spear_textures()
+	elif using_shield:
+		update_shield_textures()

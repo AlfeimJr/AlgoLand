@@ -27,6 +27,7 @@ IsCustomization="*res://scripts/is_customization.gd"
 ItemDatabase="*res://scripts/ItemDatabase.gd"
 GameData="*res://scripts/GameData.gd"
 Global="*res://scripts/global.gd"
+GDConsole="*res://addons/gdconsole/gdconsole.gd"
 
 [display]
 
@@ -39,13 +40,13 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", "res://addons/gdscript_formatter/plugin.cfg", "res://addons/msca/plugin.cfg", "res://addons/tnowe_extra_controls/plugin.cfg")
+enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", "res://addons/gdconsole/plugin.cfg", "res://addons/gdscript_formatter/plugin.cfg", "res://addons/msca/plugin.cfg", "res://addons/tnowe_extra_controls/plugin.cfg")
 
 [global_group]
 
 enemy=""
-shield=""
-sword=""
+sword_basic=""
+shield_basic=""
 
 [input]
 

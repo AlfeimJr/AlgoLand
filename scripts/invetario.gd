@@ -65,16 +65,18 @@ func close() -> void:
 func update_inventory() -> void:
 	if not player:
 		return
+	print(player.current_item_type)
 	if sword_slot:
 		# Verifica que tipo de arma o jogador está usando
 		# e define o frame. Ajuste os números conforme a sua spritesheet.
-		match player.current_item_type:  # "sword", "shield", "spear", etc.
-			"sword":
+		
+		match $Item.item_type:  # "sword", "shield", "spear", etc.
+			"sword_basic":
 				sword_slot.frame = 42
 				sword_slot.position = Vector2(6, 6)
-			"shield":
+			"shield_basic":
 				shield_slot.frame = 32
-				shield_slot.position = Vector2(-1, -4)
+				shield_slot.position = Vector2(-1, -2)
 			"spear":
 				sword_slot.frame = 2
 	# Limpar slots

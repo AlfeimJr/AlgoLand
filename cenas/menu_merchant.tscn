@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cr71vbrmc2m6t"]
+[gd_scene load_steps=21 format=3 uid="uid://cr71vbrmc2m6t"]
 
 [ext_resource type="Script" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bxbxhg818jes0" path="res://CharacterSprites/Arms/spears/spear_1.png" id="6_f8pq4"]
 [ext_resource type="Texture2D" uid="uid://4kypf3twlls3" path="res://UI/sem org/3 Icons/Icons_14.png" id="6_h2o4l"]
 [ext_resource type="PackedScene" uid="uid://gigb868grykh" path="res://cenas/item_spec.tscn" id="7_1qnbk"]
+[ext_resource type="Texture2D" uid="uid://bol1st4w0cb8q" path="res://CharacterSprites/Arms/shields/shield_1.png" id="7_5tijw"]
 [ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_n1i8u"]
 [ext_resource type="FontFile" uid="uid://dirq4dnsbaakj" path="res://UI/craftpix-781165-game-ui-pixel-art (1)/Font/Planes_ValMore.ttf" id="11_w1b0y"]
 [ext_resource type="PackedScene" uid="uid://delx88t4jwfoh" path="res://cenas/slot.tscn" id="12_q3u1m"]
@@ -60,7 +61,6 @@ offset_bottom = 142.857
 mouse_filter = 2
 
 [node name="Weapons" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -159.0
@@ -134,13 +134,51 @@ position = Vector2(38.5, 38)
 scale = Vector2(1.65625, 3.33333)
 texture = ExtResource("4_8psce")
 
-[node name="sword" type="Sprite2D" parent="Weapons/Spear"]
+[node name="spear2" type="Sprite2D" parent="Weapons/Spear"]
 position = Vector2(50, 46)
 scale = Vector2(1.3, 0.957)
 texture = ExtResource("6_f8pq4")
 hframes = 8
 vframes = 8
 frame = 14
+
+[node name="Shield" type="Control" parent="Weapons"]
+anchors_preset = 0
+offset_left = 136.143
+offset_top = -1.8572
+offset_right = 176.143
+offset_bottom = 38.1428
+
+[node name="Shield" type="TextureButton" parent="Weapons/Shield"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 59.0
+offset_right = 64.0
+offset_bottom = 71.0
+texture_normal = ExtResource("3_dmibo")
+texture_pressed = ExtResource("4_8psce")
+stretch_mode = 0
+
+[node name="Text" type="Label" parent="Weapons/Shield/Shield"]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 12.0
+text = "EQUIP"
+label_settings = SubResource("LabelSettings_irua0")
+horizontal_alignment = 1
+
+[node name="Band2Off" type="Sprite2D" parent="Weapons/Shield"]
+position = Vector2(38.5, 39.4286)
+scale = Vector2(1.65625, 3.33333)
+texture = ExtResource("4_8psce")
+
+[node name="shield" type="Sprite2D" parent="Weapons/Shield"]
+position = Vector2(37.1429, 31.7143)
+scale = Vector2(2, 1.472)
+texture = ExtResource("7_5tijw")
+hframes = 8
+vframes = 8
+frame = 32
 
 [node name="Buttons" type="Panel" parent="."]
 visible = false
@@ -236,9 +274,10 @@ offset_bottom = 159.857
 mouse_filter = 2
 
 [node name="Update" type="Node2D" parent="."]
+visible = false
 position = Vector2(-160, -57.1428)
 
-[node name="Slot" parent="Update" groups=["shield", "sword"] instance=ExtResource("12_q3u1m")]
+[node name="Slot" parent="Update" groups=["shield_basic", "sword_basic"] instance=ExtResource("12_q3u1m")]
 z_index = 100
 position = Vector2(160, 57.1429)
 
@@ -294,6 +333,7 @@ expand_icon = true
 
 [connection signal="pressed" from="Weapons/Arm/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Weapons/Spear/spear" to="." method="_on_spear_pressed"]
+[connection signal="pressed" from="Weapons/Shield/Shield" to="." method="_on_shield_pressed"]
 [connection signal="pressed" from="Buttons/weaponsOption" to="." method="_on_weapons_pressed"]
 [connection signal="pressed" from="Buttons/Build" to="." method="_on_build_pressed"]
 [connection signal="pressed" from="Buttons/Leave" to="." method="_on_leave_pressed"]
