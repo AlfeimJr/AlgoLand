@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://sabkaihnp2by"]
 
-[ext_resource type="Script" path="res://scripts/cpu_particles_2d.gd" id="1_4ghp3"]
+[ext_resource type="Script" uid="uid://e1c5kdir35mq" path="res://scripts/cpu_particles_2d.gd" id="1_4ghp3"]
 
 [node name="CPUParticles2D" type="CPUParticles2D"]
 position = Vector2(506, 33)

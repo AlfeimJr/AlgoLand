@@ -5,8 +5,8 @@ signal wave_completed(wave: int)
 signal game_won()
 signal waves_stopped_signal
 
-@export var starting_wave: int = 35
-@export var max_enemies: int = 10	
+@export var starting_wave: int = 1
+@export var max_enemies: int = 5	
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 1000
 @export var detection_increase_per_wave: float = 0.2

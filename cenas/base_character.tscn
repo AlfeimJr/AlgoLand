@@ -1,7 +1,7 @@
 [gd_scene load_steps=35 format=3 uid="uid://du0s75lihf3bo"]
 
 [ext_resource type="Texture2D" uid="uid://dj1vn0eyn15fx" path="res://Tiles/Player.png" id="1_7t6es"]
-[ext_resource type="Script" path="res://scripts/character.gd" id="1_geysy"]
+[ext_resource type="Script" uid="uid://cssd8kf28roj3" path="res://scripts/character.gd" id="1_geysy"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_n7k58"]
 radius = 4.0
@@ -711,19 +711,19 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_m8f7x"]
 _data = {
-"RESET": SubResource("Animation_8ifx0"),
-"attack_down": SubResource("Animation_ykk8q"),
-"attack_left": SubResource("Animation_qf72t"),
-"attack_right": SubResource("Animation_kvar3"),
-"attack_up": SubResource("Animation_lk38m"),
-"idle_down": SubResource("Animation_t8o0t"),
-"idle_left": SubResource("Animation_7gvnd"),
-"idle_right": SubResource("Animation_g1hft"),
-"idle_up": SubResource("Animation_y7325"),
-"walk_down": SubResource("Animation_iis10"),
-"walk_left": SubResource("Animation_2k7ho"),
-"walk_right": SubResource("Animation_gkdq2"),
-"walk_up": SubResource("Animation_8gj12")
+&"RESET": SubResource("Animation_8ifx0"),
+&"attack_down": SubResource("Animation_ykk8q"),
+&"attack_left": SubResource("Animation_qf72t"),
+&"attack_right": SubResource("Animation_kvar3"),
+&"attack_up": SubResource("Animation_lk38m"),
+&"idle_down": SubResource("Animation_t8o0t"),
+&"idle_left": SubResource("Animation_7gvnd"),
+&"idle_right": SubResource("Animation_g1hft"),
+&"idle_up": SubResource("Animation_y7325"),
+&"walk_down": SubResource("Animation_iis10"),
+&"walk_left": SubResource("Animation_2k7ho"),
+&"walk_right": SubResource("Animation_gkdq2"),
+&"walk_up": SubResource("Animation_8gj12")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_m3ikj"]

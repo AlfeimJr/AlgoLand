@@ -1,6 +1,6 @@
 [gd_scene load_steps=47 format=3 uid="uid://mdljxqeqktb"]
 
-[ext_resource type="Script" path="res://scripts/slime.gd" id="1_ars7f"]
+[ext_resource type="Script" uid="uid://b44sq72sl83au" path="res://scripts/slime.gd" id="1_ars7f"]
 [ext_resource type="Texture2D" uid="uid://b4rg0y0vhenp2" path="res://inimigos/slime.png" id="2_x6hia"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dejm4"]
@@ -897,16 +897,16 @@ tracks/5/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_2jldy"]
 _data = {
-"RESET": SubResource("Animation_jxdlu"),
-"dead": SubResource("Animation_6yk5a"),
-"took_damage_down": SubResource("Animation_bojyv"),
-"took_damage_left": SubResource("Animation_likfm"),
-"took_damage_right": SubResource("Animation_wh2c7"),
-"took_damage_up": SubResource("Animation_2v43m"),
-"walk_down": SubResource("Animation_te4u4"),
-"walk_left": SubResource("Animation_g03t0"),
-"walk_right": SubResource("Animation_gyp2g"),
-"walk_up": SubResource("Animation_04qsp")
+&"RESET": SubResource("Animation_jxdlu"),
+&"dead": SubResource("Animation_6yk5a"),
+&"took_damage_down": SubResource("Animation_bojyv"),
+&"took_damage_left": SubResource("Animation_likfm"),
+&"took_damage_right": SubResource("Animation_wh2c7"),
+&"took_damage_up": SubResource("Animation_2v43m"),
+&"walk_down": SubResource("Animation_te4u4"),
+&"walk_left": SubResource("Animation_g03t0"),
+&"walk_right": SubResource("Animation_gyp2g"),
+&"walk_up": SubResource("Animation_04qsp")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wm36w"]

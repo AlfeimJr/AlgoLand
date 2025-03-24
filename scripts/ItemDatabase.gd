@@ -4,7 +4,7 @@ var items: Dictionary = {
 	"item_1": {
 		"name": "Sharp Fury",
 		"icon": "res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 85.png",
-		"price": 1000,
+		"price": 500,
 		"description": "Add 10 strength, increasing physical damage",
 		"effects": {
 			"strength": 10
@@ -13,7 +13,7 @@ var items: Dictionary = {
 	"item_2": {
 		"name": "Bloodlust",
 		"icon": "res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 93.png",
-		"price": 3000,
+		"price": 1500,
 		"description": "Gain 10% lifesteal based on damage",
 		"effects": {
 			"lifesteal": 10
@@ -22,7 +22,7 @@ var items: Dictionary = {
 	"item_3": {
 		"name": "Lightning Step",
 		"icon": "res://UI/craftpix-net-629015-100-skill-icons-pack-for-rpg/PNG/skill icon 80.png",
-		"price": 4000,
+		"price": 2000,
 		"description": "Add 10 agility, increasing movement speed",
 		"effects": {
 			"agility": 10

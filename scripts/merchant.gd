@@ -37,7 +37,9 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 
 func open_menu() -> void:
 	menu_instance.visible = true
-	
+	var player = get_tree().get_current_scene().get_node("Player")
+	if player:
+		player.disable_all_actions(true)
 	# Configurar explicitamente as camadas de colisão para slots e itens
 	var slots = menu_instance.find_children("*", "Slot", true, false)
 	for slot in slots:
@@ -53,7 +55,9 @@ func open_menu() -> void:
 
 func close_menu() -> void:
 	menu_instance.visible = false
-	
+	var player = get_tree().get_current_scene().get_node("Player")
+	if player:
+		player.disable_all_actions(false)
 	# Reiniciar estado do menu se necessário
 	if menu_instance.has_method("reset_menu"):
 		menu_instance.reset_menu()

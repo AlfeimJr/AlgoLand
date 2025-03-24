@@ -17,7 +17,7 @@ signal menu_closed
 @onready var build_button: Button = $Buttons/Build
 @onready var player = get_tree().get_root().get_node("cenario/Player")
 @onready var alert_label: Label = $Update/Alert
-
+@onready var upgrade_button: Button = $Update/UptadeClick
 var item_scene = preload("res://cenas/item.tscn")
 var wave_thresholds = {
 	1: 4,
@@ -32,17 +32,15 @@ func get_generic_weapon_type(current_weapon_id: String) -> String:
 		return "sword_basic"
 	elif current_weapon_id.find("shield_basic") != -1:
 		return "shield_basic"
-	elif current_weapon_id.find("spear") != -1:
-		return "spear"
+	elif current_weapon_id.find("spear_basic") != -1:
+		return "spear_basic"
 	else:
 		return ""
 
 func _ready() -> void:
-	var slot_world = $Update/Slot.get_viewport().get_world_2d()
-	var item = get_tree().get_root().get_node("cenario/Player/Invetario/Item")
-	print("Slot World ID: ", slot_world.get_instance_id())
-	print("item world:", item.get_instance_id())
-
+	
+	if player and not player.is_connected("equipment_changed", Callable(self, "_on_player_equipment_changed")):
+		player.connect("equipment_changed", Callable(self, "_on_player_equipment_changed"))
 	var inventory = get_tree().get_root().get_node("cenario/Player/Invetario")
 	if inventory:
 		inventory.connect("item_selected", Callable(self, "_on_inventory_item_selected"))
@@ -99,9 +97,9 @@ func _ready() -> void:
 	if player:
 		if player.using_sword:
 			start_wave_button.disabled = false
-			$Weapons/Arm/Button/Text.text = "UNEQUIP"
+			$Weapons/Arm/sword/Text.text = "UNEQUIP"
 		else:
-			$Weapons/Arm/Button/Text.text = "EQUIP"
+			$Weapons/Arm/sword/Text.text = "EQUIP"
 
 		if player.using_spear:
 			$Weapons/Spear/spear/Text.text = "UNEQUIP"
@@ -110,7 +108,7 @@ func _ready() -> void:
 
 		# (Opcional) Se quiser inicializar o texto do escudo:
 		if player.using_shield:
-			$Weapons/Shield/shield/Text.text = "UNEQUIP"
+			$Weapons/Shield/Shield/Text.text = "UNEQUIP"
 		else:
 			$Weapons/Shield/Shield/Text.text = "EQUIP"
 
@@ -145,20 +143,17 @@ func _process(delta: float) -> void:
 		# Se NÃO quiser permitir wave só com escudo, use a linha anterior do original:
 		# start_wave_button.disabled = not (player.using_sword or player.using_spear)
 
-	var merchant = get_tree().get_root().get_node("cenario/Merchant")
-	if player and merchant:
-		if player.global_position.distance_to(merchant.global_position) > detection_distance:
-			on_close_button_pressed()
-
+	if Input.is_action_just_pressed("close_menu"):
+		on_close_button_pressed()
 func _on_button_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if not player:
 		return
 	player.equip_sword()
 	if player.using_sword:
-		$Weapons/Arm/Button/Text.text = "UNEQUIP"
+		$Weapons/Arm/sword/Text.text = "UNEQUIP"
 	else:
-		$Weapons/Arm/Button/Text.text = "EQUIP"
+		$Weapons/Arm/sword/Text.text = "EQUIP"
 	if start_wave_button:
 		start_wave_button.disabled = not player.using_sword
 
@@ -175,6 +170,8 @@ func _on_start_wave_pressed() -> void:
 func on_close_button_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player:
+		player.disable_all_actions(false)
+	if player:
 		player.block_attacks(false)
 	
 	# Reseta a posição do item arrastado
@@ -185,7 +182,7 @@ func on_close_button_pressed() -> void:
 	# Fecha (oculta) o inventário
 	var inventory = get_tree().get_current_scene().get_node("Player/Invetario")
 	if inventory:
-		inventory.hide()
+		inventory.close()
 
 	emit_signal("menu_closed")
 	hide()
@@ -226,7 +223,9 @@ func _on_back_button_pressed() -> void:
 	items_spec.visible = false
 	coins_container.visible = false
 	$Update.visible = false
-
+	var inventory = get_tree().get_current_scene().get_node("Player/Invetario")
+	if inventory:
+		inventory.close()
 func update_coins_display() -> void:
 	var coins_label = coins_container.get_node("count")
 	if coins_label and coins_label is Label:
@@ -235,7 +234,7 @@ func update_coins_display() -> void:
 func _on_leave_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if player:
-		player.block_attacks(false)
+		player.disable_all_actions(false) 
 	emit_signal("menu_closed")
 	hide()
 
@@ -253,7 +252,7 @@ func _show_upgrade_menu() -> void:
 	items_container.visible = false
 	items_spec.visible = false
 	coins_container.visible = false
-
+	
 	var slot_area = $"Update/Slot/Area2D"
 	slot_area.collision_layer = 12
 	slot_area.collision_mask = 11
@@ -264,97 +263,156 @@ func _show_upgrade_menu() -> void:
 		slot_area.connect("area_entered", Callable(self, "_on_area_2d_area_entered"))
 	if not slot_area.is_connected("area_exited", Callable(self, "_on_area_2d_area_exited")):
 		slot_area.connect("area_exited", Callable(self, "_on_area_2d_area_exited"))
+		
+	var slot_node = $Update/Slot
+	
+	# Conectar o sinal do slot para atualizar o botão
+	if not slot_node.is_connected("item_changed", Callable(self, "_on_slot_item_changed")):
+		slot_node.connect("item_changed", Callable(self, "_on_slot_item_changed"))
+	check_upgrade_button_state()
+	update_upgrade_button_text()
+	
+func _on_slot_item_changed(has_item: bool) -> void:
+	check_upgrade_button_state()
+	update_upgrade_button_text()
+func check_upgrade_button_state() -> void:
+	var slot_node = $Update/Slot
+	var upgrade_button = $Update/UptadeClick
+	
+	if slot_node.current_item == null:
+		# Desabilita o botão se não houver item no slot
+		upgrade_button.disabled = true
+		upgrade_button.modulate = Color(1, 1, 1, 0.5)  # Efeito visual de desabilitado
+	else:
+		# Habilita o botão se houver um item no slot
+		upgrade_button.disabled = false
+		upgrade_button.modulate = Color(1, 1, 1, 1)  # Normal
 
 func _on_uptade_click_pressed() -> void:
-	# 1) Verifica se há item no slot
 	var slot_node = $Update/Slot
 	var dragged_item = slot_node.current_item
 	if dragged_item == null:
 		print("Não há item no slot para atualizar!")
 		return
 
-	# 2) Verifica a wave atual
 	var wave_manager = get_tree().get_root().get_node("cenario/enemySpawner/WaveManager")
 	if not wave_manager:
 		hide()
 		return
 
 	var player = get_tree().get_current_scene().get_node("Player")
-	# Aqui, obtenha o tipo do item; por exemplo, usando dragged_item.get_item_type()
-	var item_type = dragged_item.get_item_type()  # "sword", "shield" ou "spear"
+	var item_type = dragged_item.get_item_type()
 	var current_level = 0
 	var next_data = {}
-	
+
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
-	
-	if item_type == "sword_basic":
-		current_level = player.sword_level
-		next_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, current_level)
-	elif item_type == "shield_basic":
-		current_level = player.shield_level
-		next_data = arms_db_instance.get_weapon_level_data(player.current_shield_id, current_level)
-	elif item_type == "spear":
-		current_level = player.spear_level
-		next_data = arms_db_instance.get_weapon_level_data(player.current_spear_id, current_level)
-	
+
+	match item_type:
+		"sword_basic":
+			current_level = player.sword_level
+			next_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, current_level + 1)
+		"shield_basic":
+			current_level = player.shield_level
+			next_data = arms_db_instance.get_weapon_level_data(player.current_shield_id, current_level + 1)
+		"spear_basic":
+			current_level = player.spear_level
+			next_data = arms_db_instance.get_weapon_level_data(player.current_spear_id, current_level + 1)
+
 	if next_data.size() == 0:
 		print("Esse item já está no nível máximo ou não existe no DB.")
 		hide()
 		return
 
 	var needed_wave = next_data.get("wave_required", 9999)
-	print("DEBUG: O upgrade requer a wave =", needed_wave)
-	print("DEBUG: Wave atual =", wave_manager.current_wave)
+
+	var upgrade_button = $Update/UptadeClick
+	upgrade_button.text = "UPGRADE LV %d" % (current_level + 1)
+
 	if wave_manager.current_wave >= needed_wave:
-		match item_type:
-			"sword_basic":
-				player.sword_level = current_level 
-			"shield_basic":
-				player.shield_level = current_level 
-			"spear":
-				player.spear_level = current_level
-		
-		if player.has_method("start_smithing"):
-			player.start_smithing(item_type)
-		if player.has_method("update_weapon_appearance"):
-			player.update_weapon_appearance()
+		player.start_smithing(item_type)
 	else:
-		print("DEBUG: Wave atual ainda não atinge o requisito:", needed_wave)
-	
+		print("Wave atual ainda não atinge o requisito:", needed_wave)
+
 	await get_tree().create_timer(0.1).timeout
 	on_close_button_pressed()
+
+
+func update_upgrade_button_text() -> void:
+	var slot_node = $Update/Slot
+	var dragged_item = slot_node.current_item
+	var upgrade_button = $Update/UptadeClick
+	var player = get_tree().get_current_scene().get_node("Player")
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+
+	if dragged_item == null:
+		upgrade_button.text = "UPGRADE"
+		return
+
+	var item_type = dragged_item.get_item_type()
+	var current_level = 0
+	
+	match item_type:
+		"sword_basic":
+			current_level = player.sword_level
+		"shield_basic":
+			current_level = player.shield_level
+		"spear_basic":
+			current_level = player.spear_level
+
+	var next_level_data = arms_db_instance.get_weapon_level_data(item_type, current_level + 1)
+	if next_level_data.size() == 0:
+		upgrade_button.text = "MAX LEVEL"
+		upgrade_button.disabled = true
+	else:
+		upgrade_button.text = "UPGRADE LV %d" % (current_level + 1)
+		upgrade_button.disabled = false
 
 # Botão para a espada
 func _on_sword_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if not player:
 		return
+		
 	if player.using_spear:
 		player.unequip_spear()
 		$Weapons/Spear/spear/Text.text = "EQUIP"
+		$Weapons/Shield/Shield.disabled = false
+		$Weapons/Shield/Shield.modulate = Color(1, 1, 1, 1)
+		
 	if player.using_sword:
 		player.unequip_sword()
-		$Weapons/Arm/Button/Text.text = "EQUIP"
+		$Weapons/Arm/sword/Text.text = "EQUIP"
 	else:
 		player.equip_sword()
-		$Weapons/Arm/Button/Text.text = "UNEQUIP"
-	start_wave_button.disabled = not (player.using_sword or player.using_spear)
+		$Weapons/Arm/sword/Text.text = "UNEQUIP"
+	
+	# Atualiza o botão da lança
+	$Weapons/Spear/spear/Text.text = "EQUIP"
 
 # Botão para a lança
 func _on_spear_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	if not player:
 		return
+		
 	if player.using_sword:
 		player.unequip_sword()
-		$Weapons/Arm/Button/Text.text = "EQUIP"
+		$Weapons/Arm/sword/Text.text = "EQUIP"
+		
 	if player.using_spear:
 		player.unequip_spear()
 		$Weapons/Spear/spear/Text.text = "EQUIP"
+		$Weapons/Shield/Shield.disabled = false
+		$Weapons/Shield/Shield.modulate = Color(1, 1, 1, 1)
 	else:
 		player.equip_spear()
 		$Weapons/Spear/spear/Text.text = "UNEQUIP"
-	start_wave_button.disabled = not (player.using_sword or player.using_spear)
+		$Weapons/Shield/Shield.disabled = true
+		$Weapons/Shield/Shield/Text.text = "EQUIP"
+		$Weapons/Shield/Shield.modulate = Color(1, 1, 1, 0.5)
+	
+	# Atualiza o botão da espada
+	$Weapons/Arm/sword/Text.text = "EQUIP"
 
 func _on_spear_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -371,7 +429,7 @@ func _on_shield_pressed() -> void:
 
 	if player.using_shield:
 		player.unequip_shield()
-		$Weapons/Shield/shield/Text.text = "EQUIP"
+		$Weapons/Shield/Shield/Text.text = "EQUIP"
 	else:
 		player.equip_shield()
 		$Weapons/Shield/Shield/Text.text = "UNEQUIP"

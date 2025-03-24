@@ -4,7 +4,7 @@ extends CharacterBody2D
 var arms_database = preload("res://scripts/arms_database.gd")
 signal equipment_changed
 @onready var stats = preload("res://scripts/player_stats.gd").new()
-
+var is_two_handed_weapon: bool = false
 @export var hair_color: Color = Color(1, 1, 1)  # Branco como padrão
 var attacks_blocked: bool = false
 @export_category("Variables")
@@ -13,7 +13,7 @@ var attacks_blocked: bool = false
 @export var _knockback_strength: float = 200.0
 @export var _knockback_decay: float = 0.1
 @export var shield_level: int = 1
-
+var is_smithing: bool = false
 var current_shield_id: String = "shield_basic"
 var movement_enabled: bool = true
 
@@ -415,18 +415,18 @@ func _set_sprites_visible(is_attacking: bool) -> void:
 	sword_sprite.visible = (not is_attacking) and using_sword
 	spear_sprite.visible = (not is_attacking) and using_spear
 
-	# Escudo só aparece se using_shield
-	shield_sprite.visible = (not is_attacking) and using_shield
+	# Escudo só aparece se usando escudo E NÃO está atacando e NÃO está usando lança
+	shield_sprite.visible = (not is_attacking) and using_shield and not using_spear
 
 	# -- Animação de ataque com espada --
 	attackSwordChieldBody.visible = is_attacking and using_sword
 	attackSwordArm.visible = is_attacking and using_sword
-	attackChield.visible = is_attacking and using_shield
+	attackChield.visible = is_attacking and using_shield and using_sword  # Ajuste aqui
 	attackHair.visible = is_attacking and using_sword
 	attackOutfit.visible = is_attacking and using_sword
 
 	# -- Animação de ataque com lança --
-	attackSpearChieldBody.visible = is_attacking and using_spear and using_shield
+	attackSpearChieldBody.visible = is_attacking and using_spear
 	attackSpearArm.visible = is_attacking and using_spear
 	attackSpearHair.visible = is_attacking and using_spear
 	attackSpearOutfit.visible = is_attacking and using_spear
@@ -518,6 +518,7 @@ func equip_sword() -> void:
 
 	current_item_type = ""
 	using_sword = true
+	is_two_handed_weapon = false
 	update_sword_textures()
 	sword_sprite.visible = true
 	stats.move_speed += 50
@@ -537,15 +538,20 @@ func equip_spear() -> void:
 	if using_sword:
 		unequip_sword()
 
-	current_item_type = "spear"
+	if using_shield:
+		unequip_shield()
+
+	current_item_type = "spear_basic"
 	using_spear = true
+	is_two_handed_weapon = true
+	stats.calculate_derived_stats(true) # agora lança tem stats próprios
 	update_spear_textures()
 	spear_sprite.visible = true
-	stats.move_speed += 50
 	emit_signal("equipment_changed")
 
 func unequip_spear() -> void:
 	using_spear = false
+	is_two_handed_weapon = false
 	spear_sprite.visible = false
 	stats.calculate_derived_stats(using_spear)
 	emit_signal("equipment_changed")
@@ -554,7 +560,9 @@ func equip_shield() -> void:
 	if using_shield:
 		unequip_shield()
 		return
-
+	if is_two_handed_weapon:
+		print("Não é possível equipar escudo com arma de duas mãos!")
+		return
 	using_shield = true
 	shield_sprite.visible = true
 	update_shield_textures()
@@ -753,6 +761,7 @@ func apply_smithing_data() -> void:
 		smithing_outfit_sprite.texture = smithing_outfit_array[curr_outfit]
 
 func start_smithing(item_type: String) -> void:
+	is_smithing = true
 	load_smithing_textures()
 	var loaded_data = load_from_json()
 	if loaded_data:
@@ -777,32 +786,32 @@ func start_smithing(item_type: String) -> void:
 	smithing_timer.start()
 
 func _on_smithing_finished(item_type: String) -> void:
+	is_smithing = false
 	smithing_node.visible = false
 	$CompositeSprites/BaseSprites.visible = true
 	if _animation_tree and _state_machine:
 		_state_machine.travel("idle")
 	movement_enabled = true
 	
-	# Atualiza somente o item refinado
-	if item_type == "sword_basic":
-		sword_level += 1
-		update_sword_textures()
-	elif item_type == "shield_basic":
-		shield_level += 1
-		update_shield_textures()
-	elif item_type == "spear":
-		spear_level += 1
-		update_spear_textures()
+	match item_type:
+		"sword_basic":
+			sword_level += 1
+			update_sword_textures()
+			stats.strength = arms_status.get_strength_for_level(sword_level)
+			stats.calculate_derived_stats(using_sword)
+		"shield_basic":
+			shield_level += 1
+			update_shield_textures()
+			stats.defense = arms_status.get_defense_for_level(shield_level)
+			stats.calculate_derived_stats(using_sword or using_spear)
+		"spear_basic":
+			spear_level += 1
+			update_spear_textures()
+			stats.strength = arms_status.get_strength_for_level(spear_level)
+			stats.calculate_derived_stats(using_spear)
 
-	# Não chame update_sword_textures() ou update_shield_textures() aqui de forma incondicional
-	
-	# Atualiza os stats se necessário (aqui é importante usar o nível correto da arma refinada)
-	var new_strength = arms_status.get_strength_for_level(sword_level)  # Se for refinamento de espada
-	stats.strength = new_strength
-	stats.calculate_derived_stats(using_sword)
-	
+	update_weapon_appearance() # Garante atualização visual correta
 	emit_signal("smithing_finished")
-
 
 # ---------------------------
 # ATUALIZAÇÃO DAS TEXTURAS
@@ -834,25 +843,30 @@ func update_spear_textures() -> void:
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_spear_id, spear_level)
 	if level_data.size() > 0:
-		if level_data.has("texture"):
+		if level_data.has("texture") and level_data["texture"] is Texture2D:
 			spear_sprite.texture = level_data["texture"]
-		if level_data.has("attack_texture"):
+		if level_data.has("attack_texture") and level_data["attack_texture"] is Texture2D:
 			attackSpearArm.texture = level_data["attack_texture"]
 	else:
+		var base_spear_path = ""
+		var attack_spear_path = ""
+
 		if spear_level == 1:
-			var base_spear_path = "res://CharacterSprites/Arms/spears/spear_1.png"
-			var attack_spear_path = "res://CharacterSprites/Arms/spears/Attack/slash_1.png"
-			if ResourceLoader.exists(base_spear_path):
-				spear_sprite.texture = load(base_spear_path)
-			if ResourceLoader.exists(attack_spear_path):
-				attackSpearArm.texture = load(attack_spear_path)
+			base_spear_path = "res://CharacterSprites/Arms/spears/spear_1.png"
+			attack_spear_path = "res://CharacterSprites/Arms/spears/Attack/slash_1.png"
 		else:
-			var base_spear_path2 = "res://CharacterSprites/Arms/spears/spears_upgraded/%d/spear_1.png" % spear_level
-			var attack_spear_path2 = "res://CharacterSprites/Arms/spears/Attack/slash_1.png"
-			if ResourceLoader.exists(base_spear_path2):
-				spear_sprite.texture = load(base_spear_path2)
-			if ResourceLoader.exists(attack_spear_path2):
-				attackSpearArm.texture = load(attack_spear_path2)
+			base_spear_path = "res://CharacterSprites/Arms/spears/spears_upgraded/%d/spear_1.png" % spear_level
+			attack_spear_path = "res://CharacterSprites/Arms/spears/Attack/spears_upgraded/%d/slash_1.png" % spear_level
+
+		if ResourceLoader.exists(base_spear_path):
+			spear_sprite.texture = load(base_spear_path)
+		else:
+			print("Erro: Textura não encontrada:", base_spear_path)
+
+		if ResourceLoader.exists(attack_spear_path):
+			attackSpearArm.texture = load(attack_spear_path)
+		else:
+			print("Erro: Textura não encontrada:", attack_spear_path)
 
 func update_shield_textures() -> void:
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
@@ -884,3 +898,17 @@ func update_weapon_appearance() -> void:
 		update_spear_textures()
 	elif using_shield:
 		update_shield_textures()
+func disable_all_actions(disable: bool) -> void:
+	# Se estiver em smithing, não permite reativar as ações
+	if is_smithing:
+		attacks_blocked = true
+		movement_enabled = false
+		return
+		
+	# Código original
+	attacks_blocked = disable
+	movement_enabled = !disable
+	
+	if disable and _state_machine:
+		_state_machine.travel("idle")
+		velocity = Vector2.ZERO

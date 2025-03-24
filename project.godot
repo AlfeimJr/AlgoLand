@@ -17,16 +17,14 @@ fast_but_unsafe=175
 
 config/name="top down"
 run/main_scene="res://cenas/init_game.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://Tiles/icon.svg"
 
 [autoload]
 
-CustomizationManager="*res://scripts/customization_manager.gd"
 IsCustomization="*res://scripts/is_customization.gd"
 ItemDatabase="*res://scripts/ItemDatabase.gd"
 GameData="*res://scripts/GameData.gd"
-Global="*res://scripts/global.gd"
 GDConsole="*res://addons/gdconsole/gdconsole.gd"
 
 [display]
@@ -47,6 +45,7 @@ enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", 
 enemy=""
 sword_basic=""
 shield_basic=""
+spear_basic=""
 
 [input]
 

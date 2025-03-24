@@ -1,6 +1,6 @@
 [gd_scene load_steps=28 format=3 uid="uid://g8r1rfw2l8tx"]
 
-[ext_resource type="Script" path="res://scripts/slime_slippery.gd" id="1_i62ro"]
+[ext_resource type="Script" uid="uid://v3pjeqyhwiok" path="res://scripts/slime_slippery.gd" id="1_i62ro"]
 [ext_resource type="Texture2D" uid="uid://ccmqngjfq1d4j" path="res://inimigos/slippery_slime.png" id="1_ro10n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pcyc4"]
@@ -729,14 +729,14 @@ tracks/5/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_xtfpr"]
 _data = {
-"RESET": SubResource("Animation_uhxg8"),
-"attack_melee_down": SubResource("Animation_j4g3t"),
-"attack_melee_left": SubResource("Animation_j5ryh"),
-"attack_melee_right": SubResource("Animation_7x1hd"),
-"attack_melee_up": SubResource("Animation_ns5cp"),
-"dead": SubResource("Animation_0p7h1"),
-"run_left": SubResource("Animation_srr40"),
-"run_right": SubResource("Animation_gs3lt")
+&"RESET": SubResource("Animation_uhxg8"),
+&"attack_melee_down": SubResource("Animation_j4g3t"),
+&"attack_melee_left": SubResource("Animation_j5ryh"),
+&"attack_melee_right": SubResource("Animation_7x1hd"),
+&"attack_melee_up": SubResource("Animation_ns5cp"),
+&"dead": SubResource("Animation_0p7h1"),
+&"run_left": SubResource("Animation_srr40"),
+&"run_right": SubResource("Animation_gs3lt")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ro1r7"]

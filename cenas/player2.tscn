@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/body_attack_sword.png" id="2_240al"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_byhnc"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_chf58"]
+[ext_resource type="Script" uid="uid://dvsbtqoamhc8m" path="res://scripts/player.gd" id="2_chf58"]
 [ext_resource type="Texture2D" uid="uid://k3won5e66cko" path="res://CharacterSprites/Arms/swords/Attack/slash_1.png" id="3_6225j"]
-[ext_resource type="Script" path="res://scripts/camera_2d.gd" id="3_n2plp"]
+[ext_resource type="Script" uid="uid://cqyuuoock7jud" path="res://scripts/camera_2d.gd" id="3_n2plp"]
 [ext_resource type="Texture2D" uid="uid://b0wjcry5wd3g3" path="res://CharacterSprites/Arms/shields/attack/slash_1.png" id="4_itotg"]
 [ext_resource type="Texture2D" uid="uid://bsuewacssgjp5" path="res://CharacterSprites/Hair/Attack/slash_1_sword/hair (2).png" id="5_dhdeu"]
 [ext_resource type="Texture2D" uid="uid://mxo6i5b00rqu" path="res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(6).png" id="6_eyb2q"]
@@ -8467,44 +8467,44 @@ tracks/12/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s34bx"]
 _data = {
-"RESET": SubResource("Animation_qkuxn"),
-"idle_down": SubResource("Animation_21cf8"),
-"idle_left": SubResource("Animation_4eoe7"),
-"idle_right": SubResource("Animation_rkg51"),
-"idle_up": SubResource("Animation_rl4qx"),
-"run_down": SubResource("Animation_2om7e"),
-"run_left": SubResource("Animation_yr4ov"),
-"run_right": SubResource("Animation_ly5sc"),
-"run_up": SubResource("Animation_s6se4"),
-"running_down": SubResource("Animation_7h2wg"),
-"running_left": SubResource("Animation_sjjwe"),
-"running_right": SubResource("Animation_w4xl6"),
-"running_up": SubResource("Animation_yda7s"),
-"smithing_left": SubResource("Animation_ta4i2"),
-"spear_slash_1_down": SubResource("Animation_nh1v8"),
-"spear_slash_1_left": SubResource("Animation_8ldwp"),
-"spear_slash_1_right": SubResource("Animation_d3jus"),
-"spear_slash_1_up": SubResource("Animation_lystf"),
-"spear_slash_2_down": SubResource("Animation_ip1hy"),
-"spear_slash_2_left": SubResource("Animation_1c3u6"),
-"spear_slash_2_right": SubResource("Animation_mud7e"),
-"spear_slash_2_up": SubResource("Animation_l8rt3"),
-"spear_slash_3_down": SubResource("Animation_opy84"),
-"spear_slash_3_left": SubResource("Animation_hcmch"),
-"spear_slash_3_right": SubResource("Animation_mmn4e"),
-"spear_slash_3_up": SubResource("Animation_7ghaf"),
-"sword_slash_1_down": SubResource("Animation_8gnlw"),
-"sword_slash_1_left": SubResource("Animation_bwqxr"),
-"sword_slash_1_right": SubResource("Animation_tdohp"),
-"sword_slash_1_up": SubResource("Animation_j48eh"),
-"sword_slash_2_down": SubResource("Animation_de275"),
-"sword_slash_2_left": SubResource("Animation_y1k18"),
-"sword_slash_2_right": SubResource("Animation_noixg"),
-"sword_slash_2_up": SubResource("Animation_a3u44"),
-"sword_slash_3_down": SubResource("Animation_ee0xw"),
-"sword_slash_3_left": SubResource("Animation_ueqtj"),
-"sword_slash_3_right": SubResource("Animation_mr0mo"),
-"sword_slash_3_up": SubResource("Animation_i6qox")
+&"RESET": SubResource("Animation_qkuxn"),
+&"idle_down": SubResource("Animation_21cf8"),
+&"idle_left": SubResource("Animation_4eoe7"),
+&"idle_right": SubResource("Animation_rkg51"),
+&"idle_up": SubResource("Animation_rl4qx"),
+&"run_down": SubResource("Animation_2om7e"),
+&"run_left": SubResource("Animation_yr4ov"),
+&"run_right": SubResource("Animation_ly5sc"),
+&"run_up": SubResource("Animation_s6se4"),
+&"running_down": SubResource("Animation_7h2wg"),
+&"running_left": SubResource("Animation_sjjwe"),
+&"running_right": SubResource("Animation_w4xl6"),
+&"running_up": SubResource("Animation_yda7s"),
+&"smithing_left": SubResource("Animation_ta4i2"),
+&"spear_slash_1_down": SubResource("Animation_nh1v8"),
+&"spear_slash_1_left": SubResource("Animation_8ldwp"),
+&"spear_slash_1_right": SubResource("Animation_d3jus"),
+&"spear_slash_1_up": SubResource("Animation_lystf"),
+&"spear_slash_2_down": SubResource("Animation_ip1hy"),
+&"spear_slash_2_left": SubResource("Animation_1c3u6"),
+&"spear_slash_2_right": SubResource("Animation_mud7e"),
+&"spear_slash_2_up": SubResource("Animation_l8rt3"),
+&"spear_slash_3_down": SubResource("Animation_opy84"),
+&"spear_slash_3_left": SubResource("Animation_hcmch"),
+&"spear_slash_3_right": SubResource("Animation_mmn4e"),
+&"spear_slash_3_up": SubResource("Animation_7ghaf"),
+&"sword_slash_1_down": SubResource("Animation_8gnlw"),
+&"sword_slash_1_left": SubResource("Animation_bwqxr"),
+&"sword_slash_1_right": SubResource("Animation_tdohp"),
+&"sword_slash_1_up": SubResource("Animation_j48eh"),
+&"sword_slash_2_down": SubResource("Animation_de275"),
+&"sword_slash_2_left": SubResource("Animation_y1k18"),
+&"sword_slash_2_right": SubResource("Animation_noixg"),
+&"sword_slash_2_up": SubResource("Animation_a3u44"),
+&"sword_slash_3_down": SubResource("Animation_ee0xw"),
+&"sword_slash_3_left": SubResource("Animation_ueqtj"),
+&"sword_slash_3_right": SubResource("Animation_mr0mo"),
+&"sword_slash_3_up": SubResource("Animation_i6qox")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_yv5of"]
@@ -8900,7 +8900,7 @@ frame = 19
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CompositeSprites/Animation"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_s34bx")
+&"": SubResource("AnimationLibrary_s34bx")
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="CompositeSprites/Animation"]
@@ -8999,4 +8999,5 @@ wait_time = 0.22
 one_shot = true
 
 [node name="Invetario" parent="." instance=ExtResource("19_gecyq")]
+z_index = 4000
 position = Vector2(-321, -171)

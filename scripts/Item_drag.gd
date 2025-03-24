@@ -22,7 +22,7 @@ func _ready() -> void:
 		item_type = "sword_basic"
 	elif is_in_group("shield_basic"):
 		item_type = "shield_basic"
-	elif is_in_group("spear"):
+	elif is_in_group("spear_basic"):
 		item_type = "spear_basic"
 	initialPos = global_position
 	initialCameraPos = get_viewport().get_camera_2d().global_position

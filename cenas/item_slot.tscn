@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://vbu0fvbbrd75"]
 
-[ext_resource type="Script" path="res://scripts/Item_drag.gd" id="1_iyfnj"]
-[ext_resource type="Texture2D" uid="uid://bol1st4w0cb8q" path="res://CharacterSprites/Arms/shields/shield_1.png" id="2_b3c2j"]
+[ext_resource type="Script" uid="uid://bd4e47dymky6q" path="res://scripts/Item_drag.gd" id="1_iyfnj"]
+[ext_resource type="Texture2D" uid="uid://bxbxhg818jes0" path="res://CharacterSprites/Arms/spears/spear_1.png" id="2_so01i"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p215j"]
 border_width_left = 1
@@ -41,9 +41,9 @@ visibility_layer = 2048
 shape = SubResource("RectangleShape2D_ook5x")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-0.999999, -2)
-scale = Vector2(0.7, 0.7)
-texture = ExtResource("2_b3c2j")
+position = Vector2(3, 2)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_so01i")
 hframes = 8
 vframes = 8
-frame = 32
+frame = 13

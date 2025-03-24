@@ -1,12 +1,12 @@
 [gd_scene load_steps=33 format=3 uid="uid://bjss4nulwphgk"]
 
-[ext_resource type="Script" path="res://scripts/change_hair_container.gd" id="1_j81wa"]
+[ext_resource type="Script" uid="uid://f1qr8cm31i60" path="res://scripts/change_hair_container.gd" id="1_j81wa"]
 [ext_resource type="Texture2D" uid="uid://cctpinheeduv2" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/3 Icons/Icons blue/Icon_01.png" id="9_vu4hn"]
 [ext_resource type="Texture2D" uid="uid://by4m3gk3q07jp" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/3 Icons/Icons yellow/Icon_05.png" id="17_y0pte"]
 [ext_resource type="Texture2D" uid="uid://dpii1qdr5xa7i" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/3 Icons/Icons yellow/Icon_06.png" id="18_iwp83"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="20_3r8l1"]
 [ext_resource type="Texture2D" uid="uid://bxsowbfp3t6yn" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/2 Bars/Button1.png" id="21_2ijwj"]
-[ext_resource type="Script" path="res://scripts/button-scale.gd" id="22_b5gvk"]
+[ext_resource type="Script" uid="uid://m1j67fuj4ma4" path="res://scripts/button-scale.gd" id="22_b5gvk"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_aos0l"]
 font = ExtResource("20_3r8l1")
@@ -130,8 +130,8 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_f7x11"]
 _data = {
-"RESET": SubResource("Animation_ekpm1"),
-"hover_scale": SubResource("Animation_qsr47")
+&"RESET": SubResource("Animation_ekpm1"),
+&"hover_scale": SubResource("Animation_qsr47")
 }
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g5qt8"]

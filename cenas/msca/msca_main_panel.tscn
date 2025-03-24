@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bueurs2h3bdh2"]
 
-[ext_resource type="Script" path="res://addons/msca/CreatePlayer.gd" id="1_xri40"]
+[ext_resource type="Script" uid="uid://dsg8p0o4ojx8k" path="res://addons/msca/CreatePlayer.gd" id="1_xri40"]
 
 [node name="CenterContainer" type="CenterContainer"]
 offset_left = 3.0

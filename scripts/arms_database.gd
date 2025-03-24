@@ -62,16 +62,35 @@ var weapons = {
 		}
 	},
 	"spear_basic": {
-		"name": "Basic Spear",
-		"levels": {
-			1: {
-				"texture": preload("res://CharacterSprites/Arms/spears/spear_1.png"),
-				"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/slash_1.png"),
-				"wave_required": 0
-			},
-			
-		}
-	},
+	"name": "Basic Spear",
+	"levels": {
+		1: {
+			"texture": preload("res://CharacterSprites/Arms/spears/spear_1.png"),
+			"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/slash_1.png"),
+			"wave_required": 0
+		},
+		2: {
+			"texture": preload("res://CharacterSprites/Arms/spears/spears_upgraded/2/spear_1.png"),
+			"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/spears_upgraded/slash_1/2/slash_1.png"),
+			"wave_required": 4
+		},
+		3: {
+			"texture": preload("res://CharacterSprites/Arms/spears/spears_upgraded/3/spear_1.png"),
+			"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/spears_upgraded/slash_1/3/slash_1.png"),
+			"wave_required": 9
+		},
+		4: {
+			"texture": preload("res://CharacterSprites/Arms/spears/spears_upgraded/4/spear_1.png"),
+			"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/spears_upgraded/slash_1/4/slash_1.png"),
+			"wave_required": 20
+		},
+		5: {
+			"texture": preload("res://CharacterSprites/Arms/spears/spears_upgraded/5/spear_1.png"),
+			"attack_texture": preload("res://CharacterSprites/Arms/spears/Attack/spears_upgraded/slash_1/5/slash_1.png"),
+			"wave_required": 35
+		},
+	}
+},
 	# ... outras armas se necessário
 }
 

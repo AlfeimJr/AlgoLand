@@ -123,7 +123,6 @@ func _physics_process(delta: float) -> void:
 	velocity = base_velocity
 	move_and_slide()
 
-
 func compute_separation() -> Vector2:
 	var repel_vector = Vector2.ZERO
 	var neighbor_count = 0
@@ -147,6 +146,9 @@ func take_damage(damage_amount: int, knockback_force: Vector2 = Vector2.ZERO) ->
 	print("[EnemyBase] take_damage(): Recebi dano =", damage_amount)
 	health -= damage_amount
 	print("[EnemyBase] Nova health =", health)
+
+	# >>> LINHA ADICIONADA PARA EXIBIR DANO <<<
+	spawn_damage_label(damage_amount)
 
 	if health <= 0:
 		die()
@@ -249,3 +251,20 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 			is_patrolling = true
 			patrol_timer = 0.0
 			patrol_direction = Vector2.RIGHT
+
+
+# -------------------------------------------------
+# FUNÇÃO PARA CRIAR O TEXTO DE DANO ACIMA DO INIMIGO
+# -------------------------------------------------
+func spawn_damage_label(damage_value: int) -> void:
+	var label_scene = preload("res://cenas/floating_damage_label.tscn")
+	var label_instance = label_scene.instantiate()
+
+	# Posição do Node2D (a cena do texto)
+	label_instance.global_position = global_position - Vector2(0, 20)
+
+	# Chama o método 'set_damage' do script
+	label_instance.set_damage(damage_value)
+
+	# Adiciona na cena
+	get_tree().current_scene.add_child(label_instance)
