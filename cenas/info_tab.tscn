@@ -1,11 +1,97 @@
-[gd_scene load_steps=4 format=3 uid="uid://dsd2y11vv3y3c"]
+[gd_scene load_steps=9 format=4 uid="uid://dsd2y11vv3y3c"]
 
 [ext_resource type="Script" uid="uid://ciyax00h8t7vr" path="res://scripts/info_tab.gd" id="1_hbuxv"]
+[ext_resource type="Texture2D" uid="uid://d1iiqnaqd3rjw" path="res://UI/craftpix-net-420010-pixel-game-user-interface-for-platformer/1 Interface/TileMap.png" id="2_uq2o2"]
 [ext_resource type="FontFile" uid="uid://dwub7qum41gaq" path="res://UI/Planes_ValMore.ttf" id="2_wsgip"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p0vde"]
+texture = ExtResource("2_uq2o2")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+12:0/0 = 0
+13:0/0 = 0
+14:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+9:1/0 = 0
+10:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+12:2/0 = 0
+13:2/0 = 0
+14:2/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+9:4/0 = 0
+10:4/0 = 0
+12:4/0 = 0
+13:4/0 = 0
+14:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+9:5/0 = 0
+10:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+12:6/0 = 0
+13:6/0 = 0
+14:6/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_yw4k5"]
+sources/0 = SubResource("TileSetAtlasSource_p0vde")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2q05x"]
+bg_color = Color(0.237539, 0.237539, 0.237539, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i7kji"]
+bg_color = Color(0.212305, 0.212305, 0.212305, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [sub_resource type="LabelSettings" id="LabelSettings_g7v7p"]
 font = ExtResource("2_wsgip")
 font_size = 10
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="InfoTab" type="CanvasLayer"]
 script = ExtResource("1_hbuxv")
@@ -21,24 +107,26 @@ offset_top = -24.128
 offset_right = 159.936
 offset_bottom = 167.872
 
-[node name="Background" type="Panel" parent="CharacterInfo"]
-layout_mode = 0
-offset_right = 176.0
-offset_bottom = 192.0
+[node name="TileMapLayer" type="TileMapLayer" parent="CharacterInfo"]
+position = Vector2(-208, -64)
+tile_map_data = PackedByteArray("AAANAAoAAAAGAAUAAAANAAsAAAAGAAUAAAANAAwAAAAGAAUAAAANAA4AAAAGAAUAAAANAA0AAAAGAAUAAAANAA8AAAAGAAYAAAAOAA8AAAAHAAYAAAAPAA8AAAAHAAYAAAAQAA8AAAAHAAYAAAARAA8AAAAHAAYAAAASAA8AAAAHAAYAAAATAA8AAAAHAAYAAAAUAA8AAAAHAAYAAAAVAA8AAAAHAAYAAAAWAA8AAAAHAAYAAAAXAA8AAAAIAAYAAAAXAA4AAAAIAAUAAAAXAA0AAAAIAAUAAAAXAAwAAAAIAAUAAAAXAAsAAAAIAAUAAAAXAAoAAAAIAAUAAAAXAAkAAAAIAAUAAAAXAAgAAAAIAAUAAAAXAAcAAAAIAAUAAAAXAAYAAAAIAAUAAAAXAAUAAAAIAAUAAAANAAkAAAAGAAUAAAANAAgAAAAGAAUAAAANAAcAAAAGAAUAAAANAAYAAAAGAAUAAAANAAUAAAAGAAUAAAANAAQAAAAGAAQAAAAOAAQAAAAHAAQAAAAPAAQAAAAHAAQAAAAQAAQAAAAHAAQAAAARAAQAAAAHAAQAAAASAAQAAAAHAAQAAAATAAQAAAAHAAQAAAAUAAQAAAAHAAQAAAAVAAQAAAAHAAQAAAAWAAQAAAAHAAQAAAAXAAQAAAAIAAQAAAAOAAUAAAAHAAUAAAAOAAYAAAAHAAUAAAAOAAcAAAAHAAUAAAAOAAgAAAAHAAUAAAAOAAkAAAAHAAUAAAAOAAoAAAAHAAUAAAAOAAsAAAAHAAUAAAAOAAwAAAAHAAUAAAAOAA0AAAAHAAUAAAAOAA4AAAAHAAUAAAAPAAUAAAAHAAUAAAAPAAYAAAAHAAUAAAAPAAcAAAAHAAUAAAAPAAgAAAAHAAUAAAAPAAkAAAAHAAUAAAAPAAoAAAAHAAUAAAAPAAsAAAAHAAUAAAAPAAwAAAAHAAUAAAAPAA0AAAAHAAUAAAAPAA4AAAAHAAUAAAAQAAUAAAAHAAUAAAAQAAYAAAAHAAUAAAAQAAcAAAAHAAUAAAAQAAgAAAAHAAUAAAAQAAkAAAAHAAUAAAAQAAoAAAAHAAUAAAAQAAsAAAAHAAUAAAAQAAwAAAAHAAUAAAAQAA0AAAAHAAUAAAAQAA4AAAAHAAUAAAARAAUAAAAHAAUAAAARAAYAAAAHAAUAAAARAAcAAAAHAAUAAAARAAgAAAAHAAUAAAARAAkAAAAHAAUAAAARAAoAAAAHAAUAAAARAAsAAAAHAAUAAAARAAwAAAAHAAUAAAARAA0AAAAHAAUAAAARAA4AAAAHAAUAAAASAAUAAAAHAAUAAAASAAYAAAAHAAUAAAASAAcAAAAHAAUAAAASAAgAAAAHAAUAAAASAAkAAAAHAAUAAAASAAoAAAAHAAUAAAASAAsAAAAHAAUAAAASAAwAAAAHAAUAAAASAA0AAAAHAAUAAAASAA4AAAAHAAUAAAATAAUAAAAHAAUAAAATAAYAAAAHAAUAAAATAAcAAAAHAAUAAAATAAgAAAAHAAUAAAATAAkAAAAHAAUAAAATAAoAAAAHAAUAAAATAAsAAAAHAAUAAAATAAwAAAAHAAUAAAATAA0AAAAHAAUAAAATAA4AAAAHAAUAAAAUAAUAAAAHAAUAAAAUAAYAAAAHAAUAAAAUAAcAAAAHAAUAAAAUAAgAAAAHAAUAAAAUAAkAAAAHAAUAAAAUAAoAAAAHAAUAAAAUAAsAAAAHAAUAAAAUAAwAAAAHAAUAAAAUAA0AAAAHAAUAAAAUAA4AAAAHAAUAAAAVAAUAAAAHAAUAAAAVAAYAAAAHAAUAAAAVAAcAAAAHAAUAAAAVAAgAAAAHAAUAAAAVAAkAAAAHAAUAAAAVAAoAAAAHAAUAAAAVAAsAAAAHAAUAAAAVAAwAAAAHAAUAAAAVAA0AAAAHAAUAAAAVAA4AAAAHAAUAAAAWAAUAAAAHAAUAAAAWAAYAAAAHAAUAAAAWAAcAAAAHAAUAAAAWAAgAAAAHAAUAAAAWAAkAAAAHAAUAAAAWAAoAAAAHAAUAAAAWAAsAAAAHAAUAAAAWAAwAAAAHAAUAAAAWAA0AAAAHAAUAAAAWAA4AAAAHAAUAAAA=")
+tile_set = SubResource("TileSet_yw4k5")
 
 [node name="BackgroundStatus" type="Panel" parent="CharacterInfo"]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 16.0
-offset_right = 165.0
-offset_bottom = 65.0
+offset_left = 10.0
+offset_top = 18.0
+offset_right = 167.0
+offset_bottom = 67.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2q05x")
 
 [node name="BackgroundItemsPurchased" type="Panel" parent="CharacterInfo"]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 83.0
-offset_right = 165.0
-offset_bottom = 187.0
+offset_left = 10.0
+offset_top = 84.0
+offset_right = 166.0
+offset_bottom = 183.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_i7kji")
 
 [node name="ItemsPurchased" type="GridContainer" parent="CharacterInfo/BackgroundItemsPurchased"]
 layout_mode = 1
@@ -47,6 +135,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 3.0
 offset_top = 5.0
+offset_right = -3.0
+offset_bottom = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/h_separation = 30
@@ -55,9 +145,9 @@ columns = 5
 
 [node name="PlayerStatus" type="GridContainer" parent="CharacterInfo"]
 layout_mode = 0
-offset_left = 9.0
+offset_left = 13.0
 offset_top = 20.0
-offset_right = 161.0
+offset_right = 165.0
 offset_bottom = 61.0
 theme_override_constants/h_separation = 5
 theme_override_constants/v_separation = 5
@@ -65,18 +155,19 @@ columns = 4
 
 [node name="StatusTitle" type="Label" parent="CharacterInfo"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 4.0
-offset_right = 46.0
-offset_bottom = 15.0
+offset_left = 1.0
+offset_top = 3.0
+offset_right = 175.0
+offset_bottom = 14.0
 text = "STATUS"
 label_settings = SubResource("LabelSettings_g7v7p")
+horizontal_alignment = 1
 
 [node name="ItemsTitle" type="Label" parent="CharacterInfo"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 69.0
-offset_right = 79.0
-offset_bottom = 80.0
+offset_left = 11.0
+offset_top = 71.0
+offset_right = 84.0
+offset_bottom = 82.0
 text = "ITENS ACTIVE"
 label_settings = SubResource("LabelSettings_g7v7p")

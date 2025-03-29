@@ -18,7 +18,7 @@ func _ready() -> void:
 	if menu_instance.has_method("connect_start_wave"):
 		menu_instance.connect_start_wave(Callable(self, "_on_start_wave_selected"))
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if player_in_range and Input.is_action_just_pressed("open_menu"):
 		open_menu()
 	if menu_instance.visible and Input.is_action_just_pressed("close_menu"):

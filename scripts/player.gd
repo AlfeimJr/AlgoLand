@@ -16,12 +16,13 @@ var attacks_blocked: bool = false
 var is_smithing: bool = false
 var current_shield_id: String = "shield_basic"
 var movement_enabled: bool = true
-
+var base_vitality: int = 100  # Valor base de vitalidade
+var current_vitality: int = base_vitality  # Vitalidade atual com bônus
 @export var current_item_type: String = ""  # "sword", "spear", etc.
-
+var _spear_combo_in_progress: bool = false
 # >>> Escudo controlado separadamente <<<
 @export var using_shield: bool = false
-
+var queued_attack: bool = false
 # Variável que controla o nível da arma (espada)
 @export var sword_level: int = 1
 var current_weapon_id: String = "sword_basic"
@@ -31,7 +32,7 @@ var current_weapon_id: String = "sword_basic"
 @export var using_spear: bool = false
 @export var spear_level: int = 1
 var current_spear_id: String = "spear_basic"
-
+var attack_button_down: bool = false
 @export_category("Objects")
 @export var _animation_tree: AnimationTree = null
 @export var _timer: Timer = null  # Timer para controlar a duração de cada golpe
@@ -125,9 +126,9 @@ var _slash_2_time: float = 0.3
 var _slash_3_time: float = 0.3
 
 # >>> Tempos para a lança (ordem 2 -> 3 -> 1) <<<
-var _spear_slash_2_time: float = 0.3
-var _spear_slash_3_time: float = 0.3
-var _spear_slash_1_time: float = 0.3
+var _spear_slash_2_time: float = 0.35
+var _spear_slash_3_time: float = 0.45
+var _spear_slash_1_time: float = 0.35
 
 var _combo_window_timer: Timer
 
@@ -227,7 +228,7 @@ func _ready() -> void:
 	update_coins_label()
 	update_hp_bar()
 
-func _on_wave_completed(wave: int) -> void:
+func _on_wave_completed(_wave: int) -> void:
 	current_hp = stats.max_hp
 	update_hp_bar()
 
@@ -256,7 +257,7 @@ func _physics_process(delta: float) -> void:
 		_knockback = _knockback.lerp(Vector2.ZERO, _knockback_decay)
 	else:
 		_move(delta)
-		_attack_combo_logic()
+		_attack_combo_logic()  # Chamado a cada frame
 
 	move_and_slide()
 	_animate()
@@ -276,22 +277,47 @@ func _physics_process(delta: float) -> void:
 			break
 
 func _move(delta: float) -> void:
+	# Se o player está no meio de um ataque, não movimenta
 	if _is_attacking:
 		velocity.x = lerp(velocity.x, 0.0, _friction)
 		velocity.y = lerp(velocity.y, 0.0, _friction)
 		return
 
+	# Lê o input de movimento (teclas de andar)
 	var dir = Vector2(
 		Input.get_axis("move_left", "move_right"),
 		Input.get_axis("move_up", "move_down")
 	)
 
 	if dir != Vector2.ZERO:
+		# Normaliza a direção para não ficar maior que 1 em magnitude
 		dir = dir.normalized()
-		velocity.x = lerp(velocity.x, dir.x * stats.move_speed, _acceleration)
-		velocity.y = lerp(velocity.y, dir.y * stats.move_speed, _acceleration)
+
+		# **IMPORTANTE**: Atualiza a última direção de ataque
 		_attack_direction = dir
 
+		# 1) Define a base de velocidade
+		#    - Sem arma: base = 64
+		#    - Com arma (espada ou lança): base = 114
+		var base_speed = 64.0
+		if using_sword or using_spear:
+			base_speed = 114.0
+
+		# 2) Soma os bônus que já estão em stats
+		#    (quando compra item, incrementa stats.speed_item_bonus)
+		var item_speed_bonus = stats.speed_item_bonus
+
+		# 3) Soma também o bônus de agilidade, caso queira
+		var agility_bonus = float(stats.agility) * 0.5
+
+		# 4) Soma tudo para obter a velocidade final
+		var final_speed = base_speed + item_speed_bonus + agility_bonus
+
+		# Move interpolando a velocidade atual para a velocidade desejada
+		velocity.x = lerp(velocity.x, dir.x * final_speed, _acceleration)
+		velocity.y = lerp(velocity.y, dir.y * final_speed, _acceleration)
+
+		# Atualiza a animação dependendo de ter (espada/lança) ou não
 		if using_sword or using_spear:
 			_animation_tree.set("parameters/idle/blend_position", dir)
 			_animation_tree.set("parameters/running/blend_position", dir)
@@ -299,8 +325,10 @@ func _move(delta: float) -> void:
 			_animation_tree.set("parameters/idle/blend_position", dir)
 			_animation_tree.set("parameters/run/blend_position", dir)
 	else:
+		# Se não há input (dir == Vector2.ZERO), freia suavemente
 		velocity.x = lerp(velocity.x, 0.0, _friction)
 		velocity.y = lerp(velocity.y, 0.0, _friction)
+
 
 # ---------------------------
 # COMBO / ATAQUE
@@ -309,30 +337,36 @@ func _attack_combo_logic() -> void:
 	if attacks_blocked or get_viewport().gui_get_focus_owner() != null:
 		return
 
-	if using_sword:
-		if Input.is_action_just_pressed("attack"):
-			if _combo_phase == 0 and not _is_attacking:
-				_combo_phase = 1
-				start_attack_slash("AttackSwordSlash_1", _slash_1_time)
-			elif _combo_phase == 1 and _can_chain_combo:
-				_combo_phase = 2
-				start_attack_slash("AttackSwordSlash_3", _slash_2_time)
-			elif _combo_phase == 2 and _can_chain_combo:
-				_combo_phase = 3
-				start_attack_slash("AttackSwordSlash_2", _slash_3_time)
-	elif using_spear:
-		if Input.is_action_just_pressed("attack"):
-			if _combo_phase == 0 and not _is_attacking:
-				_combo_phase = 1
-				start_attack_slash_spear("AttackSpearSlash_2", _spear_slash_2_time)
-			elif _combo_phase == 1 and _can_chain_combo:
-				_combo_phase = 2
-				start_attack_slash_spear("AttackSpearSlash_3", _spear_slash_3_time)
-			elif _combo_phase == 2 and _can_chain_combo:
-				_combo_phase = 3
-				start_attack_slash_spear("AttackSpearSlash_1", _spear_slash_1_time)
+	if Input.is_action_just_pressed("attack"):
+		if _is_attacking:
+			queued_attack = true
+		else:
+			if using_sword:
+				# Aqui usamos os nomes e tempos de ataque da espada
+				if _combo_phase == 0:
+					_combo_phase = 1
+					start_attack_slash("AttackSwordSlash_1", _slash_1_time)
+				elif _combo_phase == 1:
+					_combo_phase = 2
+					start_attack_slash("AttackSwordSlash_2", _slash_2_time)
+				elif _combo_phase == 2:
+					_combo_phase = 3
+					start_attack_slash("AttackSwordSlash_3", _slash_3_time)
+			# Caso queira manter a lógica de lança, deixe o bloco abaixo
+			elif using_spear:
+				if _combo_phase == 0:
+					_combo_phase = 1
+					start_attack_slash_spear("AttackSpearSlash_2", _spear_slash_2_time)
+				elif _combo_phase == 1:
+					_combo_phase = 2
+					start_attack_slash_spear("AttackSpearSlash_3", _spear_slash_3_time)
+				elif _combo_phase == 2:
+					_combo_phase = 3
+					start_attack_slash_spear("AttackSpearSlash_1", _spear_slash_1_time)
 
-func start_attack_slash(anim_name: String, slash_time: float) -> void:
+func start_attack_slash_spear(anim_name: String, slash_time: float) -> void:
+	# Ajusta a velocidade da animação se necessário (pode ser removido se não for desejado)
+	anim_player.speed_scale = 0.2
 	_is_attacking = true
 	$AttackArea.monitoring = true
 	$AttackArea.monitorable = true
@@ -341,9 +375,7 @@ func start_attack_slash(anim_name: String, slash_time: float) -> void:
 	_state_machine.travel(anim_name)
 	_timer.start(slash_time)
 	_can_chain_combo = true
-
-func start_attack_slash_spear(anim_name: String, slash_time: float) -> void:
-	anim_player.speed_scale = 0.2
+func start_attack_slash(anim_name: String, slash_time: float) -> void:
 	_is_attacking = true
 	$AttackArea.monitoring = true
 	$AttackArea.monitorable = true
@@ -360,22 +392,36 @@ func _on_attack_timer_timeout() -> void:
 	_set_sprites_visible(false)
 	anim_player.speed_scale = 1.0
 
-	if using_sword:
-		if _combo_phase in [2, 3]:
-			_combo_phase = 0
-			_can_chain_combo = false
-		else:
-			_combo_window_timer.start(0.2)
-	elif using_spear:
-		if _combo_phase in [2, 3]:
-			_combo_phase = 0
-			_can_chain_combo = false
-		else:
-			_combo_window_timer.start(0.2)
+	# Se houver um ataque enfileirado, processa-o imediatamente
+	if queued_attack:
+		queued_attack = false
+		# Verifica se está usando a espada e continua o combo
+		if using_sword:
+			if _combo_phase == 1:
+				_combo_phase = 2
+				start_attack_slash("AttackSwordSlash_2", _slash_2_time)
+			elif _combo_phase == 2:
+				_combo_phase = 3
+				start_attack_slash("AttackSwordSlash_3", _slash_3_time)
+			else:
+				_combo_phase = 0  # Caso tenha chegado ao final ou algum erro, reinicia
+		elif using_spear:
+			# Lógica para lança (se necessário)
+			if _combo_phase == 1:
+				_combo_phase = 2
+				start_attack_slash_spear("AttackSpearSlash_3", _spear_slash_3_time)
+			elif _combo_phase == 2:
+				_combo_phase = 3
+				start_attack_slash_spear("AttackSpearSlash_1", _spear_slash_1_time)
+			else:
+				_combo_phase = 0
+		return
+
+	# Se não houver ataque enfileirado, reinicia o combo
+	_combo_phase = 0
 
 func _on_combo_window_timeout() -> void:
-	if _combo_phase == 1:
-		_combo_phase = 0
+	_combo_phase = 0  # Reseta o combo independente do estágio
 	_can_chain_combo = false
 
 # ---------------------------
@@ -521,13 +567,15 @@ func equip_sword() -> void:
 	is_two_handed_weapon = false
 	update_sword_textures()
 	sword_sprite.visible = true
-	stats.move_speed += 50
+	# Remova ou comente a linha abaixo:
+	# stats.move_speed += 50
+	stats.calculate_derived_stats(using_sword)  # Indica que uma arma está equipada
 	emit_signal("equipment_changed")
 
 func unequip_sword() -> void:
 	using_sword = false
 	sword_sprite.visible = false
-	stats.calculate_derived_stats(using_sword)
+	stats.calculate_derived_stats(false)
 	emit_signal("equipment_changed")
 
 func equip_spear() -> void:
@@ -544,7 +592,7 @@ func equip_spear() -> void:
 	current_item_type = "spear_basic"
 	using_spear = true
 	is_two_handed_weapon = true
-	stats.calculate_derived_stats(true) # agora lança tem stats próprios
+	stats.calculate_derived_stats(using_spear)
 	update_spear_textures()
 	spear_sprite.visible = true
 	emit_signal("equipment_changed")
@@ -563,12 +611,37 @@ func equip_shield() -> void:
 	if is_two_handed_weapon:
 		print("Não é possível equipar escudo com arma de duas mãos!")
 		return
+	
 	using_shield = true
 	shield_sprite.visible = true
 	update_shield_textures()
+	
+	# Aplica o bônus de vitalidade do escudo
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
+	
+	if shield_data.has("vitality_bonus"):
+		stats.vitality += shield_data["vitality_bonus"]
+		stats.calculate_derived_stats(using_sword or using_spear)
+		current_hp = min(current_hp + shield_data["vitality_bonus"], stats.max_hp)
+		update_hp_bar()
+	
 	emit_signal("equipment_changed")
 
 func unequip_shield() -> void:
+	if not using_shield:
+		return
+		
+	# Remove o bônus de vitalidade do escudo
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
+	
+	if shield_data.has("vitality_bonus"):
+		stats.vitality -= shield_data["vitality_bonus"]
+		stats.calculate_derived_stats(using_sword or using_spear)
+		current_hp = min(current_hp, stats.max_hp)  # Ajusta HP se necessário
+		update_hp_bar()
+	
 	using_shield = false
 	shield_sprite.visible = false
 	emit_signal("equipment_changed")
@@ -793,26 +866,51 @@ func _on_smithing_finished(item_type: String) -> void:
 		_state_machine.travel("idle")
 	movement_enabled = true
 	
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	
 	match item_type:
 		"sword_basic":
 			sword_level += 1
 			update_sword_textures()
-			stats.strength = arms_status.get_strength_for_level(sword_level)
+			var sword_data = arms_db_instance.get_weapon_level_data(current_weapon_id, sword_level)
+			if sword_data.has("strength_bonus"):
+				stats.strength = sword_data["strength_bonus"]
 			stats.calculate_derived_stats(using_sword)
 		"shield_basic":
+			# Se estava usando o escudo, remove o bônus antigo
+			if using_shield:
+				var old_shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
+				if old_shield_data.has("vitality_bonus"):
+					stats.vitality -= old_shield_data["vitality_bonus"]
+			
 			shield_level += 1
 			update_shield_textures()
-			stats.defense = arms_status.get_defense_for_level(shield_level)
+			
+			# Aplica o novo bônus se estiver usando o escudo
+			var new_shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
+			if using_shield:
+				if new_shield_data.has("vitality_bonus"):
+					stats.vitality += new_shield_data["vitality_bonus"]
+			
+			if new_shield_data.has("strength_bonus"):
+				stats.defense = new_shield_data["strength_bonus"]
+			
 			stats.calculate_derived_stats(using_sword or using_spear)
+			current_hp = min(current_hp, stats.max_hp)
+			update_hp_bar()
 		"spear_basic":
 			spear_level += 1
 			update_spear_textures()
-			stats.strength = arms_status.get_strength_for_level(spear_level)
+			var spear_data = arms_db_instance.get_weapon_level_data(current_spear_id, spear_level)
+			if spear_data.has("strength_bonus"):
+				stats.strength = spear_data["strength_bonus"]
 			stats.calculate_derived_stats(using_spear)
 
 	update_weapon_appearance() # Garante atualização visual correta
 	emit_signal("smithing_finished")
 
+	update_weapon_appearance() # Garante atualização visual correta
+	emit_signal("smithing_finished")
 # ---------------------------
 # ATUALIZAÇÃO DAS TEXTURAS
 # ---------------------------

@@ -5,7 +5,7 @@ signal wave_completed(wave: int)
 signal game_won()
 signal waves_stopped_signal
 
-@export var starting_wave: int = 1
+@export var starting_wave: int = 35
 @export var max_enemies: int = 5	
 @export var wave_interval: float = 15.0
 @export var max_waves: int = 1000
@@ -47,7 +47,9 @@ func start_wave() -> void:
 	emit_signal("wave_started", current_wave)
 	merchant.visible = false
 	is_wave_running = true
+	# Define o total de inimigos para a wave no início
 	enemies_alive = int(max_enemies * pow(1.5, current_wave - 1))
+	# Não sobrescreva a contagem no spawner!
 	enemy_health_multiplier = 1.0 + (current_wave * 0.2)
 	enemy_damage_multiplier = 1.0 + (current_wave * 0.1)
 	var detection_scale = 1.0 + (current_wave - 1) * detection_increase_per_wave
@@ -55,7 +57,7 @@ func start_wave() -> void:
 	if wave_banner:
 		wave_banner.show_wave_number(current_wave)
 	update_ui()
-	# Utiliza o método do spawner para criar os inimigos
+	# Chama o spawner para criar os inimigos
 	spawner.spawn_enemies(enemies_alive, enemy_health_multiplier, enemy_damage_multiplier)
 
 func update_ui() -> void:

@@ -17,7 +17,7 @@ var last_horizontal_direction: float = 1.0  # 1 para direita, -1 para esquerda
 @export var attack_cooldown: float = 1.5
 @export var attack_range: float = 20.0   # Distância mínima para que o attack animado seja priorizado
 var can_attack: bool = true
-var damage: float = 30
+var damage: float = 15
 
 # -----------------------------
 # VARIÁVEIS DE VIDA
@@ -55,18 +55,13 @@ signal hit_player
 signal enemy_died
 
 func _ready() -> void:
-	print("[EnemyBase] _ready() chamado.")
 	# Ativa a AnimationTree e define o estado "run"
 	if animation_tree:
-		print("[EnemyBase] AnimationTree encontrado. Ativando e definindo 'run'.")
 		animation_tree.active = true
 		_set_animation("run")
-	else:
-		print("[EnemyBase] AnimationTree NÃO encontrado.")
 	
 	# Configura a área de DETECÇÃO
 	if $DetectionArea:
-		print("[EnemyBase] DetectionArea encontrado, configurando monitoring e mask.")
 		$DetectionArea.monitoring = true
 		$DetectionArea.monitorable = true
 		$DetectionArea.set_collision_mask_value(2, true)
@@ -74,12 +69,19 @@ func _ready() -> void:
 			$DetectionArea.connect("body_entered", Callable(self, "_on_area_2d_body_entered"))
 		if not $DetectionArea.is_connected("body_exited", Callable(self, "_on_area_2d_body_exited")):
 			$DetectionArea.connect("body_exited", Callable(self, "_on_area_2d_body_exited"))
-	else:
-		print("[EnemyBase] NÓ DetectionArea NÃO ENCONTRADO!")
+	
+	# >>> INTEGRAÇÃO DA BARRA DE HP <<<
+	# Se o nó HPBar não estiver presente, instancia e adiciona como filho do inimigo.
+	if not has_node("HPBar"):
+		var hp_bar_scene = preload("res://cenas/hp_bar.tscn")
+		var hp_bar_instance = hp_bar_scene.instantiate()
+		hp_bar_instance.name = "HPBar"
+		add_child(hp_bar_instance)
+		# Posiciona a barra acima do inimigo (ajuste conforme necessário)
+		hp_bar_instance.position = Vector2(0, -40)
 
 func _physics_process(delta: float) -> void:
 	# Não chama super() para evitar a lógica da classe base que impede movimento durante ataque
-	
 	if is_dead or not has_method("_get_player"):
 		return
 	
@@ -87,7 +89,6 @@ func _physics_process(delta: float) -> void:
 
 	# Se estiver recuando (knockback)
 	if is_recoiling:
-		print("[SlimeSlippery] is_recoiling == true, executando move_and_slide() e retornando.")
 		move_and_slide()
 		return
 
@@ -97,7 +98,6 @@ func _physics_process(delta: float) -> void:
 		if patrol_timer >= patrol_duration:
 			patrol_timer = 0.0
 			patrol_direction = -patrol_direction
-			print("[SlimeSlippery] Invertendo patrulha, novo patrol_direction =", patrol_direction)
 		_set_animation_direction(patrol_direction)
 		base_velocity = patrol_direction * patrol_speed + compute_separation()
 
@@ -112,9 +112,6 @@ func _physics_process(delta: float) -> void:
 			else:
 				direction = Vector2.ZERO
 				base_velocity = Vector2.ZERO
-
-			if distance_to_player < attack_range and can_attack and not is_damaged:
-				print("[SlimeSlippery] Player muito perto (d <", attack_range, "). Attack animado deverá ser disparado via area_attack.")
 			base_velocity = direction * speed
 	else:
 		base_velocity = Vector2.ZERO
@@ -140,42 +137,50 @@ func compute_separation() -> Vector2:
 
 func take_damage(damage_amount: int, knockback_force: Vector2 = Vector2.ZERO) -> void:
 	if is_dead:
-		print("[EnemyBase] take_damage() ignorado pois is_dead == true.")
 		return
 
-	print("[EnemyBase] take_damage(): Recebi dano =", damage_amount)
 	health -= damage_amount
-	print("[EnemyBase] Nova health =", health)
 
-	# >>> LINHA ADICIONADA PARA EXIBIR DANO <<<
+	# Exibe texto de dano flutuante
 	spawn_damage_label(damage_amount)
+	
+	# Atualiza a barra de HP, se existir
+	if has_node("HPBar"):
+		get_node("HPBar").update_bar(health)
 
+	# Verifica se o inimigo morreu
 	if health <= 0:
 		die()
 		return
 
-	# Só altera a animação se não estiver atacando
+	# Se não estiver atacando, volta a animação para "run"
 	if not is_attacking:
 		_set_animation("run")
 
+	# Se não foi passado knockback_force, calcula um padrão
 	if knockback_force == Vector2.ZERO:
 		knockback_force = (position - _get_player().position).normalized() * 300.0
 
+	# Aplica o knockback (recuo)
 	is_recoiling = true
 	velocity = knockback_force
 	move_and_slide()
 
+	# Espera um pouco (0.3s) para manter o knockback
 	await get_tree().create_timer(0.3).timeout
 	is_recoiling = false
 	velocity = Vector2.ZERO
 
+	# Pisca para indicar dano
 	_blink_damage()
+
+	# Espera mais um pouco antes de voltar para a animação "run"
 	await get_tree().create_timer(0.5).timeout
 	if not is_attacking:
 		_set_animation("run")
 
+
 func _blink_damage() -> void:
-	print("[EnemyBase] _blink_damage() piscando sprite")
 	for i in range(5):
 		sprite.modulate.a = 0.3
 		await get_tree().create_timer(0.1).timeout
@@ -184,10 +189,8 @@ func _blink_damage() -> void:
 
 func die() -> void:
 	if is_dead:
-		print("[EnemyBase] die() ignorado pois is_dead == true.")
 		return
 	is_dead = true
-	print("[EnemyBase] Morri! _set_animation('dead')")
 	_set_animation("dead")
 	await get_tree().create_timer(0.2).timeout
 	emit_signal("enemy_died")
@@ -195,12 +198,9 @@ func die() -> void:
 
 func _set_animation(anim_name: String) -> void:
 	if not animation_tree or not animation_state:
-		print("[EnemyBase] _set_animation() abortado: animation_tree ou animation_state inexistente.")
 		return
 	if animation_state.get_current_node() == anim_name:
-		print("[EnemyBase] Já estou na animação", anim_name)
 		return
-	print("[EnemyBase] _set_animation(): travel('", anim_name, "')")
 	animation_state.travel(anim_name)
 
 func _set_animation_direction(dir: Vector2) -> void:
@@ -235,18 +235,14 @@ func _get_player() -> Node2D:
 # DETECÇÃO DO JOGADOR
 # -----------------------------
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	print("[EnemyBase] _on_area_2d_body_entered com:", body)
 	if body == _get_player():
-		print("[EnemyBase] É o player! is_chasing = true, is_patrolling = false")
 		is_chasing = true
 		is_patrolling = false
 		hit_player.emit()
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
-	print("[EnemyBase] _on_area_2d_body_exited com:", body)
 	if body == _get_player():
 		if not in_attack_area:
-			print("[EnemyBase] Player saiu da DetectionArea. is_chasing = false, is_patrolling = true")
 			is_chasing = false
 			is_patrolling = true
 			patrol_timer = 0.0

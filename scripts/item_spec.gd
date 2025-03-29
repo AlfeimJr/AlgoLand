@@ -6,7 +6,7 @@ var current_item_data: Dictionary
 func _ready() -> void:
 	pass
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 
 func set_item_data(data: Dictionary) -> void:

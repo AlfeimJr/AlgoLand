@@ -2,7 +2,7 @@ extends Node2D
 
 @export var item_type: String = "sword_basic"
 @export var item_level: int = 1  # Nível do item (opcional)
-
+var in_inventory: bool = false
 var draggable = false
 var is_inside_dropable = false
 var slot_ref = null
@@ -146,9 +146,13 @@ func set_item_level(new_level: int) -> void:
 	# Aqui você pode atualizar visuais ou stats do item conforme o novo nível
 
 func reset_position() -> void:
-	var camera = get_viewport().get_camera_2d()
-	var camera_offset = camera.global_position - initialCameraPos
-	global_position = initialPos + camera_offset
+	if in_inventory and slot_ref:
+		# Se estiver no inventário, reposicione no slot
+		global_position = slot_ref.global_position
+	else:
+		var camera = get_viewport().get_camera_2d()
+		var camera_offset = camera.global_position - initialCameraPos
+		global_position = initialPos + camera_offset
 	is_dragging = false
 	is_any_item_dragging = false
 	track_points.clear()

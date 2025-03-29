@@ -13,15 +13,15 @@ func _ready() -> void:
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 
-func _on_wave_started(wave: int) -> void:
+func _on_wave_started(_wave: int) -> void:
 	barraca_aberta.visible = false
 	barraca_fechada.visible = true
 	$"BarraFechada/1".collision_enabled = true
 	
-func _on_wave_completed(wave: int) -> void:
+func _on_wave_completed(_wave: int) -> void:
 	barraca_aberta.visible = true
 	barraca_fechada.visible = false
 	$"BarraFechada/1".collision_enabled = false

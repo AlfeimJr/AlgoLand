@@ -3,7 +3,7 @@ extends CanvasLayer
 func _ready() -> void:
 	$CharacterInfo.visible = false
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_pressed("show_stats"):
 		$CharacterInfo.visible = true
 		update_menu()
@@ -59,7 +59,7 @@ func update_menu() -> void:
 			$CharacterInfo/BackgroundItemsPurchased/ItemsPurchased.add_child(item_instance)
 	else:
 		var empty_label = Label.new()
-		empty_label.text = "Nenhum item comprado."
+		empty_label.text = "NO ITEMS PURCHASED"
 		empty_label.add_theme_font_override("font", font_file)
 		empty_label.add_theme_font_size_override("font_size", 8)  # Adicione aqui também
 		empty_label.add_theme_color_override("font_color", Color.WHITE)

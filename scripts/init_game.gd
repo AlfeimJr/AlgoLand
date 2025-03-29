@@ -9,7 +9,7 @@ func _ready() -> void:
 	print("Arquivo será buscado em: ", save_file_path)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 
 

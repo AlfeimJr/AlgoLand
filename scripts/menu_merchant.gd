@@ -16,7 +16,6 @@ signal menu_closed
 @onready var weapons_option_button: Button = $Buttons/weaponsOption
 @onready var build_button: Button = $Buttons/Build
 @onready var player = get_tree().get_root().get_node("cenario/Player")
-@onready var alert_label: Label = $Update/Alert
 @onready var upgrade_button: Button = $Update/UptadeClick
 var item_scene = preload("res://cenas/item.tscn")
 var wave_thresholds = {
@@ -130,9 +129,6 @@ func _on_inventory_item_selected(item_type: String, texture: Texture2D) -> void:
 	var next_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, next_level)
 	if next_data.size() > 0:
 		var needed_wave = next_data.get("wave_required", 9999)
-		alert_label.text = "OPENS BY WINNING WAVE " + str(needed_wave)
-	else:
-		alert_label.text = "MAX LEVEL REACHED"
 
 func _process(delta: float) -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
@@ -190,10 +186,12 @@ func on_close_button_pressed() -> void:
 func _on_weapons_pressed() -> void:
 	back_button.visible = true
 	main_menu.visible = false
+	$Frame2.visible = true
 	weapons_list.visible = true
 
 func _on_build_pressed() -> void:
 	main_menu.visible = false
+	$Frame2.visible = true
 	weapons_list.visible = false
 	build_list.visible = true
 	items_container.visible = true
@@ -216,7 +214,9 @@ func _on_item_clicked(clicked_item_data: Dictionary) -> void:
 
 func _on_back_button_pressed() -> void:
 	main_menu.visible = true
+	$Frame2.visible = true
 	back_button.visible = false
+	$Frame2.visible = false
 	weapons_list.visible = false
 	build_list.visible = false
 	items_container.visible = false
@@ -247,6 +247,7 @@ func _show_upgrade_menu() -> void:
 	$Update.visible = true
 	main_menu.visible = false
 	back_button.visible = true
+	$Frame2.visible = true
 	weapons_list.visible = false
 	build_list.visible = false
 	items_container.visible = false
@@ -275,6 +276,83 @@ func _show_upgrade_menu() -> void:
 func _on_slot_item_changed(has_item: bool) -> void:
 	check_upgrade_button_state()
 	update_upgrade_button_text()
+	
+	# Pega o node de informações (InfoItemUpdate) e seus componentes
+	var info_item_update = $Update/InfoItemUpdate
+	
+	# Se não há item no slot, esconde a janela e sai
+	if not has_item:
+		info_item_update.visible = false
+		return
+
+	info_item_update.visible = true
+
+	# Pega o item que foi colocado no slot
+	var slot_node = $Update/Slot
+	var dragged_item = slot_node.current_item
+	if dragged_item == null:
+		info_item_update.visible = false
+		return
+
+	# Identifica o tipo de item
+	var item_type = dragged_item.get_item_type()
+	var player = get_tree().get_current_scene().get_node("Player")
+
+	# Descobre o nível atual do item no player
+	var current_level = 0
+	match item_type:
+		"sword_basic":
+			current_level = player.sword_level
+		"spear_basic":
+			current_level = player.spear_level
+		"shield_basic":
+			current_level = player.shield_level
+		_:
+			info_item_update.visible = false
+			return
+
+	var next_level = current_level + 1
+	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var next_data = arms_db_instance.get_weapon_level_data(item_type, next_level)
+	if next_data.size() == 0:
+		info_item_update.visible = false
+		return
+
+	# Assume que há um node para exibir o nível, ex.: LEVEL
+	var level_label = $Update/InfoItemUpdate/TextsContent/LEVEL
+	if level_label:
+		level_label.text = "LV → " + str(next_level)
+		level_label.visible = true
+
+	# Nodes para os stats
+	var str_label = $Update/InfoItemUpdate/TextsContent/STR
+	var dmg_label = $Update/InfoItemUpdate/TextsContent/DMG
+	var vit_label = $Update/InfoItemUpdate/TextsContent/VIT
+	var def_label = $Update/InfoItemUpdate/TextsContent/DEF
+
+	# Inicializa todos como visíveis e depois ajusta conforme o tipo de item
+	str_label.visible = true
+	dmg_label.visible = true
+	vit_label.visible = true
+	def_label.visible = true
+
+	match item_type:
+		"sword_basic", "spear_basic":
+			# Para armas, mostramos STR e DMG
+			str_label.text = "STR → " + str(next_data.get("strength_bonus", 0))
+			dmg_label.text = "DMG → " + str(next_data.get("damage", 0))
+			# Esconde os labels não utilizados
+			vit_label.visible = false
+			def_label.visible = false
+		"shield_basic":
+			# Para escudos, mostramos VIT e DEF (usando "vitality_bonus" e "strength_bonus" para defesa, por exemplo)
+			vit_label.text = "VIT → " + str(next_data.get("vitality_bonus", 0))
+			def_label.text = "DEF → " + str(next_data.get("strength_bonus", 0))
+			# Esconde os labels de armas
+			str_label.visible = false
+			dmg_label.visible = false
+
+	
 func check_upgrade_button_state() -> void:
 	var slot_node = $Update/Slot
 	var upgrade_button = $Update/UptadeClick
@@ -303,6 +381,7 @@ func _on_uptade_click_pressed() -> void:
 	var player = get_tree().get_current_scene().get_node("Player")
 	var item_type = dragged_item.get_item_type()
 	var current_level = 0
+	var next_level = 0
 	var next_data = {}
 
 	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
@@ -310,13 +389,16 @@ func _on_uptade_click_pressed() -> void:
 	match item_type:
 		"sword_basic":
 			current_level = player.sword_level
-			next_data = arms_db_instance.get_weapon_level_data(player.current_weapon_id, current_level + 1)
+			next_level = current_level + 1
+			next_data = arms_db_instance.get_weapon_level_data(item_type, next_level)
 		"shield_basic":
 			current_level = player.shield_level
-			next_data = arms_db_instance.get_weapon_level_data(player.current_shield_id, current_level + 1)
+			next_level = current_level + 1
+			next_data = arms_db_instance.get_weapon_level_data(item_type, next_level)
 		"spear_basic":
 			current_level = player.spear_level
-			next_data = arms_db_instance.get_weapon_level_data(player.current_spear_id, current_level + 1)
+			next_level = current_level + 1
+			next_data = arms_db_instance.get_weapon_level_data(item_type, next_level)
 
 	if next_data.size() == 0:
 		print("Esse item já está no nível máximo ou não existe no DB.")
@@ -326,16 +408,16 @@ func _on_uptade_click_pressed() -> void:
 	var needed_wave = next_data.get("wave_required", 9999)
 
 	var upgrade_button = $Update/UptadeClick
-	upgrade_button.text = "UPGRADE LV %d" % (current_level + 1)
+	upgrade_button.text = "UPGRADE LV %d" % next_level
 
 	if wave_manager.current_wave >= needed_wave:
+		# Inicia a animação de smithing
 		player.start_smithing(item_type)
 	else:
 		print("Wave atual ainda não atinge o requisito:", needed_wave)
 
 	await get_tree().create_timer(0.1).timeout
 	on_close_button_pressed()
-
 
 func update_upgrade_button_text() -> void:
 	var slot_node = $Update/Slot
@@ -439,3 +521,7 @@ func _on_shield_pressed() -> void:
 
 	# Se NÃO quiser wave só com escudo, mantenha a forma antiga:
 	# start_wave_button.disabled = not (player.using_sword or player.using_spear)
+
+
+func _on_close_modal_pressed() -> void:
+	on_close_button_pressed()

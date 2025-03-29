@@ -23,10 +23,10 @@ signal item_selected(item_type: String, texture: Texture2D)
 @onready var spear_slot_empty = $sword_slot_empty
 
 # -- Referências aos elementos de customização do personagem --
-@onready var player_customization = $Panel/PlayerCustomization
-@onready var hair_sprite = $Panel/PlayerCustomization/Hair
-@onready var outfit_sprite = $Panel/PlayerCustomization/Outfit
-@onready var body_sprite = $Panel/PlayerCustomization/Body
+@onready var player_customization = $PlayerCustomization
+@onready var hair_sprite = $PlayerCustomization/Hair
+@onready var outfit_sprite = $PlayerCustomization/Outfit
+@onready var body_sprite = $PlayerCustomization/Body
 
 func _ready() -> void:
 	# Iniciar com o inventário fechado
@@ -142,12 +142,6 @@ func update_inventory() -> void:
 	# ---- LÓGICA PARA SLOTS VAZIOS ----
 	# Se o jogador estiver usando espada, esconde o slot vazio de espada
 	# e assim por diante para escudo e lança.
-	if sword_slot_empty:
-		sword_slot_empty.visible = not player.using_sword
-	if shield_slot_empty:
-		shield_slot_empty.visible = not player.using_shield
-	if spear_slot_empty:
-		spear_slot_empty.visible = not player.using_spear and not player.using_sword
 
 	update_player_customization()
 

@@ -25,9 +25,6 @@ func _ready() -> void:
 		if $area_attack.has_node("attack_collision"):
 			var attack_collision = $area_attack.get_node("attack_collision")
 			attack_collision.disabled = true
-			print("[SlimeSlippery] attack_collision desabilitado inicialmente.")
-	else:
-		print("[SlimeSlippery] NÓ area_attack NÃO ENCONTRADO!")
 		
 	# Configura a área de dano ao player
 	if $attack:
@@ -42,13 +39,9 @@ func _ready() -> void:
 		if $attack.has_node("attack_collision_player"):
 			var attack_collision_player = $attack.get_node("attack_collision_player")
 			attack_collision_player.disabled = true
-			print("[SlimeSlippery] attack_collision_player desabilitado inicialmente.")
-	else:
-		print("[SlimeSlippery] NÓ attack NÃO ENCONTRADO!")
 
 func _physics_process(delta: float) -> void:
 	# Não chama super() para evitar a lógica da classe base que impede movimento durante ataque
-	
 	if is_dead or not has_method("_get_player"):
 		return
 	
@@ -56,7 +49,6 @@ func _physics_process(delta: float) -> void:
 
 	# Se estiver recuando (knockback)
 	if is_recoiling:
-		print("[SlimeSlippery] is_recoiling == true, executando move_and_slide() e retornando.")
 		move_and_slide()
 		return
 
@@ -66,7 +58,6 @@ func _physics_process(delta: float) -> void:
 		if patrol_timer >= patrol_duration:
 			patrol_timer = 0.0
 			patrol_direction = -patrol_direction
-			print("[SlimeSlippery] Invertendo patrulha, novo patrol_direction =", patrol_direction)
 		_set_animation_direction(patrol_direction)
 		base_velocity = patrol_direction * patrol_speed + compute_separation()
 
@@ -82,8 +73,6 @@ func _physics_process(delta: float) -> void:
 				direction = Vector2.ZERO
 				base_velocity = Vector2.ZERO
 
-			if distance_to_player < attack_range and can_attack and not is_damaged:
-				print("[SlimeSlippery] Player muito perto (d <", attack_range, "). Attack animado deverá ser disparado via area_attack.")
 			base_velocity = direction * speed
 	else:
 		base_velocity = Vector2.ZERO
@@ -96,16 +85,12 @@ func _physics_process(delta: float) -> void:
 #  SINAIS DA ÁREA DE DETECÇÃO (PERSEGUIÇÃO)
 # --------------------------------------------------
 func _on_detection_area_body_entered(body: Node) -> void:
-	print("[SlimeSlippery] _on_detection_area_body_entered com:", body)
 	if body == player:
-		print("[SlimeSlippery] É o player! is_chasing = true, is_patrolling = false")
 		is_chasing = true
 		is_patrolling = false
 
 func _on_detection_area_body_exited(body: Node) -> void:
-	print("[SlimeSlippery] _on_detection_area_body_exited com:", body)
 	if body == player:
-		print("[SlimeSlippery] Player saiu da DetectionArea. is_chasing = false, is_patrolling = true")
 		is_chasing = false
 		is_patrolling = true
 		patrol_timer = 0.0
@@ -115,27 +100,20 @@ func _on_detection_area_body_exited(body: Node) -> void:
 #  SINAIS DA ÁREA DE ATAQUE
 # --------------------------------------------------
 func _on_attack_area_body_entered(body: Node) -> void:
-	print("[SlimeSlippery] _on_attack_area_body_entered com:", body)
 	if body == player:
-		print("[SlimeSlippery] É o player! can_attack:", can_attack, " is_dead:", is_dead)
 		in_attack_area = true
 		is_chasing = true
 		is_patrolling = false
 		if can_attack and not is_dead:
-			print("[SlimeSlippery] Chamando _attack_player()...")
 			_attack_player()
 
 func _on_attack_area_body_exited(body: Node) -> void:
-	print("[SlimeSlippery] _on_attack_area_body_exited com:", body)
 	if body == player:
 		in_attack_area = false
-		print("[SlimeSlippery] Player saiu da área de ataque.")
 
-# Função para quando o player entra na área de colisão que dá dano
 # Função para quando o player entra na área de colisão que dá dano
 func _on_attack_collision_player_body_entered(body: Node) -> void:
 	if body == player:
-		print("[SlimeSlippery] Player atingido pelo ataque!")
 		# Aplica dano ao player
 		if body.has_method("take_damage"):
 			# Calcula a direção do knockback (do inimigo para o player)
@@ -155,13 +133,11 @@ func _attack_player() -> void:
 		return
 		
 	is_currently_attacking = true
-	print("[SlimeSlippery] >> _attack_player chamado!")
 	is_attacking = true
 	can_attack = false
 	
 	# Calcula o vetor em direção ao player
 	var dir_to_player = player.position - position
-	print("[SlimeSlippery] dir_to_player =", dir_to_player)
 	
 	# Viaja para o estado "attack" no AnimationTree
 	_set_animation("attack")
@@ -173,7 +149,6 @@ func _attack_player() -> void:
 	else:
 		blend_vec.y = sign(dir_to_player.y)  # +1 para baixo, -1 para cima
 	
-	print("[SlimeSlippery] Ajustando blend_position para:", blend_vec)
 	animation_tree.set("parameters/attack/blend_position", blend_vec)
 	
 	# Ativa a hitbox de dano no momento certo da animação
@@ -181,7 +156,6 @@ func _attack_player() -> void:
 	
 	# Ativa a hitbox de dano (attack_collision_player)
 	if $attack and $attack.has_node("attack_collision_player"):
-		print("[SlimeSlippery] Habilitando attack_collision_player.")
 		var attack_collision_player = $attack.get_node("attack_collision_player")
 		attack_collision_player.disabled = false
 	
@@ -190,7 +164,6 @@ func _attack_player() -> void:
 	
 	# Desativa a hitbox de dano
 	if $attack and $attack.has_node("attack_collision_player"):
-		print("[SlimeSlippery] Desabilitando attack_collision_player.")
 		var attack_collision_player = $attack.get_node("attack_collision_player")
 		attack_collision_player.disabled = true
 	
@@ -198,18 +171,16 @@ func _attack_player() -> void:
 	_set_animation("run")
 	
 	# Aguarda o cooldown de 2 segundos
-	print("[SlimeSlippery] Esperando cooldown de 2 segundos.")
 	await get_tree().create_timer(2.0).timeout
 	
 	# Libera o ataque após o cooldown
-	print("[SlimeSlippery] Liberando can_attack = true.")
 	can_attack = true
 	is_attacking = false
 	is_currently_attacking = false
 
-# Exemplo de método específico do Slime
-func slime_special_behavior():
-	print("[SlimeSlippery] Executando comportamento especial do slime!")
-
 func _get_player() -> Node2D:
 	return player
+
+# Adicionando um print para verificar quando o inimigo é eliminado
+func _exit_tree() -> void:
+	print("SlimeSlippery eliminated: ", self.name)

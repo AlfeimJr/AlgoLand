@@ -800,7 +800,7 @@ states/run/position = Vector2(368, 108)
 size = Vector2(17, 13)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vilo2"]
-radius = 652.13
+radius = 63152.8
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_12fyc"]
 size = Vector2(32, 19)
@@ -810,7 +810,7 @@ script = ExtResource("1_i62ro")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_xtfpr")
+&"": SubResource("AnimationLibrary_xtfpr")
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
@@ -841,7 +841,6 @@ position = Vector2(-1, -4)
 shape = SubResource("RectangleShape2D_pcyc4")
 
 [node name="DetectionArea" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 light_mask = 12
