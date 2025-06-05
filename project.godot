@@ -46,6 +46,10 @@ enemy=""
 sword_basic=""
 shield_basic=""
 spear_basic=""
+head_basic=""
+armor_basic=""
+gloves_basic=""
+boots_basic=""
 
 [input]
 

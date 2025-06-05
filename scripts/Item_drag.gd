@@ -24,6 +24,14 @@ func _ready() -> void:
 		item_type = "shield_basic"
 	elif is_in_group("spear_basic"):
 		item_type = "spear_basic"
+	elif is_in_group('head_basic'):
+		item_type = ("head_basic")
+	elif is_in_group('armor_basic'):
+		item_type = ("armor_basic")
+	elif is_in_group('gloves_basic'):
+		item_type = ("gloves_basic")
+	elif is_in_group('boots_basic'):
+		item_type = ("boots_basic")
 	initialPos = global_position
 	initialCameraPos = get_viewport().get_camera_2d().global_position
 	$Area2D.collision_layer = 11

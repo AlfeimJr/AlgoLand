@@ -20,7 +20,7 @@ font = ExtResource("4_7t3ny")
 font_size = 8
 shadow_color = Color(0, 0, 0, 1)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qog3r"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n01hi"]
 texture = ExtResource("8_cx3qh")
 0:0/0 = 0
 1:0/0 = 0
@@ -168,7 +168,7 @@ texture = ExtResource("8_cx3qh")
 15:8/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_gar06"]
-sources/0 = SubResource("TileSetAtlasSource_qog3r")
+sources/0 = SubResource("TileSetAtlasSource_n01hi")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gar06"]
 texture = ExtResource("9_qog3r")
@@ -1390,17 +1390,33 @@ text = "CHARACTER"
 label_settings = SubResource("LabelSettings_apmlk")
 horizontal_alignment = 1
 
-[node name="Item" parent="." groups=["draggable_items", "sword_basic"] instance=ExtResource("7_jy1ed")]
+[node name="sword_basic" parent="." groups=["draggable_items", "sword_basic"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(150, 175)
 
-[node name="Item3" parent="." groups=["draggable_items", "spear_basic"] instance=ExtResource("7_jy1ed")]
+[node name="spear_basic" parent="." groups=["draggable_items", "spear_basic"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(150, 175)
 
-[node name="Item2" parent="." groups=["draggable_items", "shield_basic"] instance=ExtResource("7_jy1ed")]
+[node name="shield_basic" parent="." groups=["draggable_items", "shield_basic"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(203, 175)
+
+[node name="head_basic" parent="." groups=["draggable_items", "head_basic"] instance=ExtResource("7_jy1ed")]
+z_index = 700
+position = Vector2(133, 123)
+
+[node name="armor_basic" parent="." groups=["armor_basic", "draggable_items"] instance=ExtResource("7_jy1ed")]
+z_index = 700
+position = Vector2(133, 140)
+
+[node name="gloves_basic" parent="." groups=["draggable_items", "gloves_basic"] instance=ExtResource("7_jy1ed")]
+z_index = 700
+position = Vector2(133, 157)
+
+[node name="boots_basic" parent="." groups=["boots_basic", "draggable_items"] instance=ExtResource("7_jy1ed")]
+z_index = 700
+position = Vector2(133, 175)
 
 [node name="sword_slot_empty" type="TileMapLayer" parent="."]
 z_index = 5
@@ -1428,13 +1444,6 @@ z_index = 5
 position = Vector2(27, -5)
 scale = Vector2(0.88, 0.88)
 tile_map_data = PackedByteArray("AAAHAAsAAAAMAAUAAAA=")
-tile_set = SubResource("TileSet_gar06")
-
-[node name="boot" type="TileMapLayer" parent="."]
-z_index = 5
-position = Vector2(27, -1)
-scale = Vector2(0.88, 0.88)
-tile_map_data = PackedByteArray("AAAHAAwAAAAMAAYAAAA=")
 tile_set = SubResource("TileSet_gar06")
 
 [node name="ring" type="TileMapLayer" parent="."]
@@ -1485,8 +1494,16 @@ text = "78"
 label_settings = SubResource("LabelSettings_4ldf4")
 
 [node name="Status" type="Label" parent="Panel"]
+layout_mode = 0
 offset_left = 2.0
 offset_right = 18.0
 offset_bottom = 9.0
 text = "Força"
 label_settings = SubResource("LabelSettings_n01hi")
+
+[node name="boot" type="TileMapLayer" parent="."]
+z_index = 5
+position = Vector2(27, -1)
+scale = Vector2(0.88, 0.88)
+tile_map_data = PackedByteArray("AAAHAAwAAAAMAAYAAAA=")
+tile_set = SubResource("TileSet_gar06")

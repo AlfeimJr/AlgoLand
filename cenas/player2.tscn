@@ -8977,6 +8977,17 @@ texture = ExtResource("16_od6rl")
 hframes = 8
 vframes = 8
 
+[node name="Armors" type="Node2D" parent="CompositeSprites"]
+visible = false
+
+[node name="head" type="Sprite2D" parent="CompositeSprites/Armors"]
+
+[node name="body" type="Sprite2D" parent="CompositeSprites/Armors"]
+
+[node name="gloves" type="Sprite2D" parent="CompositeSprites/Armors"]
+
+[node name="boots" type="Sprite2D" parent="CompositeSprites/Armors"]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_n2plp")
 

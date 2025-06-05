@@ -142,6 +142,11 @@ var _combo_window_timer: Timer
 
 @onready var anim_player: AnimationPlayer = $CompositeSprites/Animation/AnimationPlayer
 
+@onready var armor_head_sprite  : Sprite2D = $CompositeSprites/Armors/head
+@onready var armor_body_sprite  : Sprite2D = $CompositeSprites/Armors/body
+@onready var armor_gloves_sprite: Sprite2D = $CompositeSprites/Armors/gloves
+@onready var armor_boots_sprite : Sprite2D = $CompositeSprites/Armors/boots
+
 func _ready() -> void:
 	stats.calculate_derived_stats(using_sword)
 	current_hp = stats.max_hp
@@ -227,13 +232,43 @@ func _ready() -> void:
 	_set_sprites_visible(false)
 	update_coins_label()
 	update_hp_bar()
-
+	_load_armor_set(1)
 func _on_wave_completed(_wave: int) -> void:
 	current_hp = stats.max_hp
 	update_hp_bar()
 
 func block_attacks(block: bool) -> void:
 	attacks_blocked = block
+
+func _load_armor_set(set_id: int) -> void:
+
+	var base_path := "res://CharacterSprites/Armors/%d" % set_id
+
+	var head_path   : String = "%s/head.png"   % base_path
+	var body_path   : String = "%s/armor.png"  % base_path
+	var gloves_path : String = "%s/gloves.png" % base_path
+	var boots_path  : String = "%s/boots.png"  % base_path
+
+	if ResourceLoader.exists(head_path):
+		armor_head_sprite.texture = load(head_path)
+	else:
+		push_warning("[_load_armor_set] head.png não encontrado em: " + head_path)
+
+	if ResourceLoader.exists(body_path):
+		armor_body_sprite.texture = load(body_path)
+	else:
+		push_warning("[_load_armor_set] armor.png não encontrado em: " + body_path)
+	if ResourceLoader.exists(gloves_path):
+		armor_gloves_sprite.texture = load(gloves_path)
+	else:
+		push_warning("[_load_armor_set] gloves.png não encontrado em: " + gloves_path)
+
+	if ResourceLoader.exists(boots_path):
+		armor_boots_sprite.texture = load(boots_path)
+	else:
+		push_warning("[_load_armor_set] boots.png não encontrado em: " + boots_path)
+	pass  
+
 
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):

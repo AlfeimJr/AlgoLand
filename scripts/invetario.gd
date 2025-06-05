@@ -13,15 +13,22 @@ signal item_selected(item_type: String, texture: Texture2D)
 @onready var player = get_node("/root/cenario/Player")
 
 # -- Referências aos slots do inventário (nós que exibem o item equipado) --
-@onready var sword_slot = $Item/Sprite2D
-@onready var spear_slot = $Item3/Sprite2D
-@onready var shield_slot = $Item2/Sprite2D
+@onready var sword_slot = $sword_basic/Sprite2D
+@onready var spear_slot = $spear_basic/Sprite2D
+@onready var shield_slot = $shield_basic/Sprite2D
+@onready var head_slot = $head_basic/Sprite2D
+@onready var armor_slot = $armor_basic/Sprite2D
+@onready var gloves_slot = $gloves_basic/Sprite2D
+@onready var boots_slot = $boots_basic/Sprite2D
 
 # -- Referências aos nós do "slot vazio" --
 @onready var sword_slot_empty = $sword_slot_empty
 @onready var shield_slot_empty = $shield_slot_empty
 @onready var spear_slot_empty = $sword_slot_empty
-
+@onready var head_slot_empty = $head
+@onready var body_slot_empty = $body
+@onready var gloves_slot_empty = $gloves
+@onready var boot_slot_empty = $boot
 # -- Referências aos elementos de customização do personagem --
 @onready var player_customization = $PlayerCustomization
 @onready var hair_sprite = $PlayerCustomization/Hair
@@ -92,37 +99,37 @@ func update_inventory() -> void:
 	# $Item  = espada
 	# $Item2 = escudo
 	# $Item3 = lança
-	if $Item and $Item3:
+	if $sword_basic and $spear_basic:
 		if player.using_sword:
-			$Item.visible = true   # mostra a espada
-			$Item3.visible = false # esconde a lança
+			$sword_basic.visible = true   # mostra a espada
+			$spear_basic.visible = false # esconde a lança
 		elif player.using_spear:
-			$Item.visible = false
-			$Item3.visible = true
+			$sword_basic.visible = false
+			$spear_basic.visible = true
 		else:
 			# Se nenhuma arma estiver equipada, mostra só o "slot" da espada
-			$Item.visible = false
-			$Item3.visible = false
+			$sword_basic.visible = false
+			$spear_basic.visible = false
 	
 	# Escudo
-	if $Item2:
+	if $shield_basic:
 		# Se o jogador estiver usando escudo, mostra; caso contrário, esconde
-		$Item2.visible = player.using_shield
+		$shield_basic.visible = player.using_shield
 
 	# Atualizar frames e posições baseado no item_type (apenas exemplo)
-	if $Item:
-		match $Item.item_type:
+	if $sword_basic:
+		match $sword_basic.item_type:
 			"sword_basic":
 				sword_slot.frame = 42
 				sword_slot.position = Vector2(6, 6)
 				sword_slot.scale = Vector2(0.7, 0.7)
 
-	if $Item2 and $Item2.item_type == "shield_basic":
+	if $shield_basic and $shield_basic.item_type == "shield_basic":
 		shield_slot.frame = 32
 		shield_slot.position = Vector2(-1, -2)
 		shield_slot.scale = Vector2(0.7, 0.7)
 
-	if $Item3 and $Item3.item_type == "spear_basic":
+	if $spear_basic and $spear_basic.item_type == "spear_basic":
 		spear_slot.frame = 13
 		spear_slot.position = Vector2(3, 2)
 		spear_slot.scale = Vector2(0.4, 0.4)
@@ -139,10 +146,65 @@ func update_inventory() -> void:
 	if player.using_shield and player.shield_sprite and player.shield_sprite.texture:
 		shield_slot.texture = player.shield_sprite.texture
 
-	# ---- LÓGICA PARA SLOTS VAZIOS ----
-	# Se o jogador estiver usando espada, esconde o slot vazio de espada
-	# e assim por diante para escudo e lança.
+	# --- HEAD ---
+	if player.armor_head_sprite and player.armor_head_sprite.texture:
+		# 1) Atribui a textura
+		head_slot.texture = player.armor_head_sprite.texture
+		# 2) Garante hframes e vframes = 1
+		head_slot.hframes = 1
+		head_slot.vframes = 1
+		# 3) Ajusta o scale para 0.7
+		head_slot.scale = Vector2(0.7, 0.7)
+		# 4) Ajusta position para (0,0)
+		head_slot.position = Vector2.ZERO
+	else:
+		head_slot.texture = null
+		head_slot.hframes = 1
+		head_slot.vframes = 1
+		head_slot.scale = Vector2(0.7, 0.7)
+		head_slot.position = Vector2.ZERO
 
+# --- CORPO (ARMOR) ---
+	if player.armor_body_sprite and player.armor_body_sprite.texture:
+		armor_slot.texture = player.armor_body_sprite.texture
+		armor_slot.hframes = 1
+		armor_slot.vframes = 1
+		armor_slot.scale = Vector2(0.7, 0.7)
+		armor_slot.position = Vector2.ZERO
+	else:
+		armor_slot.texture = null
+		armor_slot.hframes = 1
+		armor_slot.vframes = 1
+		armor_slot.scale = Vector2(0.7, 0.7)
+		armor_slot.position = Vector2.ZERO
+
+# --- GLOVES ---
+	if player.armor_gloves_sprite and player.armor_gloves_sprite.texture:
+		gloves_slot.texture = player.armor_gloves_sprite.texture
+		gloves_slot.hframes = 1
+		gloves_slot.vframes = 1
+		gloves_slot.scale = Vector2(0.7, 0.7)
+		gloves_slot.position = Vector2.ZERO
+	else:
+		gloves_slot.texture = null
+		gloves_slot.hframes = 1
+		gloves_slot.vframes = 1
+		gloves_slot.scale = Vector2(0.7, 0.7)
+		gloves_slot.position = Vector2.ZERO
+
+# --- BOOTS ---
+	if player.armor_boots_sprite and player.armor_boots_sprite.texture:
+		boots_slot.texture = player.armor_boots_sprite.texture
+		boots_slot.hframes = 1
+		boots_slot.vframes = 1
+		boots_slot.scale = Vector2(0.7, 0.7)
+		boots_slot.position = Vector2.ZERO
+	else:
+		boots_slot.texture = null
+		boots_slot.hframes = 1
+		boots_slot.vframes = 1
+		boots_slot.scale = Vector2(0.7, 0.7)
+		boots_slot.position = Vector2.ZERO
 	update_player_customization()
 
 func update_player_customization() -> void:

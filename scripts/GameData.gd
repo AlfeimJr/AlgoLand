@@ -1,6 +1,6 @@
 extends Node
 
-var coins: int = 60020000
+var coins: int = 0
 
 func _ready() -> void:
 	# Atualiza a UI de moedas (caso já exista)
