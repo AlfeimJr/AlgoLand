@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 # Preload do banco de dados de armas (nome: arms_database)
-var arms_database = preload("res://scripts/arms_database.gd")
+var arms_database = preload("res://scripts/Databases/arms_database.gd")
 signal equipment_changed
 @onready var stats = preload("res://scripts/player_stats.gd").new()
 var is_two_handed_weapon: bool = false
@@ -16,8 +16,15 @@ var attacks_blocked: bool = false
 var is_smithing: bool = false
 var current_shield_id: String = "shield_basic"
 var movement_enabled: bool = true
-var base_vitality: int = 100  # Valor base de vitalidade
-var current_vitality: int = base_vitality  # Vitalidade atual com bônus
+
+# Vitalidade: separando base e bônus
+var base_vitality: int = 100            # Valor base de vitalidade
+var bonus_vitality: int = 0             # Soma de todos os bônus de vitalidade
+var current_vitality: int = base_vitality  # Vitalidade total (base + bônus)
+
+# Defesa: como não há um “base_defense” explícito, assumimos que stats.defense = soma dos bônus
+var bonus_defense: int = 0               # Soma de todos os bônus de defesa
+
 @export var current_item_type: String = ""  # "sword", "spear", etc.
 var _spear_combo_in_progress: bool = false
 # >>> Escudo controlado separadamente <<<
@@ -89,7 +96,7 @@ var purchased_items: Array[Dictionary] = []
 var curr_hair: int = 0
 var curr_outfit: int = 0
 var _state_machine: Object
-var arms_status = preload("res://scripts/Arms_status.gd").new()
+var arms_status = preload("res://scripts/Databases/arms_database.gd").new()
 var _knockback: Vector2 = Vector2.ZERO
 var knockback_timer: float = 0.0
 
@@ -147,10 +154,35 @@ var _combo_window_timer: Timer
 @onready var armor_gloves_sprite: Sprite2D = $CompositeSprites/Armors/gloves
 @onready var armor_boots_sprite : Sprite2D = $CompositeSprites/Armors/boots
 
-func _ready() -> void:
-	stats.calculate_derived_stats(using_sword)
-	current_hp = stats.max_hp
 
+# Níveis atuais de cada peça de armadura (iniciam em 1 por padrão)
+@export var head_level: int = 1
+@export var body_level: int = 1
+@export var gloves_level: int = 1
+@export var boots_level: int = 1
+
+# IDs (chaves no banco de dados `armors`)
+var current_head_id: String   = "armor_head"
+var current_body_id: String   = "armor_body"
+var current_gloves_id: String = "armor_gloves"
+var current_boots_id: String  = "armor_boots"
+
+# Flags para indicar se cada peça está equipada ou não
+@export var using_head: bool   = false
+@export var using_body: bool   = false
+@export var using_gloves: bool = false
+@export var using_boots: bool  = false
+
+func _ready() -> void:
+	# Inicializa vitalidade e defesa corretamente
+	base_vitality = 100
+	bonus_vitality = 0
+	bonus_defense = 0
+	stats.vitality = base_vitality  # 100, não 5
+	stats.defense = 0  # Será calculado depois
+	current_vitality = base_vitality
+
+	# Conecta timer de ataque se existir
 	if _timer:
 		_timer.connect("timeout", Callable(self, "_on_attack_timer_timeout"))
 
@@ -224,6 +256,7 @@ func _ready() -> void:
 	connect_signal_if_not_connected($AttackArea, "body_entered", "_on_attack_body_entered")
 	connect_signal_if_not_connected($AttackArea, "area_entered", "_on_attack_area_entered")
 
+	# Carrega dados salvos
 	var loaded_data = load_from_json()
 	apply_loaded_data(loaded_data)
 
@@ -232,7 +265,21 @@ func _ready() -> void:
 	_set_sprites_visible(false)
 	update_coins_label()
 	update_hp_bar()
-	_load_armor_set(1)
+
+	# Equipa armaduras padrão
+	head_level   = 1
+	body_level   = 1
+	gloves_level = 1
+	boots_level  = 1
+
+	equip_head()
+	equip_body()
+	equip_gloves()
+	equip_boots()
+
+	current_hp = stats.max_hp
+	update_hp_bar()
+
 func _on_wave_completed(_wave: int) -> void:
 	current_hp = stats.max_hp
 	update_hp_bar()
@@ -241,7 +288,6 @@ func block_attacks(block: bool) -> void:
 	attacks_blocked = block
 
 func _load_armor_set(set_id: int) -> void:
-
 	var base_path := "res://CharacterSprites/Armors/%d" % set_id
 
 	var head_path   : String = "%s/head.png"   % base_path
@@ -267,8 +313,8 @@ func _load_armor_set(set_id: int) -> void:
 		armor_boots_sprite.texture = load(boots_path)
 	else:
 		push_warning("[_load_armor_set] boots.png não encontrado em: " + boots_path)
-	pass  
-
+	# (nada a fazer aqui além de warnings)
+	pass
 
 func connect_signal_if_not_connected(node: Node, signal_name: String, method: String) -> void:
 	if not node.is_connected(signal_name, Callable(self, method)):
@@ -410,6 +456,7 @@ func start_attack_slash_spear(anim_name: String, slash_time: float) -> void:
 	_state_machine.travel(anim_name)
 	_timer.start(slash_time)
 	_can_chain_combo = true
+
 func start_attack_slash(anim_name: String, slash_time: float) -> void:
 	_is_attacking = true
 	$AttackArea.monitoring = true
@@ -646,37 +693,54 @@ func equip_shield() -> void:
 	if is_two_handed_weapon:
 		print("Não é possível equipar escudo com arma de duas mãos!")
 		return
-	
+
 	using_shield = true
 	shield_sprite.visible = true
 	update_shield_textures()
-	
-	# Aplica o bônus de vitalidade do escudo
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
-	
+
+	# Aplica o bônus de vitalidade do escudo
 	if shield_data.has("vitality_bonus"):
-		stats.vitality += shield_data["vitality_bonus"]
-		stats.calculate_derived_stats(using_sword or using_spear)
+		bonus_vitality += shield_data["vitality_bonus"]
+		current_vitality = base_vitality + bonus_vitality
+		stats.vitality = current_vitality
+		# Ajusta o HP atual para não exceder o máximo
 		current_hp = min(current_hp + shield_data["vitality_bonus"], stats.max_hp)
-		update_hp_bar()
-	
+
+	# Aplica o bônus de defesa do escudo (se houver)
+	if shield_data.has("strength_bonus"):
+		bonus_defense += shield_data["strength_bonus"]
+		stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+	update_hp_bar()
 	emit_signal("equipment_changed")
 
 func unequip_shield() -> void:
 	if not using_shield:
 		return
-		
-	# Remove o bônus de vitalidade do escudo
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
-	
+
+	# Remove o bônus de vitalidade do escudo
 	if shield_data.has("vitality_bonus"):
-		stats.vitality -= shield_data["vitality_bonus"]
-		stats.calculate_derived_stats(using_sword or using_spear)
-		current_hp = min(current_hp, stats.max_hp)  # Ajusta HP se necessário
-		update_hp_bar()
-	
+		bonus_vitality -= shield_data["vitality_bonus"]
+		current_vitality = base_vitality + bonus_vitality
+		stats.vitality = current_vitality
+		# Ajusta o HP atual para o máximo se ultrapassado
+		current_hp = min(current_hp, stats.max_hp)
+
+	# Remove o bônus de defesa do escudo (se houver)
+	if shield_data.has("strength_bonus"):
+		bonus_defense -= shield_data["strength_bonus"]
+		stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+	update_hp_bar()
+
 	using_shield = false
 	shield_sprite.visible = false
 	emit_signal("equipment_changed")
@@ -704,7 +768,9 @@ func apply_item_effects(item_data: Dictionary) -> void:
 			"strength":
 				stats.strength += effect_value
 			"defense":
-				stats.defense += effect_value
+				# Esse bônus se soma a defense base
+				bonus_defense += effect_value
+				stats.defense = bonus_defense
 			"agility":
 				stats.agility += effect_value
 			"lifesteal":
@@ -792,6 +858,13 @@ func load_from_json() -> Dictionary:
 	return json.get_data()
 
 func apply_loaded_data(data: Dictionary) -> void:
+	# Antes de aplicar, zera todos os bônus de armadura/escudo
+	bonus_vitality = 0
+	bonus_defense = 0
+	current_vitality = base_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
 	if data.has("curr_hair"):
 		curr_hair = data["curr_hair"]
 		hairSprite.texture = composite_sprites.hair_spriteSheet[curr_hair]
@@ -842,8 +915,29 @@ func apply_loaded_data(data: Dictionary) -> void:
 		using_spear = data["using_spear"]
 
 	# Se quiser salvar/carregar se o escudo estava equipado
-	if data.has("using_shield"):
-		using_shield = data["using_shield"]
+	if data.has("using_shield") and data["using_shield"] == true:
+		# Equipa escudo ao carregar, disparando todos os bônus corretamente
+		equip_shield()
+
+	if data.has("head_level"):
+		head_level = data["head_level"]
+	if data.has("using_head") and data["using_head"] == true:
+		equip_head()
+
+	if data.has("body_level"):
+		body_level = data["body_level"]
+	if data.has("using_body") and data["using_body"] == true:
+		equip_body()
+
+	if data.has("gloves_level"):
+		gloves_level = data["gloves_level"]
+	if data.has("using_gloves") and data["using_gloves"] == true:
+		equip_gloves()
+
+	if data.has("boots_level"):
+		boots_level = data["boots_level"]
+	if data.has("using_boots") and data["using_boots"] == true:
+		equip_boots()
 
 func load_smithing_textures() -> void:
 	if smithing_hair_array.size() > 0:
@@ -900,9 +994,9 @@ func _on_smithing_finished(item_type: String) -> void:
 	if _animation_tree and _state_machine:
 		_state_machine.travel("idle")
 	movement_enabled = true
-	
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
-	
+
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
+
 	match item_type:
 		"sword_basic":
 			sword_level += 1
@@ -911,28 +1005,34 @@ func _on_smithing_finished(item_type: String) -> void:
 			if sword_data.has("strength_bonus"):
 				stats.strength = sword_data["strength_bonus"]
 			stats.calculate_derived_stats(using_sword)
+
 		"shield_basic":
-			# Se estava usando o escudo, remove o bônus antigo
+			# Se estava usando o escudo, remove o bônus antigo primeiro
 			if using_shield:
 				var old_shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
 				if old_shield_data.has("vitality_bonus"):
-					stats.vitality -= old_shield_data["vitality_bonus"]
-			
+					bonus_vitality -= old_shield_data["vitality_bonus"]
+				if old_shield_data.has("strength_bonus"):
+					bonus_defense -= old_shield_data["strength_bonus"]
+
 			shield_level += 1
 			update_shield_textures()
-			
+
 			# Aplica o novo bônus se estiver usando o escudo
 			var new_shield_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
 			if using_shield:
 				if new_shield_data.has("vitality_bonus"):
-					stats.vitality += new_shield_data["vitality_bonus"]
-			
-			if new_shield_data.has("strength_bonus"):
-				stats.defense = new_shield_data["strength_bonus"]
-			
+					bonus_vitality += new_shield_data["vitality_bonus"]
+					current_vitality = base_vitality + bonus_vitality
+					stats.vitality = current_vitality
+				if new_shield_data.has("strength_bonus"):
+					bonus_defense += new_shield_data["strength_bonus"]
+					stats.defense = bonus_defense
+
 			stats.calculate_derived_stats(using_sword or using_spear)
 			current_hp = min(current_hp, stats.max_hp)
 			update_hp_bar()
+
 		"spear_basic":
 			spear_level += 1
 			update_spear_textures()
@@ -946,11 +1046,12 @@ func _on_smithing_finished(item_type: String) -> void:
 
 	update_weapon_appearance() # Garante atualização visual correta
 	emit_signal("smithing_finished")
+
 # ---------------------------
 # ATUALIZAÇÃO DAS TEXTURAS
 # ---------------------------
 func update_sword_textures() -> void:
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_weapon_id, sword_level)
 	if level_data.size() > 0 and level_data.has("texture"):
 		sword_sprite.texture = level_data["texture"]
@@ -973,7 +1074,7 @@ func update_sword_textures() -> void:
 				attackSwordArm.texture = load(attack_sword_path2)
 
 func update_spear_textures() -> void:
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_spear_id, spear_level)
 	if level_data.size() > 0:
 		if level_data.has("texture") and level_data["texture"] is Texture2D:
@@ -1002,7 +1103,7 @@ func update_spear_textures() -> void:
 			print("Erro: Textura não encontrada:", attack_spear_path)
 
 func update_shield_textures() -> void:
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var level_data = arms_db_instance.get_weapon_level_data(current_shield_id, shield_level)
 	if level_data.size() > 0 and level_data.has("texture"):
 		shield_sprite.texture = level_data["texture"]
@@ -1031,17 +1132,207 @@ func update_weapon_appearance() -> void:
 		update_spear_textures()
 	elif using_shield:
 		update_shield_textures()
+
 func disable_all_actions(disable: bool) -> void:
 	# Se estiver em smithing, não permite reativar as ações
 	if is_smithing:
 		attacks_blocked = true
 		movement_enabled = false
 		return
-		
+
 	# Código original
 	attacks_blocked = disable
 	movement_enabled = !disable
-	
+
 	if disable and _state_machine:
 		_state_machine.travel("idle")
 		velocity = Vector2.ZERO
+
+func equip_head() -> void:
+	if using_head:
+		unequip_head()
+		return
+
+	using_head = true
+	var db = arms_database.new()
+	var head_data = db.get_armor_level_data(current_head_id, head_level)
+	
+	# Aplica bônus de vitalidade
+	if head_data.has("vitality_bonus"):
+		bonus_vitality += head_data["vitality_bonus"]
+		current_vitality = base_vitality + bonus_vitality
+		stats.vitality = current_vitality  # Atualiza o stats
+	
+	# Aplica bônus de defesa
+	if head_data.has("defense_bonus"):
+		bonus_defense += head_data["defense_bonus"]
+		stats.defense = bonus_defense  # Atualiza o stats
+	
+	# Atualiza textura
+	if head_data.has("texture"):
+		armor_head_sprite.texture = head_data["texture"]
+	
+	emit_signal("equipment_changed")
+
+func unequip_head() -> void:
+	if not using_head:
+		return
+
+	var db = arms_database.new()
+	var head_data = db.get_armor_level_data(current_head_id, head_level)
+	if head_data.has("vitality_bonus"):
+		bonus_vitality -= head_data["vitality_bonus"]
+	if head_data.has("defense_bonus"):
+		bonus_defense -= head_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	armor_head_sprite.texture = null
+	using_head = false
+	emit_signal("equipment_changed")
+
+func equip_body() -> void:
+	if using_body:
+		unequip_body()
+		return
+
+	using_body = true
+	var db = arms_database.new()
+	var body_data = db.get_armor_level_data(current_body_id, body_level)
+	if body_data.has("vitality_bonus"):
+		bonus_vitality += body_data["vitality_bonus"]
+	if body_data.has("defense_bonus"):
+		bonus_defense += body_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	if body_data.has("texture"):
+		armor_body_sprite.texture = body_data["texture"]
+
+	emit_signal("equipment_changed")
+
+func unequip_body() -> void:
+	if not using_body:
+		return
+
+	var db = arms_database.new()
+	var body_data = db.get_armor_level_data(current_body_id, body_level)
+	if body_data.has("vitality_bonus"):
+		bonus_vitality -= body_data["vitality_bonus"]
+	if body_data.has("defense_bonus"):
+		bonus_defense -= body_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	armor_body_sprite.texture = null
+	using_body = false
+	emit_signal("equipment_changed")
+
+func equip_gloves() -> void:
+	if using_gloves:
+		unequip_gloves()
+		return
+
+	using_gloves = true
+	var db = arms_database.new()
+	var gloves_data = db.get_armor_level_data(current_gloves_id, gloves_level)
+	if gloves_data.has("vitality_bonus"):
+		bonus_vitality += gloves_data["vitality_bonus"]
+	if gloves_data.has("defense_bonus"):
+		bonus_defense += gloves_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	if gloves_data.has("texture"):
+		armor_gloves_sprite.texture = gloves_data["texture"]
+
+	emit_signal("equipment_changed")
+
+func unequip_gloves() -> void:
+	if not using_gloves:
+		return
+
+	var db = arms_database.new()
+	var gloves_data = db.get_armor_level_data(current_gloves_id, gloves_level)
+	if gloves_data.has("vitality_bonus"):
+		bonus_vitality -= gloves_data["vitality_bonus"]
+	if gloves_data.has("defense_bonus"):
+		bonus_defense -= gloves_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	armor_gloves_sprite.texture = null
+	using_gloves = false
+	emit_signal("equipment_changed")
+
+func equip_boots() -> void:
+	if using_boots:
+		unequip_boots()
+		return
+
+	using_boots = true
+	var db = arms_database.new()
+	var boots_data = db.get_armor_level_data(current_boots_id, boots_level)
+	if boots_data.has("vitality_bonus"):
+		bonus_vitality += boots_data["vitality_bonus"]
+	if boots_data.has("defense_bonus"):
+		bonus_defense += boots_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	if boots_data.has("texture"):
+		armor_boots_sprite.texture = boots_data["texture"]
+
+	emit_signal("equipment_changed")
+
+func unequip_boots() -> void:
+	if not using_boots:
+		return
+
+	var db = arms_database.new()
+	var boots_data = db.get_armor_level_data(current_boots_id, boots_level)
+	if boots_data.has("vitality_bonus"):
+		bonus_vitality -= boots_data["vitality_bonus"]
+	if boots_data.has("defense_bonus"):
+		bonus_defense -= boots_data["defense_bonus"]
+
+	# Atualiza stats.vitality e stats.defense
+	current_vitality = base_vitality + bonus_vitality
+	stats.vitality = current_vitality
+	stats.defense = bonus_defense
+
+	stats.calculate_derived_stats(using_sword or using_spear)
+
+	armor_boots_sprite.texture = null
+	using_boots = false
+	emit_signal("equipment_changed")

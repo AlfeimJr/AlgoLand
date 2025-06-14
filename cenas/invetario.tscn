@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=4 uid="uid://bf6koeuf0he2t"]
 
-[ext_resource type="Script" uid="uid://bpoxmf71xslk6" path="res://scripts/invetario.gd" id="1_3ee8g"]
-[ext_resource type="Script" uid="uid://ofbeefpeh01o" path="res://scripts/player_customization.gd" id="1_vfbku"]
+[ext_resource type="Script" uid="uid://bpoxmf71xslk6" path="res://scripts/Design/Inventario.gd" id="1_3ee8g"]
+[ext_resource type="Script" uid="uid://ofbeefpeh01o" path="res://scripts/Jogador/player_customization.gd" id="1_vfbku"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_voeqa"]
 [ext_resource type="Texture2D" uid="uid://bfehvhr7stacf" path="res://CharacterSprites/Hair/hair (1).png" id="3_4h4ys"]
 [ext_resource type="Texture2D" uid="uid://21q8d7mh05k4" path="res://CharacterSprites/Outfit/outfit (4).png" id="4_5kdp8"]

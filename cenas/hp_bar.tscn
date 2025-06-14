@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b6nyd4j3mlgs1"]
 
-[ext_resource type="Script" uid="uid://v27vwkpvy1x2" path="res://scripts/hp_bar.gd" id="1_njar3"]
+[ext_resource type="Script" uid="uid://v27vwkpvy1x2" path="res://scripts/Design/Barra-de-vida.gd" id="1_njar3"]
 [ext_resource type="Texture2D" uid="uid://brcfp5ubvo636" path="res://UI/craftpix-net-420010-pixel-game-user-interface-for-platformer/4 Bars/8.png" id="2_hw0od"]
 
 [node name="HPBar" type="Node2D"]

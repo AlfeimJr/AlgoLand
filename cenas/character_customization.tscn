@@ -1,6 +1,6 @@
 [gd_scene load_steps=40 format=4 uid="uid://cqvrfxmfoqu72"]
 
-[ext_resource type="Script" uid="uid://br262vkklhbes" path="res://scripts/character_customization.gd" id="1_pnp6h"]
+[ext_resource type="Script" uid="uid://br262vkklhbes" path="res://scripts/Jogador/character_customization.gd" id="1_pnp6h"]
 [ext_resource type="PackedScene" uid="uid://bjss4nulwphgk" path="res://cenas/control.tscn" id="1_qh50s"]
 [ext_resource type="Texture2D" uid="uid://dqu50n46na80q" path="res://UI/craftpix-781165-game-ui-pixel-art (1)/2 Bars/Band2_on.png" id="2_ki2yh"]
 [ext_resource type="Texture2D" uid="uid://bt4hgjf7sfbqq" path="res://Tiles/23.05a - Arctic Woodland 1.1/evergreen trees/evergreen trees (autumn) 80x112.png" id="3_oci6u"]
@@ -18,7 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://copfgub76bdni" path="res://Tiles/neve/Tiled_files/Ground_ice.png" id="12_rio77"]
 [ext_resource type="Texture2D" uid="uid://dn12gymtar4uj" path="res://Tiles/neve/Tiled_files/spots.png" id="13_hbsjp"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="18_o6udd"]
-[ext_resource type="Script" uid="uid://ofbeefpeh01o" path="res://scripts/player_customization.gd" id="18_xbbi8"]
+[ext_resource type="Script" uid="uid://ofbeefpeh01o" path="res://scripts/Jogador/player_customization.gd" id="18_xbbi8"]
 [ext_resource type="Texture2D" uid="uid://bfehvhr7stacf" path="res://CharacterSprites/Hair/hair (1).png" id="20_soe3k"]
 [ext_resource type="Texture2D" uid="uid://21q8d7mh05k4" path="res://CharacterSprites/Outfit/outfit (4).png" id="21_mj354"]
 [ext_resource type="FontFile" uid="uid://dirq4dnsbaakj" path="res://UI/craftpix-781165-game-ui-pixel-art (1)/Font/Planes_ValMore.ttf" id="22_ug6jq"]

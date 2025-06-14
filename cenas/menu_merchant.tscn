@@ -1,6 +1,6 @@
 [gd_scene load_steps=55 format=4 uid="uid://cr71vbrmc2m6t"]
 
-[ext_resource type="Script" uid="uid://biyygehq6yxmj" path="res://scripts/menu_merchant.gd" id="1_v7em4"]
+[ext_resource type="Script" uid="uid://biyygehq6yxmj" path="res://scripts/Logicas/menu_merchant.gd" id="1_v7em4"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_bsqvj"]
 [ext_resource type="Texture2D" uid="uid://cpydwtmtbwllg" path="res://UI/craftpix-net-420010-pixel-game-user-interface-for-platformer/1 Interface/Tile_27.png" id="2_bxvre"]
 [ext_resource type="Texture2D" uid="uid://7e6qicro5c8o" path="res://UI/sem org/2 Bars/Band2_on.png" id="3_dmibo"]

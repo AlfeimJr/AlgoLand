@@ -1,6 +1,6 @@
 [gd_scene load_steps=28 format=3 uid="uid://g8r1rfw2l8tx"]
 
-[ext_resource type="Script" uid="uid://v3pjeqyhwiok" path="res://scripts/slime_slippery.gd" id="1_i62ro"]
+[ext_resource type="Script" uid="uid://v3pjeqyhwiok" path="res://scripts/Inimigos/Slime_atual.gd" id="1_i62ro"]
 [ext_resource type="Texture2D" uid="uid://ccmqngjfq1d4j" path="res://inimigos/slippery_slime.png" id="1_ro10n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pcyc4"]

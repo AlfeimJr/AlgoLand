@@ -1,6 +1,6 @@
 [gd_scene load_steps=47 format=3 uid="uid://mdljxqeqktb"]
 
-[ext_resource type="Script" uid="uid://b44sq72sl83au" path="res://scripts/slime.gd" id="1_ars7f"]
+[ext_resource type="Script" uid="uid://b44sq72sl83au" path="res://scripts/Inimigos/Slime_versao_antiga.gd" id="1_ars7f"]
 [ext_resource type="Texture2D" uid="uid://b4rg0y0vhenp2" path="res://inimigos/slime.png" id="2_x6hia"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dejm4"]
@@ -1017,7 +1017,7 @@ autoplay = "run"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_2jldy")
+&"": SubResource("AnimationLibrary_2jldy")
 }
 
 [node name="Texture" type="Sprite2D" parent="."]

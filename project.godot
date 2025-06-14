@@ -23,8 +23,8 @@ config/icon="res://Tiles/icon.svg"
 [autoload]
 
 IsCustomization="*res://scripts/is_customization.gd"
-ItemDatabase="*res://scripts/ItemDatabase.gd"
-GameData="*res://scripts/GameData.gd"
+ItemDatabase="*res://scripts/DadosLocais/Dados-dos-items-loja.gd"
+GameData="*res://scripts/DadosLocais/Dados-do-jogo.gd"
 GDConsole="*res://addons/gdconsole/gdconsole.gd"
 
 [display]

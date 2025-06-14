@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cwd16obq4ib3"]
 
-[ext_resource type="Script" uid="uid://dpkrjvoorf6m8" path="res://scripts/slime_spawner.gd" id="1_4xyyh"]
+[ext_resource type="Script" uid="uid://dpkrjvoorf6m8" path="res://scripts/Logicas/slime_spawner.gd" id="1_4xyyh"]
 
 [node name="enemySpawner" type="Node2D"]
 position = Vector2(271, 188)

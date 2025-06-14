@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://dutbynh6yeyky" path="res://CharacterSprites/Body_sword_chield/body_attack_sword.png" id="2_240al"]
 [ext_resource type="Texture2D" uid="uid://bj2dckfe0s2an" path="res://CharacterSprites/Body/body_1.png" id="2_byhnc"]
-[ext_resource type="Script" uid="uid://dvsbtqoamhc8m" path="res://scripts/Jogador/player.gd" id="2_chf58"]
+[ext_resource type="Script" uid="uid://dvsbtqoamhc8m" path="res://scripts/player.gd" id="2_chf58"]
 [ext_resource type="Texture2D" uid="uid://k3won5e66cko" path="res://CharacterSprites/Arms/swords/Attack/slash_1.png" id="3_6225j"]
-[ext_resource type="Script" uid="uid://cqyuuoock7jud" path="res://scripts/Logicas/camera_2d.gd" id="3_n2plp"]
+[ext_resource type="Script" uid="uid://cqyuuoock7jud" path="res://scripts/camera_2d.gd" id="3_n2plp"]
 [ext_resource type="Texture2D" uid="uid://b0wjcry5wd3g3" path="res://CharacterSprites/Arms/shields/attack/slash_1.png" id="4_itotg"]
 [ext_resource type="Texture2D" uid="uid://bsuewacssgjp5" path="res://CharacterSprites/Hair/Attack/slash_1_sword/hair (2).png" id="5_dhdeu"]
 [ext_resource type="Texture2D" uid="uid://mxo6i5b00rqu" path="res://CharacterSprites/Outfit/Attack/slash_1_sword/outfit(6).png" id="6_eyb2q"]

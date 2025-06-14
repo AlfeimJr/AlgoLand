@@ -115,7 +115,7 @@ func _ready() -> void:
 
 func _on_inventory_item_selected(item_type: String, texture: Texture2D) -> void:
 	print(texture)
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var player = get_tree().get_current_scene().get_node("Player")
 	var current_level = 0
 	var next_level = 0
@@ -312,7 +312,7 @@ func _on_slot_item_changed(has_item: bool) -> void:
 			return
 
 	var next_level = current_level + 1
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 	var next_data = arms_db_instance.get_weapon_level_data(item_type, next_level)
 	if next_data.size() == 0:
 		info_item_update.visible = false
@@ -384,7 +384,7 @@ func _on_uptade_click_pressed() -> void:
 	var next_level = 0
 	var next_data = {}
 
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 
 	match item_type:
 		"sword_basic":
@@ -424,7 +424,7 @@ func update_upgrade_button_text() -> void:
 	var dragged_item = slot_node.current_item
 	var upgrade_button = $Update/UptadeClick
 	var player = get_tree().get_current_scene().get_node("Player")
-	var arms_db_instance = preload("res://scripts/arms_database.gd").new()
+	var arms_db_instance = preload("res://scripts/Databases/arms_database.gd").new()
 
 	if dragged_item == null:
 		upgrade_button.text = "UPGRADE"
