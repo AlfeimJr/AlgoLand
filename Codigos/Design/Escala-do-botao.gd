@@ -1,9 +1,9 @@
 extends Button
 
 # Escala original
-var original_scale = Vector2(1, 1)
+var escala_original = Vector2(1, 1)
 # Escala ao passar o mouse
-var hover_scale = Vector2(1.2, 1.2)
+var escala_hover = Vector2(1.2, 1.2)
 
 func _ready():
 	pass

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://vbu0fvbbrd75"]
 
-[ext_resource type="Script" uid="uid://bd4e47dymky6q" path="res://scripts/Logicas/Item_drag.gd" id="1_iyfnj"]
+[ext_resource type="Script" uid="uid://bd4e47dymky6q" path="res://Codigos/Logicas/Item_drag.gd" id="1_iyfnj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p215j"]
 border_width_left = 1

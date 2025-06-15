@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=4 uid="uid://ds1a8bbfngca6"]
 
-[ext_resource type="Script" uid="uid://do1hx1bulieou" path="res://scripts/Logicas/init_game.gd" id="1_gvmdk"]
+[ext_resource type="Script" uid="uid://do1hx1bulieou" path="res://Codigos/Logicas/init_game.gd" id="1_gvmdk"]
 [ext_resource type="Texture2D" uid="uid://byc51015i3y5n" path="res://Tiles/tile-plataforma/1 Tiles/Tileset.png" id="1_h65b0"]
 [ext_resource type="Texture2D" uid="uid://clf2puem1l843" path="res://Tiles/tile-plataforma/2 Background/Background.png" id="2_yh8ib"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="3_r6lks"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://1hjy0eg2xg8e"]
 
-[ext_resource type="Script" uid="uid://ck5l80nrmi0if" path="res://scripts/Design/Item-no-inventario.gd" id="1_qbp2s"]
+[ext_resource type="Script" uid="uid://ck5l80nrmi0if" path="res://Codigos/Design/Item-no-inventario.gd" id="1_qbp2s"]
 [ext_resource type="Texture2D" uid="uid://cq1fn6onf8otr" path="res://UI/items/16x16/515.png" id="2_xod7j"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qbp2s"]

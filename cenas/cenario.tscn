@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://b1h1u10dvlyy2"]
 
-[ext_resource type="Script" uid="uid://db3x0y14736pc" path="res://scripts/Logicas/cenario.gd" id="1_xi8ta"]
+[ext_resource type="Script" uid="uid://db3x0y14736pc" path="res://Codigos/Logicas/cenario.gd" id="1_xi8ta"]
 [ext_resource type="PackedScene" uid="uid://dtphjwfloo87l" path="res://cenas/terrains.tscn" id="2_rmsv3"]
 [ext_resource type="PackedScene" uid="uid://sabkaihnp2by" path="res://cenas/nao_usados/cpu_particles_2d.tscn" id="2_vdwf8"]
 [ext_resource type="PackedScene" uid="uid://y6c4hi6s1u75" path="res://cenas/player2.tscn" id="5_4qs78"]
@@ -19,7 +19,7 @@ script = ExtResource("1_xi8ta")
 [node name="enemySpawner" parent="." instance=ExtResource("5_jwhcr")]
 position = Vector2(215, 176)
 
-[node name="WaveManager" parent="enemySpawner" instance=ExtResource("6_j85rw")]
+[node name="GerenciadorOndas" parent="enemySpawner" instance=ExtResource("6_j85rw")]
 max_waves = 1000
 
 [node name="Terrains" parent="." instance=ExtResource("2_rmsv3")]

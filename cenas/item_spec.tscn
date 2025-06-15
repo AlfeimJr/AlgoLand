@@ -1,9 +1,9 @@
 [gd_scene load_steps=17 format=4 uid="uid://gigb868grykh"]
 
-[ext_resource type="Script" uid="uid://dp7pnc0jto6ha" path="res://scripts/Logicas/item_spec.gd" id="1_3d3jq"]
+[ext_resource type="Script" uid="uid://dp7pnc0jto6ha" path="res://Codigos/Logicas/item_spec.gd" id="1_3d3jq"]
 [ext_resource type="Texture2D" uid="uid://d1iiqnaqd3rjw" path="res://UI/craftpix-net-420010-pixel-game-user-interface-for-platformer/1 Interface/TileMap.png" id="2_hn3dw"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="2_jpc7k"]
-[ext_resource type="Script" uid="uid://dxp8a5kslyg83" path="res://scripts/Design/Botao-de-compra.gd" id="3_4otf7"]
+[ext_resource type="Script" uid="uid://dxp8a5kslyg83" path="res://Codigos/Design/Botao-de-compra.gd" id="3_4otf7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_okvb3"]
 bg_color = Color(0.231373, 0.231373, 0.231373, 0)

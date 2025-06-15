@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://delx88t4jwfoh"]
 
-[ext_resource type="Script" uid="uid://xw8lb53m2kne" path="res://scripts/Logicas/slot.gd" id="1_trewy"]
+[ext_resource type="Script" uid="uid://xw8lb53m2kne" path="res://Codigos/Logicas/slot.gd" id="1_trewy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_drht8"]
 

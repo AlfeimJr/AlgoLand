@@ -1,8 +1,8 @@
 [gd_scene load_steps=13 format=3 uid="uid://idfadyrk0auf"]
 
-[ext_resource type="Script" uid="uid://cgyxmrwl7qv06" path="res://scripts/Logicas/control.gd" id="1_uhhk1"]
+[ext_resource type="Script" uid="uid://cgyxmrwl7qv06" path="res://Codigos/Logicas/control.gd" id="1_uhhk1"]
 [ext_resource type="FontFile" uid="uid://dwub7qum41gaq" path="res://UI/Planes_ValMore.ttf" id="2_nwwd0"]
-[ext_resource type="Script" uid="uid://dotco0yycjhr2" path="res://scripts/Logicas/wave.gd" id="3_50t8h"]
+[ext_resource type="Script" uid="uid://dotco0yycjhr2" path="res://Codigos/Logicas/wave.gd" id="3_50t8h"]
 [ext_resource type="Texture2D" uid="uid://cfhlumu376grb" path="res://UI/sem org/5 Logo/Logo.png" id="3_cfvah"]
 [ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/sem org/2 Bars/Band2_off.png" id="5_t1nvj"]
 [ext_resource type="Texture2D" uid="uid://crcpsqbhgylr7" path="res://UI/sem org/2 Bars/Healthbar_full.png" id="6_p6ugm"]

@@ -70,7 +70,7 @@ func enemy_died() -> void:
 	update_ui()
 	if enemies_alive <= 0:
 		var reward = gold_base_reward * current_wave
-		GameData.add_coins(reward)
+		DadosJogo.add_coins(reward)
 		merchant.visible = true
 		var store = get_tree().get_root().get_node_or_null("cenario/UI/MerchantMenu")
 		if store and store.is_visible():

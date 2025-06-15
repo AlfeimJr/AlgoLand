@@ -1,40 +1,40 @@
-extends "EnemyBase.gd"
+extends "Inimigo-base.gd"
 
-class_name SlimeEnemy
+class_name InimigoSlime
 
 # Referência ao jogador
-@onready var player = get_node("/root/cenario/Player")
+@onready var jogador = get_node("/root/cenario/Jogador")
 
 # -----------------------------
 # CONFIGURAÇÕES ESPECÍFICAS DO SLIME
 # -----------------------------
-@export var slime_specific_property: int = 42  # Exemplo de propriedade específica do slime
+@export var propriedade_especifica_slime: int = 42  # Exemplo de propriedade específica do slime
 
 # -----------------------------
 # IMPLEMENTAÇÃO DE MÉTODOS ABSTRATOS
 # -----------------------------
-func _get_player() -> Node2D:
-	return player
+func obter_jogador() -> Node2D:
+	return jogador
 
 # -----------------------------
 # COMPORTAMENTOS ESPECÍFICOS DO SLIME
 # -----------------------------
 func _ready() -> void:
-	# Chama o _ready do EnemyBase
+	# Chama o _ready do BaseInimigo
 	super()
 	
 	# Configurações específicas do slime
-	if animation_tree:
-		animation_tree.active = true
-		_set_animation("run")  # Define animação inicial específica do slime
+	if arvore_animacao:
+		arvore_animacao.active = true
+		definir_animacao("run")  # Define animação inicial específica do slime
 
 func _physics_process(delta: float) -> void:
-	# Chama o _physics_process do EnemyBase, passando o argumento delta
+	# Chama o _physics_process do BaseInimigo, passando o argumento delta
 	super(delta)
 	
 	# Adiciona comportamentos específicos do slime aqui, se necessário
 	pass
 
 # Exemplo de método específico do slime
-func slime_special_behavior():
+func comportamento_especial_slime():
 	print("Executando comportamento especial do slime!")

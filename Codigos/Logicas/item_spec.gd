@@ -22,10 +22,10 @@ func _on_button_pressed() -> void:
 		return
 
 	var price = current_item_data.get("price", 0)
-	if GameData.coins >= price:
+	if DadosJogo.coins >= price:
 		player.spend_coins(price)
 		var coins_label = coins.get_node("count") as Label
-		coins_label.text = str(GameData.coins)
+		coins_label.text = str(DadosJogo.coins)
 		if current_item_data.has("effects"):
 			var effects = current_item_data["effects"]
 			for key in effects.keys():
