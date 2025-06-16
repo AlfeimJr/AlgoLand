@@ -1,23 +1,21 @@
 extends CanvasLayer  # Agora o script pode ser usado no CanvasLayer
 
-@onready var wave_label = $wave/WaveLabel
-@onready var enemies_label = $enemiesCount/EnemiesLabel
+@onready var rotulo_onda = $wave/WaveLabel
+@onready var rotulo_inimigos = $enemiesCount/enemies_label
 
-
-var wave_manager
+var gerenciador_ondas
 
 func _ready():
-	wave_manager = get_tree().get_root().get_node("/root/cenario/enemySpawner/WaveManager")
+	gerenciador_ondas = get_tree().get_root().get_node("/root/cenario/enemySpawner/GerenciadorOndas")
 
-
-	if wave_manager:
+	if gerenciador_ondas:
 		# Conectar eventos para atualizar UI
-		wave_manager.connect("wave_started", Callable(self, "_on_wave_started"))
-		wave_manager.connect("wave_completed", Callable(self, "_on_wave_completed"))
+		gerenciador_ondas.connect("onda_iniciada", Callable(self, "_ao_onda_iniciada"))
+		gerenciador_ondas.connect("onda_completada", Callable(self, "_ao_onda_completada"))
 	else:
-		print("❌ ERRO: WaveManager não encontrado!")
+		print("❌ ERRO: GerenciadorOndas não encontrado!")
 
-func _on_wave_started(wave: int):
-	print("🔵 Wave start:", wave)
-	wave_label.text = str(wave)
-	enemies_label.text = "Enemys: " + str(wave_manager.enemies_alive)
+func _ao_onda_iniciada(onda: int):
+	print("🔵 Onda iniciada:", onda)
+	rotulo_onda.text = str(onda)
+	rotulo_inimigos.text = "Inimigos: " + str(gerenciador_ondas.inimigos_vivos)

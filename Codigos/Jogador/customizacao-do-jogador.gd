@@ -11,8 +11,8 @@ var roupa_atual: int = 0
 var sprites_cabelo: Array[Texture2D] = []
 var sprites_roupa: Array[Texture2D] = []
 
-@onready var sprite_cabelo: Sprite2D = $Hair
-@onready var sprite_roupa: Sprite2D = $Outfit
+@onready var sprite_cabelo: Sprite2D = $Cabelo
+@onready var sprite_roupa: Sprite2D = $Roupa
 
 func _ready() -> void:
 	# 1) Carrega as sprites de cabelo (exemplo de 1 a 27)

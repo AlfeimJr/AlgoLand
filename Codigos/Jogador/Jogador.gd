@@ -49,12 +49,12 @@ signal forja_finalizada
 # ---------------------------
 # BaseSprites
 # ---------------------------
-@onready var sprite_corpo = $CompositeSprites/BaseSprites/Body
-@onready var sprite_cabelo = $CompositeSprites/BaseSprites/Hair
-@onready var sprite_roupa = $CompositeSprites/BaseSprites/Outfit
-@onready var sprite_espada = $CompositeSprites/BaseSprites/Arm
-@onready var sprite_escudo = $CompositeSprites/BaseSprites/Child
-@onready var sprite_lanca = $CompositeSprites/BaseSprites/spear
+@onready var sprite_corpo = $CompositeSprites/BaseSprites/Corpo
+@onready var sprite_cabelo = $CompositeSprites/BaseSprites/Cabelo
+@onready var sprite_roupa = $CompositeSprites/BaseSprites/Roupa
+@onready var sprite_espada = $CompositeSprites/BaseSprites/Braco
+@onready var sprite_escudo = $CompositeSprites/BaseSprites/Escudo
+@onready var sprite_lanca = $CompositeSprites/BaseSprites/Lanca
 
 # Arrays exclusivos da Forja
 var array_cabelo_forja: Array[Texture2D] = []
@@ -95,7 +95,7 @@ var itens_comprados: Array[Dictionary] = []
 
 var cabelo_atual: int = 0
 var roupa_atual: int = 0
-var _maquina_estados: Object
+var _maquina_estados: Object 
 var status_armas = preload("res://Codigos/DadosLocais/Equipamentos.gd").new()
 var _knockback: Vector2 = Vector2.ZERO
 var temporizador_knockback: float = 0.0
@@ -176,11 +176,12 @@ func _ready() -> void:
 	# Inicializa vitalidade e defesa corretamente
 	vitalidade_base = 100
 	bonus_vitalidade = 0
+	_temporizador = $AttackTimer
 	bonus_defesa = 0
 	estatisticas.vitalidade = vitalidade_base  # 100, não 5
 	estatisticas.defesa = 0  # Será calculado depois
 	vitalidade_atual = vitalidade_base
-
+	_arvore_animacao = $CompositeSprites/Animation/AnimationTree
 	# Conecta timer de ataque se existir
 	if _temporizador:
 		_temporizador.connect("timeout", Callable(self, "_on_temporizador_ataque_timeout"))
@@ -506,6 +507,7 @@ func _on_timeout_janela_combo() -> void:
 # Animação
 # ---------------------------
 func animar() -> void:
+	print(_maquina_estados)
 	if _esta_atacando:
 		return
 	if velocity.length() > 2:
@@ -810,8 +812,8 @@ func aplicar_knockback(forca: Vector2) -> void:
 		$CompositeSprites/BaseSprites/Cabelo,
 		$CompositeSprites/BaseSprites/Roupa,
 		$CompositeSprites/BaseSprites/Braco,
-		$CompositeSprites/BaseSprites/Filho,
-		$CompositeSprites/BaseSprites/lanca,
+		$CompositeSprites/BaseSprites/Escudo,
+		$CompositeSprites/BaseSprites/Lanca,
 		$CompositeSprites/AttackSwordAnimation/CorpoEspadaEscudo,
 		$CompositeSprites/AttackSwordAnimation/BracoEspada,
 		$CompositeSprites/AttackSwordAnimation/Escudo,

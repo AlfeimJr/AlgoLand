@@ -5,7 +5,7 @@ extends Node2D
 func _ready() -> void:
 # Define o caminho para o diretório "Documentos"
 	var documents_dir = OS.get_user_data_dir()
-	save_file_path = documents_dir.path_join("player_config.json")
+	save_file_path = documents_dir.path_join("configuracao_jogador.json")
 	print("Arquivo será buscado em: ", save_file_path)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -27,7 +27,7 @@ func _on_start_game_pressed() -> void:
 		get_tree().current_scene.queue_free()  # Remove a cena atual
 		get_tree().current_scene = instance    # Define a nova cena como atual
 	else:
-		var scene = load("res://cenas/character_customization.tscn")
+		var scene = load("res://cenas/customizacao-de-personagem.tscn")
 		var instance = scene.instantiate()
 		
 		# Limpa a cena atual e adiciona a nova cena à árvore

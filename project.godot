@@ -16,14 +16,14 @@ fast_but_unsafe=175
 [application]
 
 config/name="top down"
-run/main_scene="res://cenas/init_game.tscn"
+run/main_scene="res://cenas/inicio-do-jogo.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://Tiles/icon.svg"
 
 [autoload]
 
 IsCustomization="*res://scripts/is_customization.gd"
-ItemDatabase="*res://Codigos/DadosLocais/Dados-dos-items-loja.gd"
+DadosDosItems="*res://Codigos/DadosLocais/Dados-dos-items-loja.gd"
 DadosJogo="*res://Codigos/DadosLocais/Dados-do-jogo.gd"
 GDConsole="*res://addons/gdconsole/gdconsole.gd"
 
@@ -43,13 +43,13 @@ enabled=PackedStringArray("res://addons/function_type_autocomplete/plugin.cfg", 
 [global_group]
 
 enemy=""
-sword_basic=""
-shield_basic=""
-spear_basic=""
-head_basic=""
-armor_basic=""
-gloves_basic=""
-boots_basic=""
+espada_basica=""
+escudo_basico=""
+lanca_basica=""
+cabeca_basica=""
+armadura_basica=""
+botas_basicas=""
+luvas_basicas=""
 
 [input]
 

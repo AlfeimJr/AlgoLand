@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name BaseInimigo
+class_name InimigoBase
 
 # -----------------------------
 # CONFIGURAÇÕES DE MOVIMENTO
@@ -73,7 +73,7 @@ func _ready() -> void:
 	# >>> INTEGRAÇÃO DA BARRA DE HP <<<
 	# Se o nó HPBar não estiver presente, instancia e adiciona como filho do inimigo.
 	if not has_node("HPBar"):
-		var cena_barra_hp = preload("res://cenas/hp_bar.tscn")
+		var cena_barra_hp = preload("res://cenas/barra-de-vida.tscn")
 		var instancia_barra_hp = cena_barra_hp.instantiate()
 		instancia_barra_hp.name = "HPBar"
 		add_child(instancia_barra_hp)
@@ -146,7 +146,7 @@ func receber_dano(quantidade_dano: int, forca_knockback: Vector2 = Vector2.ZERO)
 	
 	# Atualiza a barra de HP, se existir
 	if has_node("HPBar"):
-		get_node("HPBar").update_bar(vida)
+		get_node("HPBar").atualizar_barra(vida)
 
 	# Verifica se o inimigo morreu
 	if vida <= 0:
@@ -251,7 +251,7 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 # FUNÇÃO PARA CRIAR O TEXTO DE DANO ACIMA DO INIMIGO
 # -------------------------------------------------
 func gerar_rotulo_dano(valor_dano: int) -> void:
-	var cena_rotulo = preload("res://cenas/floating_damage_label.tscn")
+	var cena_rotulo = preload("res://cenas/dano-flutuante.tscn")
 	var instancia_rotulo = cena_rotulo.instantiate()
 
 	# Posição do Node2D (a cena do texto)

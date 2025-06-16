@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://y6govco4twv7" path="res://UI/sem org/2 Bars/Band2_off.png" id="5_t1nvj"]
 [ext_resource type="Texture2D" uid="uid://crcpsqbhgylr7" path="res://UI/sem org/2 Bars/Healthbar_full.png" id="6_p6ugm"]
 [ext_resource type="Texture2D" uid="uid://b4i4jaaj50hva" path="res://UI/sem org/2 Bars/Healthbar_empty.png" id="7_6xg6j"]
-[ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/coins.tscn" id="8_dsu43"]
+[ext_resource type="PackedScene" uid="uid://cdlhjfru12f0w" path="res://cenas/moedas.tscn" id="8_dsu43"]
 [ext_resource type="PackedScene" uid="uid://dsd2y11vv3y3c" path="res://cenas/info_tab.tscn" id="9_tmm8h"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_drs66"]
@@ -33,7 +33,7 @@ offset_right = 341.0
 offset_bottom = 323.0
 texture = ExtResource("5_t1nvj")
 
-[node name="EnemiesLabel" type="Label" parent="enemiesCount"]
+[node name="enemies_label" type="Label" parent="enemiesCount"]
 texture_filter = 1
 layout_mode = 0
 offset_left = 4.0
@@ -67,12 +67,12 @@ text = "1"
 label_settings = SubResource("LabelSettings_v0hah")
 horizontal_alignment = 1
 
-[node name="HealthbarEmpty" type="Sprite2D" parent="."]
+[node name="BarraVidaVazia" type="Sprite2D" parent="."]
 position = Vector2(295.375, 299.125)
 scale = Vector2(0.950521, 1.35417)
 texture = ExtResource("7_6xg6j")
 
-[node name="HealthbarFull" type="TextureRect" parent="."]
+[node name="BarraVidaCheia" type="TextureRect" parent="."]
 offset_left = 249.0
 offset_top = 291.0
 offset_right = 345.0
@@ -90,7 +90,7 @@ offset_bottom = 306.0
 text = "10/10"
 label_settings = SubResource("LabelSettings_r58lk")
 
-[node name="Coins" parent="." instance=ExtResource("8_dsu43")]
+[node name="Moedas" parent="." instance=ExtResource("8_dsu43")]
 offset_left = 246.0
 offset_top = 268.0
 offset_right = 311.0

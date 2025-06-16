@@ -39,9 +39,6 @@ func _ready() -> void:
 	# Iniciar com o inventário fechado
 	fechar()
 
-	# Exemplo: inicia a lança invisível
-	if $Item3:
-		$Item3.visible = false
 
 	# Conectar sinais do jogador
 	if jogador:

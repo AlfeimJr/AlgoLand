@@ -20,13 +20,13 @@ func atualizar_menu() -> void:
 		filho.queue_free()
 
 	var array_estatisticas = [
-		"FOR: " + str(jogador.stats.forca),
-		"AGI: " + str(jogador.stats.agilidade),
-		"VIT: " + str(jogador.stats.vitalidade),
-		"INT: " + str(jogador.stats.inteligencia),
-		"SOR: " + str(jogador.stats.sorte),
-		"DEF: " + str(jogador.stats.defesa),
-		"DAN: " + str(jogador.stats.dano_ataque)
+		"FOR: " + str(jogador.estatisticas.forca),
+		"AGI: " + str(jogador.estatisticas.agilidade),
+		"VIT: " + str(jogador.estatisticas.vitalidade),
+		"INT: " + str(jogador.estatisticas.inteligencia),
+		"SOR: " + str(jogador.estatisticas.sorte),
+		"DEF: " + str(jogador.estatisticas.defesa),
+		"DAN: " + str(jogador.estatisticas.dano_ataque)
 	]
 
 	var arquivo_fonte: FontFile = load("res://UI/Planes_ValMore.ttf") as FontFile

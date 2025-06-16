@@ -10,7 +10,7 @@ func _ready() -> void:
 	if gerenciador_ondas:
 		gerenciador_ondas.connect("onda_iniciada", Callable(self, "_on_onda_iniciada"))
 		gerenciador_ondas.connect("onda_completada", Callable(self, "_on_onda_completada"))
-		gerenciador_ondas.connect("ondas_paradas_sinal",  Callable(self, "_on_ondas_paradas"))
+		gerenciador_ondas.connect("sinal_ondas_paradas",  Callable(self, "_on_ondas_paradas"))
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

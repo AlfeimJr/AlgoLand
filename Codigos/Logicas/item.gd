@@ -1,14 +1,14 @@
 extends Control  # Ou Button, dependendo do seu caso.
 
 var item_data: Dictionary
-signal item_clicked(item_data)
-func set_item_data(data: Dictionary) -> void:
+signal item_clicado(item_data)
+func definir_dados_item(data: Dictionary) -> void:
 	item_data = data
 	print("data", data)
 	# Verifique se os nomes dos nós abaixo são EXATAMENTE os mesmos que aparecem na sua cena.
 	# Pela imagem: "TextureButton" > "TextureRect" e "Label"
-	$TextureButton/Label.text = str(data["price"])
-	$TextureButton/TextureRect.texture = load(data["icon"])
+	$TextureButton/Label.text = str(data["preco"])
+	$TextureButton/TextureRect.texture = load(data["icone"])
 	$TextureButton/background.texture = load("res://UI/sem org/2 Bars/Band2_off.png")
 func _ready() -> void:
 	pass
@@ -17,4 +17,4 @@ func _ready() -> void:
 
 
 func _on_texture_button_pressed() -> void:
-	emit_signal("item_clicked", item_data)
+	emit_signal("item_clicado", item_data)

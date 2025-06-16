@@ -1342,25 +1342,25 @@ font = ExtResource("11_c5u6b")
 font_size = 6
 shadow_color = Color(0, 0, 0, 1)
 
-[node name="Invetario" type="Node2D"]
+[node name="Inventario" type="Node2D"]
 script = ExtResource("1_3ee8g")
 
-[node name="PlayerCustomization" type="CharacterBody2D" parent="."]
+[node name="PersonalizacaoJogador" type="CharacterBody2D" parent="."]
 z_index = 1
 position = Vector2(170, 135)
 script = ExtResource("1_vfbku")
 
-[node name="Body" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Corpo" type="Sprite2D" parent="PersonalizacaoJogador"]
 texture = ExtResource("2_voeqa")
 hframes = 8
 vframes = 8
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerCustomization"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PersonalizacaoJogador"]
 visible = false
 position = Vector2(245, 172)
 shape = SubResource("RectangleShape2D_sosyx")
 
-[node name="Hair" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Cabelo" type="Sprite2D" parent="PersonalizacaoJogador"]
 z_index = 4
 position = Vector2(0, -10)
 texture = ExtResource("3_4h4ys")
@@ -1368,16 +1368,16 @@ hframes = 8
 vframes = 8
 frame = 1
 
-[node name="Outfit" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Roupa" type="Sprite2D" parent="PersonalizacaoJogador"]
 texture = ExtResource("4_5kdp8")
 hframes = 8
 vframes = 8
 
-[node name="Sword" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Espada" type="Sprite2D" parent="PersonalizacaoJogador"]
 
-[node name="Shield" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Escudo" type="Sprite2D" parent="PersonalizacaoJogador"]
 
-[node name="Spear" type="Sprite2D" parent="PlayerCustomization"]
+[node name="Lanca" type="Sprite2D" parent="PersonalizacaoJogador"]
 position = Vector2(-5.24521e-06, 0)
 
 [node name="Label" type="Label" parent="."]
@@ -1390,56 +1390,56 @@ text = "CHARACTER"
 label_settings = SubResource("LabelSettings_apmlk")
 horizontal_alignment = 1
 
-[node name="sword_basic" parent="." groups=["draggable_items", "sword_basic"] instance=ExtResource("7_jy1ed")]
+[node name="espada_basica" parent="." groups=["draggable_items", "espada_basica"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(150, 175)
 
-[node name="spear_basic" parent="." groups=["draggable_items", "spear_basic"] instance=ExtResource("7_jy1ed")]
+[node name="lanca_basica" parent="." groups=["lanca_basica"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(150, 175)
 
-[node name="shield_basic" parent="." groups=["draggable_items", "shield_basic"] instance=ExtResource("7_jy1ed")]
+[node name="escudo_basico" parent="." groups=["draggable_items", "escudo_basico"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(203, 175)
 
-[node name="head_basic" parent="." groups=["draggable_items", "head_basic"] instance=ExtResource("7_jy1ed")]
+[node name="cabeca_basica" parent="." groups=["cabeca_basica", "draggable_items"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(133, 123)
 
-[node name="armor_basic" parent="." groups=["armor_basic", "draggable_items"] instance=ExtResource("7_jy1ed")]
+[node name="armadura_basica" parent="." groups=["armadura_basica", "draggable_items"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(133, 140)
 
-[node name="gloves_basic" parent="." groups=["draggable_items", "gloves_basic"] instance=ExtResource("7_jy1ed")]
+[node name="luvas_basicas" parent="." groups=["draggable_items", "luvas_basicas"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(133, 157)
 
-[node name="boots_basic" parent="." groups=["boots_basic", "draggable_items"] instance=ExtResource("7_jy1ed")]
+[node name="botas_basicas" parent="." groups=["botas_basicas", "draggable_items"] instance=ExtResource("7_jy1ed")]
 z_index = 700
 position = Vector2(133, 175)
 
-[node name="sword_slot_empty" type="TileMapLayer" parent="."]
+[node name="slot_espada_vazio" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(2, -1)
 scale = Vector2(0.88, 0.88)
 tile_map_data = PackedByteArray("AAAKAAwAAAAKAAMAAAA=")
 tile_set = SubResource("TileSet_gar06")
 
-[node name="head" type="TileMapLayer" parent="."]
+[node name="cabeca" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(27, 3)
 scale = Vector2(0.88, 0.88)
 tile_map_data = PackedByteArray("AAAHAAgAAAAMAAMAAAA=")
 tile_set = SubResource("TileSet_gar06")
 
-[node name="body" type="TileMapLayer" parent="."]
+[node name="corpo" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(27, 6)
 scale = Vector2(0.88, 0.88)
 tile_map_data = PackedByteArray("AAAHAAkAAAANAAQAAAA=")
 tile_set = SubResource("TileSet_gar06")
 
-[node name="gloves" type="TileMapLayer" parent="."]
+[node name="luvas" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(27, -5)
 scale = Vector2(0.88, 0.88)
@@ -1467,7 +1467,7 @@ scale = Vector2(0.88, 0.88)
 tile_map_data = PackedByteArray("AAAMAAoAAAADAAAAAAA=")
 tile_set = SubResource("TileSet_gar06")
 
-[node name="shield_slot_empty" type="TileMapLayer" parent="."]
+[node name="slot_escudo_vazio" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(41, 41)
 scale = Vector2(0.88, 0.88)
@@ -1501,7 +1501,7 @@ offset_bottom = 9.0
 text = "Força"
 label_settings = SubResource("LabelSettings_n01hi")
 
-[node name="boot" type="TileMapLayer" parent="."]
+[node name="bota" type="TileMapLayer" parent="."]
 z_index = 5
 position = Vector2(27, -1)
 scale = Vector2(0.88, 0.88)

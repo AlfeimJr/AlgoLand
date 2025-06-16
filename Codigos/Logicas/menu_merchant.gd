@@ -47,7 +47,7 @@ func _ready() -> void:
 	atualizar_exibicao_moedas()
 
 	var gerenciador_ondas = get_tree().get_root().get_node("cenario/enemySpawner/GerenciadorOndas")
-	if gerenciador_ondas and gerenciador_ondas.onda_em_execucao:
+	if gerenciador_ondas and gerenciador_ondas.onda_iniciada:
 		hide()
 		return
 
@@ -172,9 +172,7 @@ func ao_botao_fechar_pressionado() -> void:
 		jogador.bloquear_ataques(false)
 	
 	# Reseta a posição do item arrastado
-	var item = get_tree().get_current_scene().get_node("Jogador/Inventario/Item")
-	if item:
-		item.resetar_posicao()
+	
 	
 	# Fecha (oculta) o inventário
 	var inventario = get_tree().get_current_scene().get_node("Jogador/Inventario")
@@ -201,8 +199,8 @@ func _on_construir_pressionado() -> void:
 	for filho in container_itens.get_children():
 		filho.queue_free()
 	atualizar_exibicao_moedas()
-	for chave in DadosJogo.itens.keys():
-		var dados_item = DadosJogo.obter_dados_item(chave)
+	for chave in DadosDosItems.itens.keys():
+		var dados_item = DadosDosItems.obter_dados_item(chave)
 		if dados_item.size() > 0:
 			var instancia_item = cena_item.instantiate()
 			instancia_item.definir_dados_item(dados_item)

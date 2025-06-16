@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bx8nyvg8qemk7" path="res://NPC/npc merchant A v00.png" id="1_5nqid"]
 [ext_resource type="Texture2D" uid="uid://dckgvjj6um2eq" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/1 Frames/Frame2.png" id="2_3fri6"]
-[ext_resource type="PackedScene" uid="uid://cr71vbrmc2m6t" path="res://cenas/menu_merchant.tscn" id="2_auqq5"]
+[ext_resource type="PackedScene" uid="uid://cr71vbrmc2m6t" path="res://cenas/menu-do-mercante.tscn" id="2_auqq5"]
 [ext_resource type="Script" uid="uid://cr2qyggnekl04" path="res://Codigos/Logicas/merchant.gd" id="3_8n8mb"]
 [ext_resource type="FontFile" uid="uid://b13xmp6wu4ea" path="res://UI/craftpix-net-775352-game-user-interface-pixel-art/6 Font/CraftPixNet Survival Kit.otf" id="4_dv8ra"]
 

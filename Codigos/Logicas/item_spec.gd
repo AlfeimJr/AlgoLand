@@ -1,7 +1,7 @@
 extends Panel
 
 var current_item_data: Dictionary
-@onready var coins = $"../Coins"
+@onready var coins = $"../Moedas"
 
 func _ready() -> void:
 	pass
@@ -9,12 +9,12 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	pass
 
-func set_item_data(data: Dictionary) -> void:
+func definir_dados_item(data: Dictionary) -> void:
 	current_item_data = data
-	$ItemName.text = data["name"]
-	$ItemPrice.text = str(data["price"])
-	$ItemSelected/itemImage.texture = load(data["icon"])
-	$ItemDescription.text = data["description"]
+	$ItemName.text = data["nome"]
+	$ItemPrice.text = str(data["preco"])
+	$ItemSelected/itemImage.texture = load(data["icone"])
+	$ItemDescription.text = data["descricao"]
 
 func _on_button_pressed() -> void:
 	var player = get_tree().get_root().get_node("cenario/Player")

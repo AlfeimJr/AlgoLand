@@ -11,7 +11,7 @@ font_size = 7
 shadow_size = 2
 shadow_color = Color(0, 0, 0, 1)
 
-[node name="Item" type="Control"]
+[node name="Item" type="Control" groups=["espada_basica"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

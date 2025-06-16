@@ -25,7 +25,7 @@ offset_bottom = 24.0
 texture = ExtResource("1_5u3ec")
 expand_mode = 1
 
-[node name="count" type="Label" parent="."]
+[node name="contador" type="Label" parent="."]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 6.0
